@@ -1,6 +1,6 @@
-import { TanStackDevtools } from "@tanstack/react-devtools";
+// import { TanStackDevtools } from "@tanstack/react-devtools";
 import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+// import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
 import appCss from "../styles.css?url";
 
@@ -15,7 +15,7 @@ export const Route = createRootRoute({
 				content: "width=device-width, initial-scale=1",
 			},
 			{
-				title: "TanStack Start Starter",
+				title: "Kost",
 			},
 		],
 		links: [
@@ -23,8 +23,23 @@ export const Route = createRootRoute({
 				rel: "stylesheet",
 				href: appCss,
 			},
+			{
+				rel: "preconnect",
+				href: "https://fonts.googleapis.com",
+			},
+			{
+				rel: "preconnect",
+				href: "https://fonts.gstatic.com",
+				crossOrigin: "anonymous",
+			},
+			{
+				rel: "stylesheet",
+				href: "https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap",
+			},
 		],
 	}),
+
+	notFoundComponent: () => <div>404 - Halaman tidak ditemukan</div>,
 
 	shellComponent: RootDocument,
 });
@@ -35,9 +50,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			<head>
 				<HeadContent />
 			</head>
-			<body>
+			<body className="bg-[#F2F2F2]">
 				{children}
-				<TanStackDevtools
+				{/* <TanStackDevtools
 					config={{
 						position: "bottom-right",
 					}}
@@ -47,7 +62,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 							render: <TanStackRouterDevtoolsPanel />,
 						},
 					]}
-				/>
+				/> */}
 				<Scripts />
 			</body>
 		</html>

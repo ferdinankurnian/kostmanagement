@@ -9,38 +9,310 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as MemberRouteImport } from './routes/member'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MemberHomeRouteImport } from './routes/member/home'
+import { Route as AuthLoginRouteImport } from './routes/_auth/login'
+import { Route as AuthDebugRouteImport } from './routes/_auth/debug'
+import { Route as AdminMainRouteRouteImport } from './routes/admin/_main/route'
+import { Route as AdminLaporanIndexRouteImport } from './routes/admin/laporan/index'
+import { Route as AdminMainIndexRouteImport } from './routes/admin/_main/index'
+import { Route as AdminTambahPenghuniPilihKamarRouteImport } from './routes/admin/tambah-penghuni/pilih-kamar'
+import { Route as AdminTambahPenghuniHasilRouteImport } from './routes/admin/tambah-penghuni/hasil'
+import { Route as AdminTambahPenghuniFormRouteImport } from './routes/admin/tambah-penghuni/form'
+import { Route as AdminTagihanDetailRouteImport } from './routes/admin/tagihan/detail'
+import { Route as AdminProfilRekeningRouteImport } from './routes/admin/profil/rekening'
+import { Route as AdminProfilPeraturanRouteImport } from './routes/admin/profil/peraturan'
+import { Route as AdminProfilInformasiPemilikRouteImport } from './routes/admin/profil/informasi-pemilik'
+import { Route as AdminProfilInformasiKostRouteImport } from './routes/admin/profil/informasi-kost'
+import { Route as AdminLaporanViewRouteImport } from './routes/admin/laporan/view'
+import { Route as AdminMainTagihanRouteImport } from './routes/admin/_main/tagihan'
+import { Route as AdminMainProfilRouteImport } from './routes/admin/_main/profil'
+import { Route as AdminMainPengumumanRouteImport } from './routes/admin/_main/pengumuman'
 
+const MemberRoute = MemberRouteImport.update({
+  id: '/member',
+  path: '/member',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/_auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MemberHomeRoute = MemberHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => MemberRoute,
+} as any)
+const AuthLoginRoute = AuthLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthDebugRoute = AuthDebugRouteImport.update({
+  id: '/debug',
+  path: '/debug',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AdminMainRouteRoute = AdminMainRouteRouteImport.update({
+  id: '/_main',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLaporanIndexRoute = AdminLaporanIndexRouteImport.update({
+  id: '/laporan/',
+  path: '/laporan/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminMainIndexRoute = AdminMainIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminMainRouteRoute,
+} as any)
+const AdminTambahPenghuniPilihKamarRoute =
+  AdminTambahPenghuniPilihKamarRouteImport.update({
+    id: '/tambah-penghuni/pilih-kamar',
+    path: '/tambah-penghuni/pilih-kamar',
+    getParentRoute: () => AdminRoute,
+  } as any)
+const AdminTambahPenghuniHasilRoute =
+  AdminTambahPenghuniHasilRouteImport.update({
+    id: '/tambah-penghuni/hasil',
+    path: '/tambah-penghuni/hasil',
+    getParentRoute: () => AdminRoute,
+  } as any)
+const AdminTambahPenghuniFormRoute = AdminTambahPenghuniFormRouteImport.update({
+  id: '/tambah-penghuni/form',
+  path: '/tambah-penghuni/form',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminTagihanDetailRoute = AdminTagihanDetailRouteImport.update({
+  id: '/tagihan/detail',
+  path: '/tagihan/detail',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProfilRekeningRoute = AdminProfilRekeningRouteImport.update({
+  id: '/profil/rekening',
+  path: '/profil/rekening',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProfilPeraturanRoute = AdminProfilPeraturanRouteImport.update({
+  id: '/profil/peraturan',
+  path: '/profil/peraturan',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProfilInformasiPemilikRoute =
+  AdminProfilInformasiPemilikRouteImport.update({
+    id: '/profil/informasi-pemilik',
+    path: '/profil/informasi-pemilik',
+    getParentRoute: () => AdminRoute,
+  } as any)
+const AdminProfilInformasiKostRoute =
+  AdminProfilInformasiKostRouteImport.update({
+    id: '/profil/informasi-kost',
+    path: '/profil/informasi-kost',
+    getParentRoute: () => AdminRoute,
+  } as any)
+const AdminLaporanViewRoute = AdminLaporanViewRouteImport.update({
+  id: '/laporan/view',
+  path: '/laporan/view',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminMainTagihanRoute = AdminMainTagihanRouteImport.update({
+  id: '/tagihan',
+  path: '/tagihan',
+  getParentRoute: () => AdminMainRouteRoute,
+} as any)
+const AdminMainProfilRoute = AdminMainProfilRouteImport.update({
+  id: '/profil',
+  path: '/profil',
+  getParentRoute: () => AdminMainRouteRoute,
+} as any)
+const AdminMainPengumumanRoute = AdminMainPengumumanRouteImport.update({
+  id: '/pengumuman',
+  path: '/pengumuman',
+  getParentRoute: () => AdminMainRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminMainRouteRouteWithChildren
+  '/member': typeof MemberRouteWithChildren
+  '/debug': typeof AuthDebugRoute
+  '/login': typeof AuthLoginRoute
+  '/member/home': typeof MemberHomeRoute
+  '/admin/pengumuman': typeof AdminMainPengumumanRoute
+  '/admin/profil': typeof AdminMainProfilRoute
+  '/admin/tagihan': typeof AdminMainTagihanRoute
+  '/admin/laporan/view': typeof AdminLaporanViewRoute
+  '/admin/profil/informasi-kost': typeof AdminProfilInformasiKostRoute
+  '/admin/profil/informasi-pemilik': typeof AdminProfilInformasiPemilikRoute
+  '/admin/profil/peraturan': typeof AdminProfilPeraturanRoute
+  '/admin/profil/rekening': typeof AdminProfilRekeningRoute
+  '/admin/tagihan/detail': typeof AdminTagihanDetailRoute
+  '/admin/tambah-penghuni/form': typeof AdminTambahPenghuniFormRoute
+  '/admin/tambah-penghuni/hasil': typeof AdminTambahPenghuniHasilRoute
+  '/admin/tambah-penghuni/pilih-kamar': typeof AdminTambahPenghuniPilihKamarRoute
+  '/admin/': typeof AdminMainIndexRoute
+  '/admin/laporan/': typeof AdminLaporanIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminMainIndexRoute
+  '/member': typeof MemberRouteWithChildren
+  '/debug': typeof AuthDebugRoute
+  '/login': typeof AuthLoginRoute
+  '/member/home': typeof MemberHomeRoute
+  '/admin/pengumuman': typeof AdminMainPengumumanRoute
+  '/admin/profil': typeof AdminMainProfilRoute
+  '/admin/tagihan': typeof AdminMainTagihanRoute
+  '/admin/laporan/view': typeof AdminLaporanViewRoute
+  '/admin/profil/informasi-kost': typeof AdminProfilInformasiKostRoute
+  '/admin/profil/informasi-pemilik': typeof AdminProfilInformasiPemilikRoute
+  '/admin/profil/peraturan': typeof AdminProfilPeraturanRoute
+  '/admin/profil/rekening': typeof AdminProfilRekeningRoute
+  '/admin/tagihan/detail': typeof AdminTagihanDetailRoute
+  '/admin/tambah-penghuni/form': typeof AdminTambahPenghuniFormRoute
+  '/admin/tambah-penghuni/hasil': typeof AdminTambahPenghuniHasilRoute
+  '/admin/tambah-penghuni/pilih-kamar': typeof AdminTambahPenghuniPilihKamarRoute
+  '/admin/laporan': typeof AdminLaporanIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_auth': typeof AuthRouteWithChildren
+  '/admin': typeof AdminRouteWithChildren
+  '/member': typeof MemberRouteWithChildren
+  '/admin/_main': typeof AdminMainRouteRouteWithChildren
+  '/_auth/debug': typeof AuthDebugRoute
+  '/_auth/login': typeof AuthLoginRoute
+  '/member/home': typeof MemberHomeRoute
+  '/admin/_main/pengumuman': typeof AdminMainPengumumanRoute
+  '/admin/_main/profil': typeof AdminMainProfilRoute
+  '/admin/_main/tagihan': typeof AdminMainTagihanRoute
+  '/admin/laporan/view': typeof AdminLaporanViewRoute
+  '/admin/profil/informasi-kost': typeof AdminProfilInformasiKostRoute
+  '/admin/profil/informasi-pemilik': typeof AdminProfilInformasiPemilikRoute
+  '/admin/profil/peraturan': typeof AdminProfilPeraturanRoute
+  '/admin/profil/rekening': typeof AdminProfilRekeningRoute
+  '/admin/tagihan/detail': typeof AdminTagihanDetailRoute
+  '/admin/tambah-penghuni/form': typeof AdminTambahPenghuniFormRoute
+  '/admin/tambah-penghuni/hasil': typeof AdminTambahPenghuniHasilRoute
+  '/admin/tambah-penghuni/pilih-kamar': typeof AdminTambahPenghuniPilihKamarRoute
+  '/admin/_main/': typeof AdminMainIndexRoute
+  '/admin/laporan/': typeof AdminLaporanIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/member'
+    | '/debug'
+    | '/login'
+    | '/member/home'
+    | '/admin/pengumuman'
+    | '/admin/profil'
+    | '/admin/tagihan'
+    | '/admin/laporan/view'
+    | '/admin/profil/informasi-kost'
+    | '/admin/profil/informasi-pemilik'
+    | '/admin/profil/peraturan'
+    | '/admin/profil/rekening'
+    | '/admin/tagihan/detail'
+    | '/admin/tambah-penghuni/form'
+    | '/admin/tambah-penghuni/hasil'
+    | '/admin/tambah-penghuni/pilih-kamar'
+    | '/admin/'
+    | '/admin/laporan/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/admin'
+    | '/member'
+    | '/debug'
+    | '/login'
+    | '/member/home'
+    | '/admin/pengumuman'
+    | '/admin/profil'
+    | '/admin/tagihan'
+    | '/admin/laporan/view'
+    | '/admin/profil/informasi-kost'
+    | '/admin/profil/informasi-pemilik'
+    | '/admin/profil/peraturan'
+    | '/admin/profil/rekening'
+    | '/admin/tagihan/detail'
+    | '/admin/tambah-penghuni/form'
+    | '/admin/tambah-penghuni/hasil'
+    | '/admin/tambah-penghuni/pilih-kamar'
+    | '/admin/laporan'
+  id:
+    | '__root__'
+    | '/'
+    | '/_auth'
+    | '/admin'
+    | '/member'
+    | '/admin/_main'
+    | '/_auth/debug'
+    | '/_auth/login'
+    | '/member/home'
+    | '/admin/_main/pengumuman'
+    | '/admin/_main/profil'
+    | '/admin/_main/tagihan'
+    | '/admin/laporan/view'
+    | '/admin/profil/informasi-kost'
+    | '/admin/profil/informasi-pemilik'
+    | '/admin/profil/peraturan'
+    | '/admin/profil/rekening'
+    | '/admin/tagihan/detail'
+    | '/admin/tambah-penghuni/form'
+    | '/admin/tambah-penghuni/hasil'
+    | '/admin/tambah-penghuni/pilih-kamar'
+    | '/admin/_main/'
+    | '/admin/laporan/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRouteWithChildren
+  AdminRoute: typeof AdminRouteWithChildren
+  MemberRoute: typeof MemberRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/member': {
+      id: '/member'
+      path: '/member'
+      fullPath: '/member'
+      preLoaderRoute: typeof MemberRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_auth': {
+      id: '/_auth'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +320,211 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/member/home': {
+      id: '/member/home'
+      path: '/home'
+      fullPath: '/member/home'
+      preLoaderRoute: typeof MemberHomeRouteImport
+      parentRoute: typeof MemberRoute
+    }
+    '/_auth/login': {
+      id: '/_auth/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/debug': {
+      id: '/_auth/debug'
+      path: '/debug'
+      fullPath: '/debug'
+      preLoaderRoute: typeof AuthDebugRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/admin/_main': {
+      id: '/admin/_main'
+      path: ''
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminMainRouteRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/laporan/': {
+      id: '/admin/laporan/'
+      path: '/laporan'
+      fullPath: '/admin/laporan/'
+      preLoaderRoute: typeof AdminLaporanIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/_main/': {
+      id: '/admin/_main/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminMainIndexRouteImport
+      parentRoute: typeof AdminMainRouteRoute
+    }
+    '/admin/tambah-penghuni/pilih-kamar': {
+      id: '/admin/tambah-penghuni/pilih-kamar'
+      path: '/tambah-penghuni/pilih-kamar'
+      fullPath: '/admin/tambah-penghuni/pilih-kamar'
+      preLoaderRoute: typeof AdminTambahPenghuniPilihKamarRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/tambah-penghuni/hasil': {
+      id: '/admin/tambah-penghuni/hasil'
+      path: '/tambah-penghuni/hasil'
+      fullPath: '/admin/tambah-penghuni/hasil'
+      preLoaderRoute: typeof AdminTambahPenghuniHasilRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/tambah-penghuni/form': {
+      id: '/admin/tambah-penghuni/form'
+      path: '/tambah-penghuni/form'
+      fullPath: '/admin/tambah-penghuni/form'
+      preLoaderRoute: typeof AdminTambahPenghuniFormRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/tagihan/detail': {
+      id: '/admin/tagihan/detail'
+      path: '/tagihan/detail'
+      fullPath: '/admin/tagihan/detail'
+      preLoaderRoute: typeof AdminTagihanDetailRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/profil/rekening': {
+      id: '/admin/profil/rekening'
+      path: '/profil/rekening'
+      fullPath: '/admin/profil/rekening'
+      preLoaderRoute: typeof AdminProfilRekeningRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/profil/peraturan': {
+      id: '/admin/profil/peraturan'
+      path: '/profil/peraturan'
+      fullPath: '/admin/profil/peraturan'
+      preLoaderRoute: typeof AdminProfilPeraturanRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/profil/informasi-pemilik': {
+      id: '/admin/profil/informasi-pemilik'
+      path: '/profil/informasi-pemilik'
+      fullPath: '/admin/profil/informasi-pemilik'
+      preLoaderRoute: typeof AdminProfilInformasiPemilikRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/profil/informasi-kost': {
+      id: '/admin/profil/informasi-kost'
+      path: '/profil/informasi-kost'
+      fullPath: '/admin/profil/informasi-kost'
+      preLoaderRoute: typeof AdminProfilInformasiKostRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/laporan/view': {
+      id: '/admin/laporan/view'
+      path: '/laporan/view'
+      fullPath: '/admin/laporan/view'
+      preLoaderRoute: typeof AdminLaporanViewRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/_main/tagihan': {
+      id: '/admin/_main/tagihan'
+      path: '/tagihan'
+      fullPath: '/admin/tagihan'
+      preLoaderRoute: typeof AdminMainTagihanRouteImport
+      parentRoute: typeof AdminMainRouteRoute
+    }
+    '/admin/_main/profil': {
+      id: '/admin/_main/profil'
+      path: '/profil'
+      fullPath: '/admin/profil'
+      preLoaderRoute: typeof AdminMainProfilRouteImport
+      parentRoute: typeof AdminMainRouteRoute
+    }
+    '/admin/_main/pengumuman': {
+      id: '/admin/_main/pengumuman'
+      path: '/pengumuman'
+      fullPath: '/admin/pengumuman'
+      preLoaderRoute: typeof AdminMainPengumumanRouteImport
+      parentRoute: typeof AdminMainRouteRoute
+    }
   }
 }
 
+interface AuthRouteChildren {
+  AuthDebugRoute: typeof AuthDebugRoute
+  AuthLoginRoute: typeof AuthLoginRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthDebugRoute: AuthDebugRoute,
+  AuthLoginRoute: AuthLoginRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
+interface AdminMainRouteRouteChildren {
+  AdminMainPengumumanRoute: typeof AdminMainPengumumanRoute
+  AdminMainProfilRoute: typeof AdminMainProfilRoute
+  AdminMainTagihanRoute: typeof AdminMainTagihanRoute
+  AdminMainIndexRoute: typeof AdminMainIndexRoute
+}
+
+const AdminMainRouteRouteChildren: AdminMainRouteRouteChildren = {
+  AdminMainPengumumanRoute: AdminMainPengumumanRoute,
+  AdminMainProfilRoute: AdminMainProfilRoute,
+  AdminMainTagihanRoute: AdminMainTagihanRoute,
+  AdminMainIndexRoute: AdminMainIndexRoute,
+}
+
+const AdminMainRouteRouteWithChildren = AdminMainRouteRoute._addFileChildren(
+  AdminMainRouteRouteChildren,
+)
+
+interface AdminRouteChildren {
+  AdminMainRouteRoute: typeof AdminMainRouteRouteWithChildren
+  AdminLaporanViewRoute: typeof AdminLaporanViewRoute
+  AdminProfilInformasiKostRoute: typeof AdminProfilInformasiKostRoute
+  AdminProfilInformasiPemilikRoute: typeof AdminProfilInformasiPemilikRoute
+  AdminProfilPeraturanRoute: typeof AdminProfilPeraturanRoute
+  AdminProfilRekeningRoute: typeof AdminProfilRekeningRoute
+  AdminTagihanDetailRoute: typeof AdminTagihanDetailRoute
+  AdminTambahPenghuniFormRoute: typeof AdminTambahPenghuniFormRoute
+  AdminTambahPenghuniHasilRoute: typeof AdminTambahPenghuniHasilRoute
+  AdminTambahPenghuniPilihKamarRoute: typeof AdminTambahPenghuniPilihKamarRoute
+  AdminLaporanIndexRoute: typeof AdminLaporanIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminMainRouteRoute: AdminMainRouteRouteWithChildren,
+  AdminLaporanViewRoute: AdminLaporanViewRoute,
+  AdminProfilInformasiKostRoute: AdminProfilInformasiKostRoute,
+  AdminProfilInformasiPemilikRoute: AdminProfilInformasiPemilikRoute,
+  AdminProfilPeraturanRoute: AdminProfilPeraturanRoute,
+  AdminProfilRekeningRoute: AdminProfilRekeningRoute,
+  AdminTagihanDetailRoute: AdminTagihanDetailRoute,
+  AdminTambahPenghuniFormRoute: AdminTambahPenghuniFormRoute,
+  AdminTambahPenghuniHasilRoute: AdminTambahPenghuniHasilRoute,
+  AdminTambahPenghuniPilihKamarRoute: AdminTambahPenghuniPilihKamarRoute,
+  AdminLaporanIndexRoute: AdminLaporanIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface MemberRouteChildren {
+  MemberHomeRoute: typeof MemberHomeRoute
+}
+
+const MemberRouteChildren: MemberRouteChildren = {
+  MemberHomeRoute: MemberHomeRoute,
+}
+
+const MemberRouteWithChildren =
+  MemberRoute._addFileChildren(MemberRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRouteWithChildren,
+  AdminRoute: AdminRouteWithChildren,
+  MemberRoute: MemberRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
