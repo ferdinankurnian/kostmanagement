@@ -1,13 +1,15 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { MemberNavbar } from "@/components/tabbar";
 
-export const Route = createFileRoute("/admin")({
+export const Route = createFileRoute("/member/_main")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
   return (
-    <div className="min-h-screen max-w-lg mx-auto p-4 pb-28">
+    <>
       <Outlet />
-    </div>
+      <MemberNavbar />
+    </>
   );
 }

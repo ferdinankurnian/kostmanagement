@@ -50,7 +50,7 @@ function RouteComponent() {
       <TopBar>
         <TopBarLeft>
           <Link to="/admin">
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon-lg">
               <ChevronLeft className="size-6" />
             </Button>
           </Link>
@@ -59,7 +59,7 @@ function RouteComponent() {
           <h1 className="text-lg">Laporan</h1>
         </TopBarCenter>
         <TopBarRight>
-          <Button variant="secondary" size="sm">
+          <Button variant="outline">
             Minggu <ChevronDown />
           </Button>
         </TopBarRight>

@@ -1,15 +1,15 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { AdminNavbar } from "@/components/admin-navbar";
+import { AdminNavbar } from "@/components/tabbar";
 
 export const Route = createFileRoute("/admin/_main")({
-	component: RouteComponent,
+  component: RouteComponent,
 });
 
 function RouteComponent() {
-	return (
-		<>
-			<Outlet />
-			<AdminNavbar />
-		</>
-	);
+  return (
+    <>
+      <Outlet />
+      <AdminNavbar />
+    </>
+  );
 }

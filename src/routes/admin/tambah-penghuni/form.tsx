@@ -21,7 +21,7 @@ function RouteComponent() {
         <TopBarLeft>
           <Button
             variant="ghost"
-            size="icon"
+            size="icon-lg"
             onClick={() =>
               navigate({ to: "/admin/tambah-penghuni/pilih-kamar" })
             }
@@ -36,11 +36,11 @@ function RouteComponent() {
       <div className="space-y-6">
         <div className="space-y-2">
           <Label htmlFor={judulId}>Nama</Label>
-          <Input id={judulId} placeholder="Masukkan judul pengumuman" />
+          <Input id={judulId} placeholder="Nama lengkap" />
         </div>
         <div className="space-y-2">
           <Label htmlFor={judulId}>Nomor Telepon</Label>
-          <Input id={judulId} placeholder="Masukkan judul pengumuman" />
+          <Input id={judulId} placeholder="08xxxxxxxxxx" />
         </div>
         <div className="space-y-2">
           <Label htmlFor={deskripsiId}>Foto KTP</Label>

@@ -11,13 +11,12 @@ export const TopBar = ({ children, className }: TopBarProps) => {
 		<>
 			<div
 				className={cn(
-					"flex justify-between items-center fixed bg-[#F2F2F2] p-4 top-0 left-0 right-0 mx-auto z-50",
+					"grid grid-cols-3 items-center sticky bg-[#F2F2F2] p-4 -mx-4 -mt-4 top-0 z-50",
 					className,
 				)}
 			>
 				{children}
 			</div>
-			<div className="h-16" />
 		</>
 	);
 };
@@ -28,7 +27,7 @@ interface TopBarLeftProps {
 }
 
 export const TopBarLeft = ({ children, className }: TopBarLeftProps) => {
-	return <div className={cn("", className)}>{children}</div>;
+	return <div className={cn("flex items-center col-start-1 col-end-2", className)}>{children}</div>;
 };
 
 interface TopBarCenterProps {
@@ -40,7 +39,7 @@ export const TopBarCenter = ({ children, className }: TopBarCenterProps) => {
 	return (
 		<div
 			className={cn(
-				"text-center absolute left-1/2 -translate-x-1/2",
+				"flex justify-center items-center col-start-2 col-end-3",
 				className,
 			)}
 		>
@@ -55,5 +54,5 @@ interface TopBarRightProps {
 }
 
 export const TopBarRight = ({ children, className }: TopBarRightProps) => {
-	return <div className={cn("flex justify-end", className)}>{children}</div>;
+	return <div className={cn("flex justify-end items-center col-start-3 col-end-4", className)}>{children}</div>;
 };
