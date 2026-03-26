@@ -1,21 +1,23 @@
-```txt
-npm install
-npm run dev
+# Kost Management — API
+
+Hono on Cloudflare Workers with Drizzle ORM + PostgreSQL (Neon).
+
+## Dev
+
+```bash
+bun run dev
 ```
 
-```txt
-npm run deploy
+## Database
+
+```bash
+bun run db:push     # push schema to DB
+bun run db:seed     # seed the database
+bun run db:studio   # open Drizzle Studio
 ```
 
-[For generating/synchronizing types based on your Worker configuration run](https://developers.cloudflare.com/workers/wrangler/commands/#types):
+## Types
 
-```txt
-npm run cf-typegen
-```
-
-Pass the `CloudflareBindings` as generics when instantiation `Hono`:
-
-```ts
-// src/index.ts
-const app = new Hono<{ Bindings: CloudflareBindings }>()
+```bash
+bun run cf-typegen   # regenerate Cloudflare types
 ```
