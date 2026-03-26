@@ -8,7 +8,7 @@
       "outputs": [".next/**", "!.next/cache/**"]
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "inputs": ["**/*.{ts,tsx,js,jsx,json}"]
     },
     "check-types": {
       "dependsOn": ["^check-types"]
