@@ -5,30 +5,18 @@
   "compatibility_date": "2026-03-25",
   "compatibility_flags": ["nodejs_compat"],
   "vars": {
-    "BETTER_AUTH_URL": "http://localhost:8787"
+    "BETTER_AUTH_URL": "http://localhost:8787",
+    "CORS_ORIGINS": "http://localhost:3000"
   },
-  // "kv_namespaces": [
-  //   {
-  //     "binding": "MY_KV_NAMESPACE",
-  //     "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-  //   }
-  // ],
+  "triggers": {
+    "crons": ["0 0 1 * *"]
+  },
   "r2_buckets": [
     {
       "binding": "R2_BUCKET",
       "bucket_name": "kost-bucket"
     }
   ],
-  // "d1_databases": [
-  //   {
-  //     "binding": "MY_DB",
-  //     "database_name": "my-database",
-  //     "database_id": ""
-  //   }
-  // ],
-  // "ai": {
-  //   "binding": "AI"
-  // },
   "observability": {
     "enabled": true,
     "head_sampling_rate": 1

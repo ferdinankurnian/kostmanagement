@@ -9,12 +9,16 @@ export interface Env {
   DATABASE_URL: string;
   BETTER_AUTH_SECRET: string;
   BETTER_AUTH_URL: string;
+  CORS_ORIGINS: string;
   R2_BUCKET: R2Bucket;
 }
 
 export function createAuth(env: Env) {
   const sql = neon(env.DATABASE_URL);
   const db = drizzle(sql, { schema });
+  const corsOrigins = env.CORS_ORIGINS
+    ? env.CORS_ORIGINS.split(",").map((o) => o.trim())
+    : ["http://localhost:3000"];
 
   return betterAuth({
     database: drizzleAdapter(db, {
@@ -23,7 +27,7 @@ export function createAuth(env: Env) {
     }),
     secret: process.env.BETTER_AUTH_SECRET || "",
     baseURL: process.env.BETTER_AUTH_URL || "",
-    trustedOrigins: ["http://localhost:3000"],
+    trustedOrigins: corsOrigins,
     emailAndPassword: {
       enabled: true,
       requireEmailVerification: false,
@@ -60,6 +64,18 @@ export function createAuth(env: Env) {
         },
         noKamar: {
           type: "number",
+          required: false,
+          input: true,
+          returned: true,
+        },
+        onboarding: {
+          type: "string",
+          required: false,
+          input: true,
+          returned: true,
+        },
+        bayarSampai: {
+          type: "date",
           required: false,
           input: true,
           returned: true,

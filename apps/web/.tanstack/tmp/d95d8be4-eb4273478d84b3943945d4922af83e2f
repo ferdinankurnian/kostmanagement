@@ -1,0 +1,81 @@
+import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { TopBar, TopBarLeft, TopBarCenter } from "@/components/top-bar";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight, ShieldAlertIcon } from "lucide-react";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemMedia,
+  ItemGroup,
+  ItemTitle,
+} from "@/components/ui/item";
+
+export const Route = createFileRoute("/_main/penghuni/notification")({
+  component: RouteComponent,
+});
+
+const music = [
+  {
+    title: "Midnight City Lights",
+    artist: "Neon Dreams",
+    album: "Electric Nights",
+    duration: "3:45",
+  },
+  {
+    title: "Coffee Shop Conversations",
+    artist: "The Morning Brew",
+    album: "Urban Stories",
+    duration: "4:05",
+  },
+  {
+    title: "Digital Rain",
+    artist: "Cyber Symphony",
+    album: "Binary Beats",
+    duration: "3:30",
+  },
+];
+
+function RouteComponent() {
+  const router = useRouter();
+  return (
+    <div className="space-y-4 px-4 pt-20 pb-20">
+      <TopBar>
+        <TopBarLeft>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => router.history.back()}
+          >
+            <ChevronLeft className="size-6" />
+          </Button>
+        </TopBarLeft>
+        <TopBarCenter>
+          <h1 className="text-lg whitespace-nowrap">Notifikasi</h1>
+        </TopBarCenter>
+      </TopBar>
+      <ItemGroup className="gap-4">
+        {music.map((song) => (
+          <Item key={song.title} variant="outline" asChild role="listitem">
+            <a href="#">
+              <ItemMedia variant="icon">
+                <ShieldAlertIcon />
+              </ItemMedia>
+              <ItemContent>
+                <ItemTitle className="line-clamp-1">
+                  {song.title} -{" "}
+                  <span className="text-muted-foreground">{song.album}</span>
+                </ItemTitle>
+                <ItemDescription>{song.artist}</ItemDescription>
+              </ItemContent>
+              <ItemActions>
+                <ChevronRight className="size-4" />
+              </ItemActions>
+            </a>
+          </Item>
+        ))}
+      </ItemGroup>
+    </div>
+  );
+}

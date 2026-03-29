@@ -1,13 +1,13 @@
 import { Link, useMatchRoute } from "@tanstack/react-router";
 import {
   BanknoteArrowUp,
-  BookOpen,
   ClipboardList,
   Home,
-  MessageSquareWarning,
-  Plus,
-  User,
   type LucideIcon,
+  MessageSquareWarning,
+  ReceiptText,
+  User,
+  UserPlus,
 } from "lucide-react";
 
 type TabItem = {
@@ -30,14 +30,14 @@ type TabBarConfig = {
 const pemilikConfig: TabBarConfig = {
   tabs: [
     { to: "/pemilik", icon: Home, label: "Home" },
-    { to: "/pemilik/tagihan", icon: BookOpen, label: "Tagihan" },
+    { to: "/pemilik/tagihan", icon: ReceiptText, label: "Tagihan" },
     // 2 slots before center action
     { to: "/pemilik/informasi", icon: ClipboardList, label: "Informasi" },
     { to: "/pemilik/profile", icon: User, label: "Profile" },
   ],
   centerAction: {
     to: "/pemilik/penghuni/choose-room",
-    icon: Plus,
+    icon: UserPlus,
     label: "Penghuni",
   },
 };
@@ -45,7 +45,7 @@ const pemilikConfig: TabBarConfig = {
 const penghuniConfig: TabBarConfig = {
   tabs: [
     { to: "/penghuni", icon: Home, label: "Home" },
-    { to: "/penghuni/tagihan", icon: BookOpen, label: "Tagihan" },
+    { to: "/penghuni/tagihan", icon: ReceiptText, label: "Tagihan" },
     { to: "/penghuni/keluhan", icon: MessageSquareWarning, label: "Keluhan" },
     { to: "/penghuni/profile", icon: User, label: "Profile" },
   ],

@@ -10,3 +10,7 @@ export const updateKamarSchema = z.object({
   ]),
   catatan: z.string().nullable().optional(),
 });
+
+export const removePenghuniSchema = z.object({
+  pin: z.string().regex(/^\d{4}$/),
+});

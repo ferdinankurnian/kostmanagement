@@ -5,6 +5,11 @@ import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
+  server: {
+    proxy: {
+      "/api": "http://localhost:8787",
+    },
+  },
   plugins: [
     tsconfigPaths({ projects: ["./tsconfig.json"] }),
     tanstackRouter({

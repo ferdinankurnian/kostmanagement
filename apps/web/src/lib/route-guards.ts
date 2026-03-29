@@ -6,6 +6,10 @@ type User = {
   name: string;
   email: string;
   role: string;
+  noKamar?: number | null;
+  ktp?: string | null;
+  onboarding?: string | null;
+  [key: string]: unknown;
 };
 
 export async function requireAuth({
@@ -24,7 +28,7 @@ export async function requireAuth({
     });
   }
 
-  return { user: session.user as User };
+  return { user: session.user as unknown as User };
 }
 
 export function requireRole(allowedRoles: string | string[]) {
@@ -42,6 +46,25 @@ export async function requireGuest() {
 
   if (session) {
     throw redirect({ to: "/" });
+  }
+}
+
+export function getOnboardingRoute(
+  step: string | null | undefined,
+):
+  | "/penghuni/onboarding"
+  | "/penghuni"
+  | "/penghuni/onboarding/bayar-tagihan"
+  | "/penghuni/onboarding/rule" {
+  switch (step) {
+    case "tour":
+      return "/penghuni";
+    case "bayar_tagihan":
+      return "/penghuni/onboarding/bayar-tagihan";
+    case "rule":
+      return "/penghuni/onboarding/rule";
+    default:
+      return "/penghuni/onboarding";
   }
 }
 

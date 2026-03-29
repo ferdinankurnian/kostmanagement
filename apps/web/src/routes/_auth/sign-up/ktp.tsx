@@ -6,12 +6,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { TopBar, TopBarCenter, TopBarLeft } from "@/components/top-bar";
 import { Button } from "@/components/ui/button";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Field, FieldError } from "@/components/ui/field";
 import { FileUpload } from "@/components/ui/file-upload";
 import { uploadKTP } from "@/lib/upload";
 
@@ -40,31 +35,15 @@ function RouteComponent() {
 
       setIsLoading(true);
       try {
-        // 1. Convert File to Base64 (because server functions usually like serializable data)
-        const reader = new FileReader();
-        const base64Promise = new Promise<string>((resolve) => {
-          reader.onload = () => {
-            const result = reader.result as string;
-            resolve(result.split(",")[1]); // remove data:image/...;base64,
-          };
-          reader.readAsDataURL(value.ktpImage!);
-        });
-
-        const base64 = await base64Promise;
-
-        // 2. Upload to R2 via API
-        await uploadKTP({
-          fileName: value.ktpImage.name,
-          fileType: value.ktpImage.type,
-          base64,
-        });
+        await uploadKTP(value.ktpImage);
 
         toast.success("KTP berhasil diupload!");
 
-        // 3. Final Redirect to Tenant Dashboard
         navigate({ to: "/penghuni/onboarding" });
-      } catch (err: any) {
-        toast.error(err.message || "Gagal mengupload KTP.");
+      } catch (err) {
+        toast.error(
+          err instanceof Error ? err.message : "Gagal mengupload KTP.",
+        );
       } finally {
         setIsLoading(false);
       }
@@ -105,16 +84,15 @@ function RouteComponent() {
             form.handleSubmit();
           }}
         >
-          <form.Field
-            name="ktpImage"
-            children={(field) => {
+          <form.Field name="ktpImage">
+            {(field) => {
               const isInvalid = field.state.meta.errors.length > 0;
               return (
                 <Field data-invalid={isInvalid} className="gap-4">
                   <FileUpload
                     id={field.name}
                     accept="image/jpeg,image/png,image/webp"
-                    description="Format: JPG, PNG, atau WebP (Max. 2MB)"
+                    description="Format: JPG, PNG, atau WebP (akan dikompres otomatis)"
                     maxSize={2}
                     onFilesSelected={(files) => {
                       field.handleChange(files[0]);
@@ -126,7 +104,7 @@ function RouteComponent() {
                 </Field>
               );
             }}
-          />
+          </form.Field>
         </form>
 
         <div className="fixed bottom-0 left-0 right-0 px-4 pb-4 pt-8 bg-linear-to-t from-background to-transparent">

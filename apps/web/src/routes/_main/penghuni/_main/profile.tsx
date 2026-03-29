@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Bell, FileText, Lock, MapPin, Phone, User } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Bell, FileText, MapPin, Phone, User } from "lucide-react";
 import { LogoutButton } from "@/components/logout-button";
 import { MenuList, MenuListItem } from "@/components/menu-list";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { authClient } from "@/lib/auth-client";
 
@@ -48,18 +48,37 @@ function RouteComponent() {
       <div className="space-y-2 px-4">
         <p className="text-sm text-muted-foreground">Data</p>
         <MenuList>
-          <MenuListItem icon={User} label="Informasi Diri" />
-          <MenuListItem icon={MapPin} label="Alamat Tinggal" />
-          <MenuListItem icon={Phone} label="Nomer Darurat" />
+          <MenuListItem
+            icon={User}
+            label="Informasi Diri"
+            to="/penghuni/profile/informasi-diri"
+          />
+          <MenuListItem
+            icon={MapPin}
+            label="Alamat Tinggal"
+            to="/penghuni/profile/alamat-tinggal"
+          />
+          <MenuListItem
+            icon={Phone}
+            label="Nomer Darurat"
+            to="/penghuni/profile/nomer-darurat"
+          />
         </MenuList>
       </div>
 
       <div className="space-y-2 px-4">
         <p className="text-sm text-muted-foreground">Pengaturan</p>
         <MenuList>
-          <MenuListItem icon={Bell} label="Informasi" />
-          <MenuListItem icon={Lock} label="Password" />
-          <MenuListItem icon={FileText} label="Peraturan Kost" />
+          <MenuListItem
+            icon={Bell}
+            label="Informasi"
+            to="/penghuni/profile/informasi"
+          />
+          <MenuListItem
+            icon={FileText}
+            label="Peraturan Kost"
+            to="/penghuni/profile/peraturan-kost"
+          />
         </MenuList>
       </div>
     </div>

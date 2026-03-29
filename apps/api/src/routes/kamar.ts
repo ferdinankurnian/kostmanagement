@@ -1,11 +1,13 @@
+import { zValidator } from "@hono/zod-validator";
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod/v4";
-import type { Env } from "../auth-worker";
+import { createAuth, type Env } from "../auth-worker";
 import { createDB } from "../db";
-import { kamar, user } from "../db/schema";
+import { kamar, settings, user } from "../db/schema";
 import { ensureAdmin } from "../middleware/auth";
-import { updateKamarSchema } from "./kamar.validator";
+import { verifyPinValue } from "../pin";
+import { removePenghuniSchema, updateKamarSchema } from "./kamar.validator";
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -48,7 +50,62 @@ app.get("/:nomor", async (c) => {
   return c.json(result[0] ?? null);
 });
 
-app.put("/:nomor", async (c) => {
+app.delete(
+  "/:nomor/penghuni",
+  zValidator("json", removePenghuniSchema),
+  async (c) => {
+    const db = createDB(c.env.DATABASE_URL);
+    const nomor = Number(c.req.param("nomor"));
+
+    const parsed = z.number().int().min(1).max(12).safeParse(nomor);
+    if (!parsed.success) {
+      return c.json({ error: "Nomor kamar harus 1-12" }, 400);
+    }
+
+    const pinParsed = removePenghuniSchema.safeParse(c.req.valid("json"));
+    if (!pinParsed.success) {
+      return c.json({ error: "PIN harus 4 digit" }, 400);
+    }
+
+    const pinRow = await db
+      .select({ value: settings.value })
+      .from(settings)
+      .where(eq(settings.key, "security_pin"))
+      .limit(1);
+
+    const isPinValid = await verifyPinValue(
+      pinRow[0]?.value,
+      pinParsed.data.pin,
+    );
+    if (!isPinValid) {
+      return c.json({ error: "PIN salah" }, 403);
+    }
+
+    const existingUser = await db
+      .select({ id: user.id })
+      .from(user)
+      .where(eq(user.noKamar, parsed.data))
+      .limit(1);
+
+    if (existingUser.length === 0) {
+      return c.json({ error: "Tidak ada penghuni di kamar ini" }, 404);
+    }
+
+    const auth = createAuth(c.env);
+    await auth.api.removeUser({
+      body: { userId: existingUser[0].id },
+    });
+
+    await db
+      .update(kamar)
+      .set({ status: "kosong", updatedAt: new Date() })
+      .where(eq(kamar.nomor, parsed.data));
+
+    return c.json({ success: true });
+  },
+);
+
+app.put("/:nomor", zValidator("json", updateKamarSchema), async (c) => {
   const db = createDB(c.env.DATABASE_URL);
   const nomor = Number(c.req.param("nomor"));
 
@@ -57,8 +114,7 @@ app.put("/:nomor", async (c) => {
     return c.json({ error: "Nomor kamar harus 1-12" }, 400);
   }
 
-  const body = await c.req.json();
-  const parsed = updateKamarSchema.safeParse(body);
+  const parsed = updateKamarSchema.safeParse(c.req.valid("json"));
   if (!parsed.success) {
     return c.json({ error: z.prettifyError(parsed.error) }, 400);
   }
@@ -75,5 +131,60 @@ app.put("/:nomor", async (c) => {
 
   return c.json(result[0]);
 });
+
+const resetPasswordSchema = z.object({
+  pin: z.string().regex(/^\d{4}$/),
+  newPassword: z.string().min(8),
+});
+
+app.put(
+  "/:nomor/password",
+  zValidator("json", resetPasswordSchema),
+  async (c) => {
+    const db = createDB(c.env.DATABASE_URL);
+    const nomor = Number(c.req.param("nomor"));
+
+    const parsedNomor = z.number().int().min(1).max(12).safeParse(nomor);
+    if (!parsedNomor.success) {
+      return c.json({ error: "Nomor kamar harus 1-12" }, 400);
+    }
+
+    const parsed = resetPasswordSchema.safeParse(c.req.valid("json"));
+    if (!parsed.success) {
+      return c.json({ error: z.prettifyError(parsed.error) }, 400);
+    }
+
+    const pinRow = await db
+      .select({ value: settings.value })
+      .from(settings)
+      .where(eq(settings.key, "security_pin"))
+      .limit(1);
+
+    const isPinValid = await verifyPinValue(pinRow[0]?.value, parsed.data.pin);
+    if (!isPinValid) {
+      return c.json({ error: "PIN salah" }, 403);
+    }
+
+    const existingUser = await db
+      .select({ id: user.id })
+      .from(user)
+      .where(eq(user.noKamar, parsedNomor.data))
+      .limit(1);
+
+    if (existingUser.length === 0) {
+      return c.json({ error: "Tidak ada penghuni di kamar ini" }, 404);
+    }
+
+    const auth = createAuth(c.env);
+    await auth.api.setUserPassword({
+      body: {
+        userId: existingUser[0].id,
+        newPassword: parsed.data.newPassword,
+      },
+    });
+
+    return c.json({ success: true });
+  },
+);
 
 export default app;

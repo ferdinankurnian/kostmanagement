@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Bell, FileText, Home, User } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Bell, FileText, Home, Lock, User } from "lucide-react";
 import { LogoutButton } from "@/components/logout-button";
 import { MenuList, MenuListItem } from "@/components/menu-list";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { authClient } from "@/lib/auth-client";
 
@@ -43,16 +43,31 @@ function RouteComponent() {
         </div>
       </div>
       <div className="space-y-2 px-4">
-        <p className="text-sm text-muted-foreground">Data Kost</p>
         <MenuList>
-          <MenuListItem icon={User} label="Informasi Pemilik" />
-          <MenuListItem icon={Home} label="Informasi Kost" />
-          <MenuListItem icon={FileText} label="Peraturan Kost" />
+          <MenuListItem
+            icon={User}
+            label="Informasi Pemilik"
+            to="/pemilik/pengaturan/informasi-pemilik"
+          />
+          <MenuListItem
+            icon={Lock}
+            label="Ganti PIN Keamanan"
+            to="/pemilik/pengaturan/pin"
+          />
+          <MenuListItem
+            icon={Home}
+            label="Informasi Kost"
+            to="/pemilik/pengaturan/informasi-kost"
+          />
+          <MenuListItem
+            icon={FileText}
+            label="Peraturan Kost"
+            to="/pemilik/pengaturan/peraturan-kost"
+          />
         </MenuList>
       </div>
 
       <div className="space-y-2 px-4">
-        <p className="text-sm text-muted-foreground">Pengaturan</p>
         <MenuList>
           <MenuListItem icon={Bell} label="Laporan" />
           <MenuListItem icon={FileText} label="Peraturan Kost" />

@@ -1,5 +1,6 @@
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import ReactDOM from "react-dom/client";
+import { registerNotificationServiceWorker } from "@/lib/pwa-notifications";
 import { routeTree } from "./routeTree.gen";
 import "./styles.css";
 
@@ -17,9 +18,11 @@ declare module "@tanstack/react-router" {
   }
 }
 
-const rootElement = document.getElementById("root")!;
+const rootElement = document.getElementById("root");
 
-if (!rootElement.innerHTML) {
+if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(<RouterProvider router={router} />);
 }
+
+void registerNotificationServiceWorker();

@@ -1,0 +1,284 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { Loader2, Lock, Save } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  changePin,
+  getSettings,
+  type Settings,
+  updateSetting,
+} from "@/lib/settings";
+
+export const Route = createFileRoute("/_main/pemilik/pengaturan/informasi-pemilik")({
+  component: PengaturanPage,
+});
+
+function PengaturanPage() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [settings, setSettings] = useState<Settings>({});
+
+  useEffect(() => {
+    getSettings()
+      .then(setSettings)
+      .catch(() => toast.error("Gagal memuat pengaturan"))
+      .finally(() => setIsLoading(false));
+  }, []);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      await Promise.all([
+        updateSetting("nama_kost", settings.nama_kost ?? ""),
+        updateSetting("harga_sewa", settings.harga_sewa ?? ""),
+        updateSetting("nama_bank", settings.nama_bank ?? ""),
+        updateSetting("no_rekening", settings.no_rekening ?? ""),
+        updateSetting(
+          "nama_pemilik_rekening",
+          settings.nama_pemilik_rekening ?? "",
+        ),
+        updateSetting("peraturan_kost", settings.peraturan_kost ?? ""),
+      ]);
+      toast.success("Pengaturan disimpan");
+    } catch {
+      toast.error("Gagal menyimpan pengaturan");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const update = (key: string, value: string) => {
+    setSettings((prev) => ({ ...prev, [key]: value }));
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center pt-20">
+        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="px-4 py-6 space-y-6">
+      <h1 className="text-xl font-semibold">Pengaturan</h1>
+
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="nama_kost">Nama Kost</Label>
+          <Input
+            id="nama_kost"
+            value={settings.nama_kost ?? ""}
+            onChange={(e) => update("nama_kost", e.target.value)}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="harga_sewa">Harga Sewa (per bulan)</Label>
+          <Input
+            id="harga_sewa"
+            type="number"
+            value={settings.harga_sewa ?? ""}
+            onChange={(e) => update("harga_sewa", e.target.value)}
+          />
+        </div>
+
+        <div className="rounded-xl border bg-muted/30 p-4 space-y-4">
+          <h2 className="text-sm font-medium">Info Rekening</h2>
+
+          <div className="space-y-2">
+            <Label htmlFor="nama_bank">Nama Bank</Label>
+            <Input
+              id="nama_bank"
+              value={settings.nama_bank ?? ""}
+              onChange={(e) => update("nama_bank", e.target.value)}
+              placeholder="BCA, Mandiri, BNI, dll"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="no_rekening">No. Rekening</Label>
+            <Input
+              id="no_rekening"
+              value={settings.no_rekening ?? ""}
+              onChange={(e) => update("no_rekening", e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="nama_pemilik_rekening">Nama Pemilik Rekening</Label>
+            <Input
+              id="nama_pemilik_rekening"
+              value={settings.nama_pemilik_rekening ?? ""}
+              onChange={(e) => update("nama_pemilik_rekening", e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="peraturan_kost">Peraturan Kost</Label>
+          <Textarea
+            id="peraturan_kost"
+            value={settings.peraturan_kost ?? ""}
+            onChange={(e) => update("peraturan_kost", e.target.value)}
+            rows={6}
+          />
+        </div>
+      </div>
+
+      <Button onClick={handleSave} disabled={isSaving} className="gap-1.5">
+        {isSaving ? (
+          <Loader2 className="animate-spin size-4" />
+        ) : (
+          <Save className="size-4" />
+        )}
+        Simpan
+      </Button>
+
+      <Separator />
+
+      <ChangePinSection isDefaultPin={settings.is_default_pin === "true"} />
+    </div>
+  );
+}
+
+function ChangePinSection({ isDefaultPin }: { isDefaultPin: boolean }) {
+  const [oldPin, setOldPin] = useState("");
+  const [newPin, setNewPin] = useState("");
+  const [confirmPin, setConfirmPin] = useState("");
+  const [isChanging, setIsChanging] = useState(false);
+  const [error, setError] = useState("");
+
+  const canSubmit =
+    oldPin.length === 4 && newPin.length === 4 && confirmPin.length === 4;
+
+  const handleChangePin = async () => {
+    setError("");
+    if (newPin !== confirmPin) {
+      setError("PIN baru tidak sama");
+      return;
+    }
+    if (newPin === oldPin) {
+      setError("PIN baru harus berbeda dari PIN lama");
+      return;
+    }
+    setIsChanging(true);
+    try {
+      await changePin(oldPin, newPin);
+      toast.success("PIN berhasil diubah");
+      setOldPin("");
+      setNewPin("");
+      setConfirmPin("");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Gagal mengubah PIN");
+    } finally {
+      setIsChanging(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2">
+        <Lock className="size-4" />
+        <h2 className="text-base font-medium">PIN Keamanan</h2>
+        {isDefaultPin && (
+          <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full">
+            Default
+          </span>
+        )}
+      </div>
+
+      {isDefaultPin && (
+        <p className="text-sm text-yellow-700 bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+          PIN Anda masih default (1234). Segera ganti untuk keamanan.
+        </p>
+      )}
+
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label>PIN Lama</Label>
+          <div className="flex justify-center">
+            <InputOTP
+              maxLength={4}
+              value={oldPin}
+              onChange={(v) => {
+                setOldPin(v);
+                setError("");
+              }}
+            >
+              <InputOTPGroup>
+                <InputOTPSlot index={0} className="size-11 text-lg" />
+                <InputOTPSlot index={1} className="size-11 text-lg" />
+                <InputOTPSlot index={2} className="size-11 text-lg" />
+                <InputOTPSlot index={3} className="size-11 text-lg" />
+              </InputOTPGroup>
+            </InputOTP>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label>PIN Baru</Label>
+          <div className="flex justify-center">
+            <InputOTP
+              maxLength={4}
+              value={newPin}
+              onChange={(v) => {
+                setNewPin(v);
+                setError("");
+              }}
+            >
+              <InputOTPGroup>
+                <InputOTPSlot index={0} className="size-11 text-lg" />
+                <InputOTPSlot index={1} className="size-11 text-lg" />
+                <InputOTPSlot index={2} className="size-11 text-lg" />
+                <InputOTPSlot index={3} className="size-11 text-lg" />
+              </InputOTPGroup>
+            </InputOTP>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Konfirmasi PIN Baru</Label>
+          <div className="flex justify-center">
+            <InputOTP
+              maxLength={4}
+              value={confirmPin}
+              onChange={(v) => {
+                setConfirmPin(v);
+                setError("");
+              }}
+            >
+              <InputOTPGroup>
+                <InputOTPSlot index={0} className="size-11 text-lg" />
+                <InputOTPSlot index={1} className="size-11 text-lg" />
+                <InputOTPSlot index={2} className="size-11 text-lg" />
+                <InputOTPSlot index={3} className="size-11 text-lg" />
+              </InputOTPGroup>
+            </InputOTP>
+          </div>
+        </div>
+      </div>
+
+      {error && <p className="text-sm text-red-600 text-center">{error}</p>}
+
+      <Button
+        onClick={handleChangePin}
+        disabled={!canSubmit || isChanging}
+        className="w-full"
+      >
+        {isChanging ? <Loader2 className="animate-spin size-4 mr-2" /> : null}
+        Ganti PIN
+      </Button>
+    </div>
+  );
+}

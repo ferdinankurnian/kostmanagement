@@ -49,3 +49,38 @@ export async function updateKamar(
   if (!res.ok) throw new Error("Gagal mengupdate kamar");
   return res.json();
 }
+
+export async function removePenghuni(
+  nomor: number,
+  pin: string,
+): Promise<{ success: boolean }> {
+  const res = await fetch(`${API_BASE}/kamar/${nomor}/penghuni`, {
+    method: "DELETE",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ pin }),
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || "Gagal menghapus penghuni");
+  }
+  return res.json();
+}
+
+export async function resetPenghuniPassword(
+  nomor: number,
+  pin: string,
+  newPassword: string,
+): Promise<{ success: boolean }> {
+  const res = await fetch(`${API_BASE}/kamar/${nomor}/password`, {
+    method: "PUT",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ pin, newPassword }),
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || "Gagal mereset password");
+  }
+  return res.json();
+}

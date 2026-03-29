@@ -7,13 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { authClient } from "@/lib/auth-client";
-import { requireGuest } from "@/lib/route-guards";
 
 export const Route = createFileRoute("/_auth/login")({
   validateSearch: z.object({
     redirect: z.string().optional(),
   }),
-  beforeLoad: requireGuest,
   component: Page,
 });
 

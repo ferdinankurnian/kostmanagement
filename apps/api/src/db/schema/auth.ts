@@ -3,12 +3,21 @@ import {
   boolean,
   index,
   integer,
+  pgEnum,
   pgTable,
   text,
   timestamp,
 } from "drizzle-orm/pg-core";
 import { nanoid } from "nanoid";
 import { kamar } from "./kamar";
+
+export const onboardingStatus = pgEnum("onboarding_status", [
+  "greeting",
+  "tour",
+  "bayar_tagihan",
+  "rule",
+  "completed",
+]);
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -31,6 +40,8 @@ export const user = pgTable("user", {
   noTeleponDarurat: text("no_telepon_darurat"),
   ktp: text("ktp"),
   noKamar: integer("no_kamar"),
+  onboarding: onboardingStatus("onboarding").default("greeting"),
+  bayarSampai: timestamp("bayar_sampai"),
 });
 
 export const session = pgTable(

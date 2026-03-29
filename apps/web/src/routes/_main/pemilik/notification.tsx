@@ -1,9 +1,14 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { NotificationPage } from "@/components/notification-page";
 
-export const Route = createFileRoute('/_main/pemilik/notification')({
+export const Route = createFileRoute("/_main/pemilik/notification")({
   component: RouteComponent,
-})
+});
 
 function RouteComponent() {
-  return <div>Hello "/_main/pemilik/notification"!</div>
+  const router = useRouter();
+
+  return (
+    <NotificationPage audience="pemilik" onBack={() => router.history.back()} />
+  );
 }

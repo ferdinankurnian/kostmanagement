@@ -1,7 +1,7 @@
 const { auth } = await import("../auth");
 const { createDB } = await import("./index");
 
-import { kamar } from "./schema";
+import { kamar, settings } from "./schema";
 
 const db = createDB(process.env.DATABASE_URL!);
 
@@ -45,6 +45,26 @@ async function seed() {
     console.log("🏠 12 kamar berhasil di-seed!");
   } catch (e: any) {
     console.error("❌ Gagal seed kamar:", e.message);
+  }
+
+  // --- settings ---
+  try {
+    await db
+      .insert(settings)
+      .values([
+        { key: "nama_kost", value: "Kost Bu Rina" },
+        { key: "harga_sewa", value: "1500000" },
+        { key: "nama_bank", value: "BCA" },
+        { key: "no_rekening", value: "1234567890" },
+        { key: "nama_pemilik_rekening", value: "Rina" },
+        { key: "peraturan_kost", value: "Dilarang merokok di dalam kamar." },
+        { key: "security_pin", value: "1234" },
+      ])
+      .onConflictDoNothing();
+
+    console.log("⚙️ Settings berhasil di-seed!");
+  } catch (e: any) {
+    console.error("❌ Gagal seed settings:", e.message);
   }
 
   console.log("✅ Seeding selesai!");

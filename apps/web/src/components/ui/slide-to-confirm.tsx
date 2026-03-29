@@ -28,14 +28,15 @@ export function SlideToConfirm({
 
   const isDisabled = disabled || isLoading;
 
-  // Reset confirmed state if isLoading turns false after being confirmed
-  // (e.g. error during submission)
+  // Reset slider when loading finishes but confirmation came from this instance
+  // (handles API errors — lets user retry)
   React.useEffect(() => {
     if (!isLoading && isConfirmed) {
-      // If we want to allow retry after error, we might reset here
-      // But for now, let's just keep it simple.
+      setIsConfirmed(false);
+      confirmedRef.current = false;
+      setDragOffset(0);
     }
-  }, [isLoading]);
+  }, [isLoading, isConfirmed]);
 
   const getMaxOffset = () => {
     if (!containerRef.current || !handleRef.current) return 0;
