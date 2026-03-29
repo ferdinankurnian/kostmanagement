@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { authClient } from "@/lib/auth-client";
+import { getOnboardingRoute } from "@/lib/route-guards";
 
 export const Route = createFileRoute("/_auth/login")({
   validateSearch: z.object({
@@ -16,7 +17,6 @@ export const Route = createFileRoute("/_auth/login")({
 });
 
 function Page() {
-  const navigate = useNavigate();
   const { redirect } = Route.useSearch();
 
   const [username, setUsername] = useState("");
@@ -24,6 +24,53 @@ function Page() {
   const [remember, setRemember] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const getDestination = (session: Awaited<
+    ReturnType<typeof authClient.getSession>
+  >["data"]) => {
+    if (redirect) {
+      return redirect;
+    }
+
+    const user = session?.user as
+      | {
+          role?: string | null;
+          onboarding?: string | null;
+        }
+      | undefined;
+
+    if (!user) {
+      return "/";
+    }
+
+    if (user.role === "user" && user.onboarding !== "completed") {
+      return getOnboardingRoute(user.onboarding);
+    }
+
+    if (user.role === "user") {
+      return "/penghuni";
+    }
+
+    if (user.role === "admin") {
+      return "/pemilik";
+    }
+
+    return "/";
+  };
+
+  const waitForSession = async () => {
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const result = await authClient.getSession();
+
+      if (result.data) {
+        return result.data;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 250));
+    }
+
+    return null;
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -39,13 +86,22 @@ function Page() {
 
       if (error) {
         setError(error.message ?? "Login gagal");
-        setLoading(false);
         return;
       }
 
-      navigate({ to: redirect ?? "/" });
+      const session = await waitForSession();
+
+      if (!session) {
+        setError(
+          "Login berhasil, tapi sesi belum aktif. Coba muat ulang halaman.",
+        );
+        return;
+      }
+
+      window.location.replace(getDestination(session));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login gagal");
+    } finally {
       setLoading(false);
     }
   };

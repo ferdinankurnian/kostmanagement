@@ -5,6 +5,9 @@ import { API_URL } from "@/lib/config";
 export const authClient = createAuthClient({
   baseURL: API_URL,
   plugins: [usernameClient(), adminClient()],
+  fetchOptions: {
+    credentials: "include",
+  },
 });
 
 export const { signIn, signUp, signOut, useSession } = authClient;
