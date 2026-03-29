@@ -1,37 +1,44 @@
 # Kost Management
 
-A boarding house (kost) management application built as a Turborepo monorepo.
+Aplikasi manajemen kost (boarding house) — Turborepo monorepo dengan React + Hono, deploy ke Cloudflare.
 
 ## Tech Stack
 
 **Web** (`apps/web`)
 - React 19 + Vite (SPA)
-- TanStack Router (file-based routing)
-- TanStack Query + TanStack Form
+- TanStack Router (file-based) + TanStack Query + TanStack Form
 - Tailwind CSS v4 + shadcn/ui (radix-nova, neutral base)
-- Zod v4, better-auth client
+- Zod v4, better-auth client, driver.js (tour), PWA (service worker + push notifications)
 
 **API** (`apps/api`)
 - Hono on Cloudflare Workers
 - Drizzle ORM + PostgreSQL (Neon)
-- better-auth
+- better-auth, R2 bucket (file storage), Zod validation
 
 **Shared tooling**
-- Turborepo for orchestration
-- Biome for linting & formatting
-- TypeScript 5.9 (strict)
+- Turborepo, Biome (lint + format), TypeScript 5.9 (strict), Bun
+
+## Features
+
+- **Role-based access** — admin (pemilik) & tenant (penghuni) dengan route guards
+- **Room management** — 12-room grid, status tracking (kosong/terisi/bermasalah/booked), PIN-protected actions
+- **Invitation system** — admin generates invite codes per room, 24h expiry, auto-links tenant + generates first bill
+- **Bill management** — auto-generation (cron monthly + manual), payment proof upload, accept/reject workflow, multi-month payment
+- **Complaints** — tenants file with photos, admin processes/resolves
+- **Announcements** — priority-based, active/inactive toggle
+- **Onboarding** — 5-step guided flow for new tenants (greeting, tour, first payment, rules)
+- **PIN security** — 4-digit PIN with PBKDF2 hashing for destructive actions
+- **PWA** — service worker, browser push notifications, 60s polling sync
+- **Settings** — kost name, rental price, bank info, rules, customizable info cards
+- **Image upload** — client-side compression (WebP), R2 storage
 
 ## Getting Started
 
 ```bash
-# install dependencies
 bun install
 
-# run both apps in dev
-bun run dev
-
-# run web only
-bun run dev:web
+bun run dev          # both apps
+bun run dev:web      # web only
 ```
 
 ## Scripts
@@ -44,9 +51,12 @@ bun run check-types  # type-check all apps
 bun run lint         # biome check (lint only)
 bun run lint:fix     # biome check --write (lint + auto-fix)
 bun run format       # biome format --write
+bun run deploy       # deploy both apps to Cloudflare
+bun run deploy:api   # deploy API only
+bun run deploy:web   # deploy web only
 ```
 
-### API
+### API DB
 
 ```bash
 cd apps/api && bun run db:push       # push Drizzle schema to DB
@@ -59,7 +69,7 @@ cd apps/api && bun run cf-typegen    # regenerate Cloudflare types
 
 ```bash
 cd apps/web && bun run test                     # run all tests
-cd apps/web && bun run test -- --run room-card  # run single test file
+cd apps/web && bun run test -- --run <pattern>  # run single test
 cd apps/web && bunx vitest watch               # watch mode
 ```
 
@@ -67,29 +77,71 @@ cd apps/web && bunx vitest watch               # watch mode
 
 ```
 apps/
-  web/              React + Vite SPA
+  web/                  React + Vite SPA (Cloudflare Pages)
     src/
-      components/   UI components (shadcn in components/ui/)
-      lib/          utilities, auth client, API helpers
-      routes/       TanStack Router file-based routes
-  api/              Hono + Cloudflare Workers
+      components/       UI components (shadcn in components/ui/)
+      lib/              API clients, auth, utilities
+      routes/           TanStack Router file-based routes
+  api/                  Hono + Cloudflare Workers
     src/
       db/
-        schema/     Drizzle table definitions
-      routes/       Hono API route handlers
-      middleware/   auth middleware, etc.
+        schema/         Drizzle table definitions
+      routes/           Hono API route handlers
+      middleware/       auth middleware
+.github/
+  workflows/
+    deploy.yml          CI/CD: auto-deploy on push to main
 ```
+
+## Database
+
+| Table        | Description                          |
+| ------------ | ------------------------------------ |
+| user         | tenants & admins (better-auth)       |
+| session      | auth sessions                        |
+| account      | auth accounts (OAuth, credentials)   |
+| verification | auth verification tokens             |
+| invitation   | room invite codes (6-char, 24h exp)  |
+| kamar        | rooms (1-12, status + notes)         |
+| tagihan      | bills (amount, period, payment flow) |
+| keluhan      | complaints (with photos)             |
+| informasi    | announcements (priority-based)       |
+| settings     | key-value config (kost info, PIN)    |
+
+## API Endends
+
+| Resource     | Endpoints                                         |
+| ------------ | ------------------------------------------------- |
+| Auth         | `GET/POST /api/auth/*` (better-auth)              |
+| Kamar        | `GET /`, `GET /:nomor`, `PUT /:nomor`, `DELETE /:nomor/penghuni`, `PUT /:nomor/password` |
+| Tagihan      | `GET /`, `GET /:id`, `POST /`, `POST /generate`, `PUT /:id/submit`, `PUT /:id/accept`, `PUT /:id/reject` |
+| Keluhan      | `GET /`, `GET /:id`, `POST /`, `PUT /:id/status`, `DELETE /:id` |
+| Informasi    | `GET /`, `GET /:id`, `POST /`, `PUT /:id`, `DELETE /:id` |
+| Invite       | `POST /`, `POST /validate`, `POST /use`, `GET /:id` |
+| Onboarding   | `PUT /`                                           |
+| Settings     | `GET /`, `GET /:key`, `PUT /:key`, `POST /verify-pin`, `POST /change-pin` |
+| Upload       | `POST /ktp`, `POST /bukti`                        |
+| Files        | `GET /api/files/*` (R2, cached 1y)                |
+
+## Deploy
+
+- **API** → Cloudflare Workers (`api.ferdinankurnian.workers.dev`)
+- **Web** → Cloudflare Pages (`kost-management.pages.dev`)
+- **CI/CD** → GitHub Actions on push to `main` (parallel deploy)
+- **Cron** → `0 0 1 * *` auto-generates monthly bills for all active tenants
 
 ## Domain Language
 
-Indonesian terms used throughout the codebase:
+Indonesian terms used throughout:
 
-| Term | Meaning |
-|------|---------|
-| kamar | room |
-| penghuni | tenant |
-| pemilik | owner |
-| tagihan | bill |
+| Term       | Meaning          |
+| ---------- | ---------------- |
+| kamar      | room             |
+| penghuni   | tenant           |
+| pemilik    | owner            |
+| tagihan    | bill             |
+| keluhan    | complaint        |
+| informasi  | announcement     |
 
 ## License
 

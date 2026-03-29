@@ -37,4 +37,5 @@ jobs:
         working-directory: .
       - run: bun run deploy
         env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

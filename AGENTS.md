@@ -4,7 +4,7 @@
 
 Monorepo for a boarding house (kost) management app. Turborepo + Bun.
 
-- **`apps/web`** — React 19 + TanStack Start (SSR), TanStack Router (file-based), Tailwind CSS v4, shadcn/ui, Zod v4
+- **`apps/web`** — React 19 + Vite (SPA), TanStack Router (file-based), TanStack Query/Form, Tailwind CSS v4, shadcn/ui, Zod v4
 - **`apps/api`** — Hono on Cloudflare Workers, Drizzle ORM + PostgreSQL (Neon), better-auth
 
 Domain language is Indonesian: `kamar` (room), `penghuni` (tenant), `pemilik` (owner), `tagihan` (bill).
@@ -43,6 +43,10 @@ cd apps/api && bun run db:push         # push schema to DB
 cd apps/api && bun run db:seed         # seed the database
 cd apps/api && bun run db:studio       # drizzle-kit studio
 cd apps/api && bun run cf-typegen      # regenerate Cloudflare types
+
+# Deploy
+bun run deploy:api                     # deploy API to Cloudflare Workers
+bun run deploy:web                     # build + deploy web to Cloudflare Pages
 ```
 
 ---
@@ -104,6 +108,7 @@ cd apps/api && bun run cf-typegen      # regenerate Cloudflare types
 - Export select/insert types: `typeof table.$inferSelect` / `$inferInsert`.
 - Relations defined separately from table definitions.
 - API routes use Hono's `app.get`/`app.post` style with typed context via `Hono<{ Bindings: Env }>`.
+- Route validation: co-locate Zod schemas in `<resource>.validator.ts` next to `<resource>.ts` route handler.
 - The API runs on Cloudflare Workers — no Node.js APIs, use Web API standards only.
 
 ### shadcn/ui
@@ -143,3 +148,4 @@ Vitest is installed in `apps/web` with `@testing-library/react` and jsdom. No te
 - The API runs on Cloudflare Workers — no Node.js APIs (`fs`, `path`, etc.), use Web API standards (`fetch`, `Request`, `Response`).
 - `bun.lock` is the lockfile — don't use `npm` or `pnpm` for installs.
 - The web app build runs `tsc -b` before `vite build` — type errors will block the build.
+- Dev proxy: Vite proxies `/api` requests to `http://localhost:8787` (the local Wrangler dev server).
