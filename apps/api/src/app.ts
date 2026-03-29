@@ -28,7 +28,18 @@ app.use(
 
 app.on(["POST", "GET"], "/api/auth/*", async (c) => {
   const auth = createAuth(c.env);
-  return auth.handler(c.req.raw);
+  const response = await auth.handler(c.req.raw);
+
+  const origin = c.req.header("Origin");
+  const allowed = (c.env as Env).CORS_ORIGINS || "http://localhost:3000";
+  const origins = allowed.split(",").map((o) => o.trim());
+  if (origin && origins.includes(origin)) {
+    response.headers.set("Access-Control-Allow-Origin", origin);
+    response.headers.set("Access-Control-Allow-Credentials", "true");
+    response.headers.set("Vary", "Origin");
+  }
+
+  return response;
 });
 
 app.get("/api/files/*", async (c) => {
