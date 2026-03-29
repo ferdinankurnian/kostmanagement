@@ -1,4 +1,5 @@
-const API_BASE = "http://localhost:8787/api";
+import { API_BASE } from "@/lib/config";
+
 const COMPRESSIBLE_IMAGE_TYPES = new Set([
   "image/jpeg",
   "image/png",

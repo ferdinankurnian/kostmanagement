@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:8787/api";
+import { API_BASE } from "@/lib/config";
 
 export type OnboardingStep =
   | "greeting"

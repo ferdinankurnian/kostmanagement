@@ -6,7 +6,8 @@
     "dev": "vite dev --port 3000",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "deploy": "bun run build && bunx wrangler pages deploy dist"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.2.8",
@@ -49,6 +50,7 @@
     "typescript": "~5.9.3",
     "vite": "^8.0.1",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^3.0.5"
+    "vitest": "^3.0.5",
+    "wrangler": "^4.4.0"
   }
 }
