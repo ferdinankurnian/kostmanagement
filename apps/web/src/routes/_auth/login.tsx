@@ -30,19 +30,24 @@ function Page() {
     setLoading(true);
     setError("");
 
-    const { error } = await authClient.signIn.username({
-      username,
-      password,
-      rememberMe: remember,
-    });
+    try {
+      const { error } = await authClient.signIn.username({
+        username,
+        password,
+        rememberMe: remember,
+      });
 
-    if (error) {
-      setError(error.message ?? "Login gagal");
+      if (error) {
+        setError(error.message ?? "Login gagal");
+        setLoading(false);
+        return;
+      }
+
+      navigate({ to: redirect ?? "/" });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Login gagal");
       setLoading(false);
-      return;
     }
-
-    navigate({ to: redirect ?? "/" });
   };
 
   return (
