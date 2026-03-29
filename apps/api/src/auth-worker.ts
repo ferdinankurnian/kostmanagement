@@ -37,6 +37,11 @@ export function createAuth(env: Env) {
     advanced: {
       crossSubDomainCookies: {
         enabled: true,
+        domain: "iydheko.site",
+      },
+      defaultCookieAttributes: {
+        secure: true,
+        sameSite: "lax",
       },
     },
     experimental: {

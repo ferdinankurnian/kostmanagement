@@ -5,8 +5,8 @@
   "compatibility_date": "2026-03-25",
   "compatibility_flags": ["nodejs_compat"],
   "vars": {
-    "BETTER_AUTH_URL": "https://api.ferdinankurnian.workers.dev",
-    "CORS_ORIGINS": "https://kost-management.pages.dev, http://localhost:3000, http://localhost:5173"
+    "BETTER_AUTH_URL": "https://api.kost.iydheko.site",
+    "CORS_ORIGINS": "https://kost.iydheko.site, http://localhost:3000, http://localhost:5173"
   },
   "triggers": {
     "crons": ["0 0 1 * *"]
