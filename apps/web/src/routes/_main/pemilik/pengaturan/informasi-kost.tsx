@@ -1,29 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useForm, useStore } from "@tanstack/react-form";
 import { createFileRoute } from "@tanstack/react-router";
-import { ChevronLeft, Loader2, Plus, Save, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { ChevronLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { TopBar, TopBarCenter, TopBarLeft } from "@/components/top-bar";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardAction,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
-  createInformasiKostCard,
-  getSettings,
-  type InformasiKostCard,
-  parseInformasiKostCards,
-  type Settings,
-  serializeInformasiKostCards,
-  updateSetting,
-} from "@/lib/settings";
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupText,
+} from "@/components/ui/input-group";
+import { Textarea } from "@/components/ui/textarea";
+import { getSettings, type Settings, updateSetting } from "@/lib/settings";
 
 export const Route = createFileRoute(
   "/_main/pemilik/pengaturan/informasi-kost",
@@ -32,12 +23,8 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
-  const queryClient = useQueryClient();
-  const [settings, setSettings] = useState<Settings>({});
-  const [cards, setCards] = useState<InformasiKostCard[]>([]);
-
   const {
-    data: settingsData,
+    data: settings,
     isLoading,
     isError,
     refetch,
@@ -45,65 +32,6 @@ function RouteComponent() {
     queryKey: ["settings"],
     queryFn: getSettings,
   });
-
-  useEffect(() => {
-    if (!settingsData) {
-      return;
-    }
-
-    setSettings(settingsData);
-    setCards(parseInformasiKostCards(settingsData.informasi_kost_cards));
-  }, [settingsData]);
-
-  const saveMutation = useMutation({
-    mutationFn: async () => {
-      await Promise.all([
-        updateSetting("nama_kost", settings.nama_kost ?? ""),
-        updateSetting("harga_sewa", settings.harga_sewa ?? ""),
-        updateSetting("nama_bank", settings.nama_bank ?? ""),
-        updateSetting("no_rekening", settings.no_rekening ?? ""),
-        updateSetting(
-          "nama_pemilik_rekening",
-          settings.nama_pemilik_rekening ?? "",
-        ),
-        updateSetting(
-          "informasi_kost_cards",
-          serializeInformasiKostCards(cards),
-        ),
-      ]);
-    },
-    onSuccess: async () => {
-      toast.success("Informasi kost disimpan");
-      await queryClient.invalidateQueries({ queryKey: ["settings"] });
-    },
-    onError: () => {
-      toast.error("Gagal menyimpan informasi kost");
-    },
-  });
-
-  const updateSettingValue = (key: string, value: string) => {
-    setSettings((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const addCard = () => {
-    setCards((prev) => [...prev, createInformasiKostCard()]);
-  };
-
-  const removeCard = (cardId: string) => {
-    setCards((prev) => prev.filter((card) => card.id !== cardId));
-  };
-
-  const updateCard = (
-    cardId: string,
-    key: keyof Pick<InformasiKostCard, "title" | "description">,
-    value: string,
-  ) => {
-    setCards((prev) =>
-      prev.map((card) =>
-        card.id === cardId ? { ...card, [key]: value } : card,
-      ),
-    );
-  };
 
   if (isLoading) {
     return (
@@ -130,7 +58,6 @@ function RouteComponent() {
             <h1 className="text-lg whitespace-nowrap">Informasi Kost</h1>
           </TopBarCenter>
         </TopBar>
-
         <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-4 space-y-3">
           <p className="text-sm text-destructive">
             Gagal memuat informasi kost.
@@ -142,6 +69,42 @@ function RouteComponent() {
       </div>
     );
   }
+
+  return <InformasiKostForm settings={settings} />;
+}
+
+function InformasiKostForm({ settings }: { settings: Settings | undefined }) {
+  const queryClient = useQueryClient();
+
+  const form = useForm({
+    defaultValues: {
+      nama_kost: settings?.nama_kost ?? "",
+      harga_sewa: settings?.harga_sewa ?? "",
+      alamat: settings?.alamat ?? "",
+    },
+  });
+
+  const namaKost = useStore(form.store, (s) => s.values.nama_kost);
+  const hargaSewa = useStore(form.store, (s) => s.values.harga_sewa);
+  const alamat = useStore(form.store, (s) => s.values.alamat);
+
+  const saveMutation = useMutation({
+    mutationFn: async () => {
+      const value = form.state.values;
+      await Promise.all([
+        updateSetting("nama_kost", value.nama_kost),
+        updateSetting("harga_sewa", value.harga_sewa),
+        updateSetting("alamat", value.alamat),
+      ]);
+    },
+    onSuccess: async () => {
+      toast.success("Informasi kost disimpan");
+      await queryClient.invalidateQueries({ queryKey: ["settings"] });
+    },
+    onError: () => {
+      toast.error("Gagal menyimpan informasi kost");
+    },
+  });
 
   return (
     <div className="space-y-4 px-4 pt-20 pb-20">
@@ -160,174 +123,88 @@ function RouteComponent() {
         </TopBarCenter>
       </TopBar>
 
-      <div className="space-y-1 pt-4">
-        <p className="text-sm text-muted-foreground">
-          Atur detail utama kost dan susun informasi tambahan dalam bentuk card.
-        </p>
-      </div>
-
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="nama_kost">Nama Kost</Label>
-          <Input
-            id="nama_kost"
-            value={settings.nama_kost ?? ""}
-            onChange={(e) => updateSettingValue("nama_kost", e.target.value)}
-            placeholder="Contoh: Kost Melati"
-          />
+      <div className="rounded-2xl border bg-card p-5 space-y-5">
+        <div>
+          <p className="text-sm text-muted-foreground">Nama Kost</p>
+          <p>{namaKost || "-"}</p>
         </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="harga_sewa">Harga Sewa (per bulan)</Label>
-          <Input
-            id="harga_sewa"
-            type="number"
-            value={settings.harga_sewa ?? ""}
-            onChange={(e) => updateSettingValue("harga_sewa", e.target.value)}
-            placeholder="1500000"
-          />
+        <div>
+          <p className="text-sm text-muted-foreground">Harga per bulan</p>
+          <p>{hargaSewa ? `Rp ${hargaSewa}` : "-"}</p>
         </div>
-
-        <div className="rounded-2xl border bg-muted/20 p-4 space-y-4">
-          <div className="space-y-1">
-            <h2 className="text-sm font-medium">Info Pembayaran</h2>
-            <p className="text-sm text-muted-foreground">
-              Rekening ini akan dipakai penghuni saat melihat instruksi
-              pembayaran.
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="nama_bank">Nama Bank</Label>
-            <Input
-              id="nama_bank"
-              value={settings.nama_bank ?? ""}
-              onChange={(e) => updateSettingValue("nama_bank", e.target.value)}
-              placeholder="BCA, Mandiri, BNI, dll"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="no_rekening">No. Rekening</Label>
-            <Input
-              id="no_rekening"
-              value={settings.no_rekening ?? ""}
-              onChange={(e) =>
-                updateSettingValue("no_rekening", e.target.value)
-              }
-              placeholder="1234567890"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="nama_pemilik_rekening">Nama Pemilik Rekening</Label>
-            <Input
-              id="nama_pemilik_rekening"
-              value={settings.nama_pemilik_rekening ?? ""}
-              onChange={(e) =>
-                updateSettingValue("nama_pemilik_rekening", e.target.value)
-              }
-              placeholder="Nama sesuai rekening"
-            />
-          </div>
+        <div>
+          <p className="text-sm text-muted-foreground">Alamat</p>
+          <p className="whitespace-pre-wrap">{alamat || "-"}</p>
         </div>
       </div>
 
-      <div className="space-y-4">
-        <div className="flex items-center justify-between gap-3">
-          <div className="space-y-1">
-            <h2 className="text-sm font-medium">Cards Informasi</h2>
-            <p className="text-sm text-muted-foreground">
-              Tambahkan poin penting seperti fasilitas, jam malam, atau catatan
-              khusus.
-            </p>
-          </div>
-          <Button type="button" variant="outline" onClick={addCard}>
-            <Plus className="size-4" />
-            Tambah Card
-          </Button>
-        </div>
+      <div className="rounded-2xl border bg-card p-5 space-y-5">
+        <form.Field name="nama_kost">
+          {(field) => (
+            <Field>
+              <FieldLabel htmlFor="nama-kost">Nama Kost</FieldLabel>
+              <Input
+                id="nama-kost"
+                type="text"
+                placeholder="Nama kost"
+                value={field.state.value}
+                onChange={(e) => field.handleChange(e.target.value)}
+              />
+            </Field>
+          )}
+        </form.Field>
 
-        {cards.length === 0 ? (
-          <div className="rounded-xl border border-dashed bg-muted/20 p-6 text-center space-y-3">
-            <p className="text-sm font-medium">Belum ada card informasi</p>
-            <p className="text-sm text-muted-foreground">
-              Buat card pertama untuk menampilkan informasi kost yang penting.
-            </p>
-            <Button type="button" variant="secondary" onClick={addCard}>
-              <Plus className="size-4" />
-              Tambah Card
-            </Button>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {cards.map((card, index) => (
-              <Card key={card.id} className="py-0">
-                <CardHeader className="border-b py-4">
-                  <CardTitle>Card {index + 1}</CardTitle>
-                  <CardDescription>
-                    Isi judul dan deskripsi untuk informasi yang ingin
-                    ditampilkan.
-                  </CardDescription>
-                  <CardAction>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => removeCard(card.id)}
-                      aria-label={`Hapus card ${index + 1}`}
-                    >
-                      <Trash2 className="size-4" />
-                    </Button>
-                  </CardAction>
-                </CardHeader>
+        <form.Field name="harga_sewa">
+          {(field) => (
+            <Field>
+              <FieldLabel htmlFor="harga-sewa">Harga per bulan</FieldLabel>
+              <InputGroup>
+                <InputGroupAddon>
+                  <InputGroupText>Rp</InputGroupText>
+                </InputGroupAddon>
+                <InputGroupInput
+                  id="harga-sewa"
+                  placeholder="500.000"
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                />
+              </InputGroup>
+            </Field>
+          )}
+        </form.Field>
 
-                <div className="space-y-4 px-4 py-4">
-                  <div className="space-y-2">
-                    <Label htmlFor={`card-title-${card.id}`}>Title</Label>
-                    <Input
-                      id={`card-title-${card.id}`}
-                      value={card.title}
-                      onChange={(e) =>
-                        updateCard(card.id, "title", e.target.value)
-                      }
-                      placeholder="Contoh: Fasilitas Umum"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor={`card-description-${card.id}`}>
-                      Description
-                    </Label>
-                    <Textarea
-                      id={`card-description-${card.id}`}
-                      value={card.description}
-                      onChange={(e) =>
-                        updateCard(card.id, "description", e.target.value)
-                      }
-                      rows={4}
-                      placeholder="Jelaskan informasi yang ingin ditampilkan"
-                    />
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        )}
+        <form.Field name="alamat">
+          {(field) => (
+            <Field>
+              <FieldLabel htmlFor="alamat">Alamat</FieldLabel>
+              <Textarea
+                id="alamat"
+                placeholder="Alamat lengkap kost"
+                value={field.state.value}
+                onChange={(e) => field.handleChange(e.target.value)}
+                rows={3}
+              />
+            </Field>
+          )}
+        </form.Field>
       </div>
 
-      <Button
-        onClick={() => void saveMutation.mutateAsync()}
-        disabled={saveMutation.isPending}
-        className="gap-1.5"
-      >
-        {saveMutation.isPending ? (
-          <Loader2 className="size-4 animate-spin" />
-        ) : (
-          <Save className="size-4" />
-        )}
-        Simpan
-      </Button>
+      <div className="fixed bottom-0 left-0 right-0 px-4 pb-4 pt-8 bg-linear-to-t from-background to-transparent text-center">
+        <Button
+          type="button"
+          className="w-full max-w-lg rounded-full mx-auto"
+          disabled={saveMutation.isPending}
+          onClick={() => saveMutation.mutate()}
+        >
+          {saveMutation.isPending ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            "Simpan"
+          )}
+        </Button>
+      </div>
     </div>
   );
 }
+
+

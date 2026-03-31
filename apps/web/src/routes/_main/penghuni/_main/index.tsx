@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowUpRight, Bell, Clipboard, ReceiptText } from "lucide-react";
+import { NotificationPromptBanner } from "@/components/notification-prompt-banner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
@@ -74,6 +75,8 @@ function RouteComponent() {
           </Avatar>
         </div>
       </div>
+
+      <NotificationPromptBanner />
 
       <div data-tour="stats" className="grid grid-cols-2 gap-2 px-4">
         <div className="bg-primary text-white p-3 rounded-xl space-y-4">

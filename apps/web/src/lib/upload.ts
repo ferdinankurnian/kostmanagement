@@ -6,7 +6,7 @@ const COMPRESSIBLE_IMAGE_TYPES = new Set([
   "image/webp",
 ]);
 
-type UploadTarget = "ktp" | "bukti";
+type UploadTarget = "ktp" | "bukti" | "avatar";
 
 type CompressionOptions = {
   maxDimension: number;
@@ -44,6 +44,13 @@ export async function uploadBukti(file: File): Promise<string> {
     maxBytes: 900_000,
   });
   return data.url as string;
+}
+
+export async function uploadAvatar(file: File): Promise<{ url: string }> {
+  return uploadPreparedFile(file, "avatar", {
+    maxDimension: 512,
+    maxBytes: 300_000,
+  });
 }
 
 async function uploadPreparedFile(

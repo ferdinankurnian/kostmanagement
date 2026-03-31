@@ -9,7 +9,6 @@ type User = {
   noKamar?: number | null;
   ktp?: string | null;
   onboarding?: string | null;
-  [key: string]: unknown;
 };
 
 export async function requireAuth({
@@ -66,15 +65,4 @@ export function getOnboardingRoute(
     default:
       return "/penghuni/onboarding";
   }
-}
-
-export function combineGuards(...guards: Function[]) {
-  return async (ctx: any) => {
-    let result = {};
-    for (const guard of guards) {
-      const res = await guard(ctx);
-      result = { ...result, ...res };
-    }
-    return result;
-  };
 }

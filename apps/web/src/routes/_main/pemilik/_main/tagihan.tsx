@@ -1,8 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Loader2 } from "lucide-react";
+import { FileText, Loader2 } from "lucide-react";
 import { TopBar, TopBarCenter } from "@/components/top-bar";
 import { Button } from "@/components/ui/button";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { Separator } from "@/components/ui/separator";
 import { getTagihan, type Tagihan } from "@/lib/tagihan";
 
@@ -81,7 +88,17 @@ function TagihanPage() {
       </TopBar>
 
       {tagihan.length === 0 ? (
-        <p className="text-sm text-muted-foreground px-4">Belum ada tagihan.</p>
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <FileText />
+            </EmptyMedia>
+            <EmptyTitle>Belum ada tagihan</EmptyTitle>
+            <EmptyDescription>
+              Tagihan bulanan akan muncul di sini setelah dibuat.
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
       ) : (
         <div className="space-y-4 px-4">
           {menungguVerifikasi.length > 0 && (

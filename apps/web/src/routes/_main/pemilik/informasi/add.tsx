@@ -155,25 +155,25 @@ function RouteComponent() {
           ]}
           onChange={(value) => setStatus(value as StatusInformasi)}
         />
-
-        <Button
-          className="w-full gap-2"
-          size="lg"
-          disabled={
-            mutation.isPending ||
-            isUploading ||
-            judul.trim().length === 0 ||
-            deskripsi.trim().length === 0
-          }
-          onClick={() => mutation.mutate()}
-        >
-          {mutation.isPending ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : (
-            <Save className="size-4" />
-          )}
-          Simpan Informasi
-        </Button>
+        <div className="fixed bottom-0 left-0 right-0 px-4 pb-4 pt-8 bg-linear-to-t from-background to-transparent text-center">
+          <Button
+            className="w-full max-w-lg rounded-full mx-auto"
+            disabled={
+              mutation.isPending ||
+              isUploading ||
+              judul.trim().length === 0 ||
+              deskripsi.trim().length === 0
+            }
+            onClick={() => mutation.mutate()}
+          >
+            {mutation.isPending ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <Save className="size-4" />
+            )}
+            Simpan Informasi
+          </Button>
+        </div>
       </div>
     </div>
   );

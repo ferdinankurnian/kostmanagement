@@ -1,6 +1,5 @@
 import type { ScheduledEvent } from "@cloudflare/workers-types";
-import { app } from "./app";
-import type { Env } from "./auth-worker";
+import { app, type Env } from "./app";
 import { handleScheduled } from "./scheduled";
 
 export default {

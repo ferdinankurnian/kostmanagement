@@ -1,12 +1,10 @@
 import { zValidator } from "@hono/zod-validator";
+import { createDB } from "@repo/db";
+import { settings, tagihan, user } from "@repo/db/schema";
 import { and, eq, isNotNull } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod/v4";
-import type { Env } from "../auth-worker";
-import { createDB } from "../db";
-import { user } from "../db/schema/auth";
-import { settings } from "../db/schema/settings";
-import { tagihan } from "../db/schema/tagihan";
+import type { Env } from "../app";
 import { getSession } from "../middleware/auth";
 
 const app = new Hono<{ Bindings: Env }>();
@@ -64,6 +62,10 @@ app.get("/:id", async (c) => {
 
   if (!rows[0]) {
     return c.json({ error: "Tagihan tidak ditemukan" }, 404);
+  }
+
+  if (session.user.role !== "admin" && rows[0].userId !== session.user.id) {
+    return c.json({ error: "Forbidden" }, 403);
   }
 
   return c.json(rows[0]);

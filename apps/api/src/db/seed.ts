@@ -1,8 +1,12 @@
-const { auth } = await import("../auth");
-const { createDB } = await import("./index");
+import { createAuth } from "@repo/auth";
+import { createDB } from "@repo/db";
+import { kamar, settings } from "@repo/db/schema";
 
-import { kamar, settings } from "./schema";
-
+const auth = createAuth({
+  DATABASE_URL: process.env.DATABASE_URL!,
+  BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET!,
+  BETTER_AUTH_URL: process.env.BETTER_AUTH_URL || "http://localhost:8787",
+});
 const db = createDB(process.env.DATABASE_URL!);
 
 async function seed() {
@@ -52,7 +56,7 @@ async function seed() {
     await db
       .insert(settings)
       .values([
-        { key: "nama_kost", value: "Kost Bu Rina" },
+        { key: "nama_kost", value: "Andaru Kost" },
         { key: "harga_sewa", value: "1500000" },
         { key: "nama_bank", value: "BCA" },
         { key: "no_rekening", value: "1234567890" },

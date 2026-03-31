@@ -7,6 +7,7 @@ import {
   ReceiptText,
   ShieldAlert,
 } from "lucide-react";
+import { NotificationPromptBanner } from "@/components/notification-prompt-banner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
@@ -123,29 +124,32 @@ function RouteComponent() {
           </Avatar>
         </div>
       </div>
-      {isDefaultPin && (
-        <div className="mx-4 flex items-start gap-3 rounded-xl border border-yellow-300 bg-yellow-50 p-3">
-          <ShieldAlert className="size-5 text-yellow-600 mt-0.5 shrink-0" />
-          <div className="space-y-1">
-            <p className="text-sm font-medium text-yellow-800">
-              PIN Keamanan Masih Default
-            </p>
-            <p className="text-xs text-yellow-700">
-              PIN Anda masih <strong>1234</strong>. Segera ganti di pengaturan
-              untuk keamanan.
-            </p>
-            <Link to="/pemilik/pengaturan">
-              <Button
-                size="sm"
-                variant="outline"
-                className="mt-1 h-7 text-xs border-yellow-400 text-yellow-800 hover:bg-yellow-100"
-              >
-                Ganti PIN
-              </Button>
-            </Link>
+      <div className="space-y-3">
+        <NotificationPromptBanner />
+        {isDefaultPin && (
+          <div className="mx-4 flex items-start gap-3 rounded-xl border border-yellow-300 bg-yellow-50 p-3">
+            <ShieldAlert className="size-5 text-yellow-600 mt-0.5 shrink-0" />
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-yellow-800">
+                PIN Keamanan Masih Default
+              </p>
+              <p className="text-xs text-yellow-700">
+                PIN Anda masih <strong>1234</strong>. Segera ganti di pengaturan
+                untuk keamanan.
+              </p>
+              <Link to="/pemilik/pengaturan/pin">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="mt-1 h-7 text-xs border-yellow-400 text-yellow-800 hover:bg-yellow-100"
+                >
+                  Ganti PIN
+                </Button>
+              </Link>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
       <div className="grid grid-cols-2 gap-2 px-4">
         <Link to="/pemilik/kamar">
           <div className="bg-primary text-white p-3 rounded-xl space-y-4 active:scale-95 transition-all">
@@ -161,18 +165,20 @@ function RouteComponent() {
             </div>
           </div>
         </Link>
-        <div className="bg-primary text-white p-3 rounded-xl space-y-4 active:scale-95 transition-all">
-          <div className="flex flex-row justify-between">
-            <p className="text-sm">Tagihan</p>
-            <span className="p-1 bg-white rounded-sm">
-              <Clipboard className="size-4 text-primary" />
-            </span>
+        <Link to="/pemilik/tagihan">
+          <div className="bg-primary text-white p-3 rounded-xl space-y-4 active:scale-95 transition-all">
+            <div className="flex flex-row justify-between">
+              <p className="text-sm">Tagihan</p>
+              <span className="p-1 bg-white rounded-sm">
+                <Clipboard className="size-4 text-primary" />
+              </span>
+            </div>
+            <div className="flex flex-row items-end gap-2">
+              <p className="text-2xl leading-none">{tagihanBelumLunas}</p>
+              <p className="text-sm">Tidak Lunas</p>
+            </div>
           </div>
-          <div className="flex flex-row items-end gap-2">
-            <p className="text-2xl leading-none">{tagihanBelumLunas}</p>
-            <p className="text-sm">Tidak Lunas</p>
-          </div>
-        </div>
+        </Link>
       </div>
       <div className="flex flex-col gap-2">
         <div className="flex flex-row justify-between px-4">

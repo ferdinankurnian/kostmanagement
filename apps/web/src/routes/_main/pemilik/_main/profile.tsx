@@ -1,5 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Bell, FileText, Home, Lock, User } from "lucide-react";
+import {
+  Bell,
+  FileText,
+  Home,
+  Lock,
+  User,
+  DoorClosed,
+  MessageCircleWarning,
+} from "lucide-react";
 import { LogoutButton } from "@/components/logout-button";
 import { MenuList, MenuListItem } from "@/components/menu-list";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -69,8 +77,16 @@ function RouteComponent() {
 
       <div className="space-y-2 px-4">
         <MenuList>
-          <MenuListItem icon={Bell} label="Laporan" />
-          <MenuListItem icon={FileText} label="Peraturan Kost" />
+          <MenuListItem
+            icon={MessageCircleWarning}
+            label="Laporan"
+            to="/pemilik/keluhan"
+          />
+          <MenuListItem
+            icon={DoorClosed}
+            label="Kelola Kamar"
+            to="/pemilik/kamar"
+          />
         </MenuList>
       </div>
     </div>

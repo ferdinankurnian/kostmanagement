@@ -1,10 +1,11 @@
 import { zValidator } from "@hono/zod-validator";
+import { createAuth } from "@repo/auth";
+import { createDB } from "@repo/db";
+import { kamar, settings, user } from "@repo/db/schema";
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod/v4";
-import { createAuth, type Env } from "../auth-worker";
-import { createDB } from "../db";
-import { kamar, settings, user } from "../db/schema";
+import type { Env } from "../app";
 import { ensureAdmin } from "../middleware/auth";
 import { verifyPinValue } from "../pin";
 import { removePenghuniSchema, updateKamarSchema } from "./kamar.validator";

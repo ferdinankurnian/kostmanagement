@@ -3,7 +3,7 @@ import { createAuthClient } from "better-auth/react";
 import { API_URL } from "@/lib/config";
 
 export const authClient = createAuthClient({
-  baseURL: API_URL,
+  ...(API_URL ? { baseURL: API_URL } : {}),
   plugins: [usernameClient(), adminClient()],
   fetchOptions: {
     credentials: "include",

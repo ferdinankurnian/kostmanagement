@@ -1,8 +1,6 @@
+import { createDB } from "@repo/db";
+import { settings, tagihan, user } from "@repo/db/schema";
 import { and, eq, isNotNull } from "drizzle-orm";
-import { createDB } from "./db";
-import { user } from "./db/schema/auth";
-import { settings } from "./db/schema/settings";
-import { tagihan } from "./db/schema/tagihan";
 
 interface Env {
   DATABASE_URL: string;

@@ -1,5 +1,6 @@
+import { createAuth } from "@repo/auth";
 import type { Context, Next } from "hono";
-import { createAuth, type Env } from "../auth-worker";
+import type { Env } from "../app";
 
 type HonoContext = Context<{ Bindings: Env }>;
 

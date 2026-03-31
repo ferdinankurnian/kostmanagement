@@ -1,6 +1,8 @@
+import { createAuth } from "@repo/auth";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { createAuth, type Env } from "./auth-worker";
+import { getSession } from "./middleware/auth";
+import { rateLimiter } from "./middleware/rate-limit";
 import informasiRoutes from "./routes/informasi";
 import inviteRoutes from "./routes/invite";
 import kamarRoutes from "./routes/kamar";
@@ -10,39 +12,53 @@ import settingsRoutes from "./routes/settings";
 import tagihanRoutes from "./routes/tagihan";
 import uploadRoutes from "./routes/upload";
 
+export interface Env {
+  DATABASE_URL: string;
+  BETTER_AUTH_SECRET: string;
+  BETTER_AUTH_URL: string;
+  CORS_ORIGINS: string;
+  R2_BUCKET: R2Bucket;
+}
+
 export const app = new Hono<{ Bindings: Env }>();
 
-app.use(
-  "/api/*",
-  cors({
-    origin: (origin, c) => {
-      const allowed = (c.env as Env).CORS_ORIGINS || "http://localhost:3000";
-      const origins = allowed.split(",").map((o) => o.trim());
-      return origins.includes(origin) ? origin : origins[0];
+const defaultOrigins = ["http://localhost:3000", "http://localhost:5173"];
+
+app.use("*", (c, next) => {
+  const origins = c.env.CORS_ORIGINS
+    ? c.env.CORS_ORIGINS.split(",").map((o) => o.trim())
+    : defaultOrigins;
+
+  return cors({
+    origin: (origin) => {
+      if (!origin) return null;
+      return origins.includes(origin) ? origin : null;
     },
     allowHeaders: ["Content-Type", "Authorization"],
-    allowMethods: ["POST", "GET", "PUT", "DELETE", "OPTIONS"],
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
-  }),
+  })(c, next);
+});
+
+app.on(
+  ["POST"],
+  "/api/auth/**",
+  rateLimiter({ limit: 20, windowMs: 60_000 }),
+  (c) => {
+    const auth = createAuth(c.env);
+    return auth.handler(c.req.raw);
+  },
 );
 
-app.on(["POST", "GET"], "/api/auth/*", async (c) => {
+app.on(["GET"], "/api/auth/**", (c) => {
   const auth = createAuth(c.env);
-  const response = await auth.handler(c.req.raw);
-
-  const origin = c.req.header("Origin");
-  const allowed = (c.env as Env).CORS_ORIGINS || "http://localhost:3000";
-  const origins = allowed.split(",").map((o) => o.trim());
-  if (origin && origins.includes(origin)) {
-    response.headers.set("Access-Control-Allow-Origin", origin);
-    response.headers.set("Access-Control-Allow-Credentials", "true");
-    response.headers.set("Vary", "Origin");
-  }
-
-  return response;
+  return auth.handler(c.req.raw);
 });
 
 app.get("/api/files/*", async (c) => {
+  const session = await getSession(c);
+  if (!session) return c.json({ error: "Unauthorized" }, 401);
+
   const path = c.req.path.replace("/api/files/", "");
   const object = await c.env.R2_BUCKET.get(path);
 
@@ -53,7 +69,7 @@ app.get("/api/files/*", async (c) => {
   const headers = new Headers();
   object.writeHttpMetadata(headers);
   headers.set("etag", object.httpEtag);
-  headers.set("cache-control", "public, max-age=31536000, immutable");
+  headers.set("cache-control", "private, max-age=3600");
 
   return new Response(object.body, { headers });
 });

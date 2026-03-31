@@ -10,6 +10,7 @@
     "deploy": "bun run build && bunx wrangler pages deploy dist"
   },
   "dependencies": {
+    "@repo/api-types": "workspace:*",
     "@fontsource-variable/geist": "^5.2.8",
     "@tailwindcss/vite": "^4.2.2",
     "@tanstack/react-form": "^1.28.5",

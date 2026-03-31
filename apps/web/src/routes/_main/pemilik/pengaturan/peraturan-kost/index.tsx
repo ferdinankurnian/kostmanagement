@@ -25,7 +25,7 @@ import {
 } from "@/lib/settings";
 
 export const Route = createFileRoute(
-  "/_main/pemilik/pengaturan/peraturan-kost",
+  "/_main/pemilik/pengaturan/peraturan-kost/",
 )({
   component: RouteComponent,
 });
@@ -268,6 +268,12 @@ function RouteComponent() {
           ) : (
             <Save className="size-4" />
           )}
+          Simpan
+        </Button>
+      </div>
+
+      <div className="fixed bottom-0 left-0 right-0 px-4 pb-4 pt-8 bg-linear-to-t from-background to-transparent text-center">
+        <Button type="submit" className="w-full max-w-lg rounded-full mx-auto">
           Simpan
         </Button>
       </div>

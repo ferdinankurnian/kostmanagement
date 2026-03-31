@@ -1,10 +1,10 @@
 import { zValidator } from "@hono/zod-validator";
+import { createDB } from "@repo/db";
+import { user } from "@repo/db/schema";
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod/v4";
-import type { Env } from "../auth-worker";
-import { createDB } from "../db";
-import { user } from "../db/schema/auth";
+import type { Env } from "../app";
 import { getSession } from "../middleware/auth";
 import { updateOnboardingSchema } from "./onboarding.validator";
 

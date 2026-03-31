@@ -6,15 +6,54 @@ export interface InformasiKostCard {
   description: string;
 }
 
+export function createInformasiKostCard(
+  overrides: Partial<InformasiKostCard> = {},
+): InformasiKostCard {
+  return {
+    id: crypto.randomUUID(),
+    title: "",
+    description: "",
+    ...overrides,
+  };
+}
+
+export function parseInformasiKostCards(
+  cardsString: string | undefined | null,
+): InformasiKostCard[] {
+  if (!cardsString) {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(cardsString);
+
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+
+    return parsed
+      .filter(isInformasiKostCard)
+      .map((card) => ({ ...createInformasiKostCard(), ...card }));
+  } catch {
+    return [];
+  }
+}
+
+export function serializeInformasiKostCards(
+  cards: InformasiKostCard[],
+): string {
+  return JSON.stringify(cards);
+}
+
 export interface Settings {
   nama_kost?: string;
   harga_sewa?: string;
+  alamat?: string;
   nama_bank?: string;
   no_rekening?: string;
   nama_pemilik_rekening?: string;
   peraturan_kost?: string;
   peraturan_kost_cards?: string;
-  informasi_kost_cards?: string;
   is_default_pin?: string;
   [key: string]: string | undefined;
 }
@@ -30,42 +69,6 @@ function isInformasiKostCard(
   const card = value as Record<string, unknown>;
 
   return typeof card.title === "string" && typeof card.description === "string";
-}
-
-export function createInformasiKostCard(): InformasiKostCard {
-  return {
-    id: crypto.randomUUID(),
-    title: "",
-    description: "",
-  };
-}
-
-export function parseInformasiKostCards(value?: string): InformasiKostCard[] {
-  if (!value) {
-    return [];
-  }
-
-  try {
-    const parsed = JSON.parse(value);
-
-    if (!Array.isArray(parsed)) {
-      return [];
-    }
-
-    return parsed.filter(isInformasiKostCard).map((card) => ({
-      id: card.id && card.id.length > 0 ? card.id : crypto.randomUUID(),
-      title: card.title,
-      description: card.description,
-    }));
-  } catch {
-    return [];
-  }
-}
-
-export function serializeInformasiKostCards(
-  cards: InformasiKostCard[],
-): string {
-  return JSON.stringify(cards);
 }
 
 export async function getSettings(): Promise<Settings> {

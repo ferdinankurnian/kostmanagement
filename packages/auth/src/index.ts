@@ -1,52 +1,53 @@
 import { neon } from "@neondatabase/serverless";
+import { schema } from "@repo/db";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin, username } from "better-auth/plugins";
 import { drizzle } from "drizzle-orm/neon-http";
-import * as schema from "./db/schema";
 
-export interface Env {
+export function createAuth(env: {
   DATABASE_URL: string;
   BETTER_AUTH_SECRET: string;
   BETTER_AUTH_URL: string;
-  CORS_ORIGINS: string;
-  R2_BUCKET: R2Bucket;
-}
-
-export function createAuth(env: Env) {
+  CORS_ORIGINS?: string;
+}) {
   const sql = neon(env.DATABASE_URL);
   const db = drizzle(sql, { schema });
-  const corsOrigins = env.CORS_ORIGINS
+
+  const trustedOrigins = env.CORS_ORIGINS
     ? env.CORS_ORIGINS.split(",").map((o) => o.trim())
-    : ["http://localhost:3000"];
+    : ["http://localhost:3000", "http://localhost:5173"];
+
+  const isProduction = env.BETTER_AUTH_URL.startsWith("https://");
 
   return betterAuth({
     database: drizzleAdapter(db, {
-      provider: "pg", // PostgreSQL
+      provider: "pg",
       schema,
     }),
     secret: env.BETTER_AUTH_SECRET,
     baseURL: env.BETTER_AUTH_URL,
-    trustedOrigins: corsOrigins,
+    trustedOrigins,
     emailAndPassword: {
       enabled: true,
       requireEmailVerification: false,
       autoSignIn: true,
     },
     plugins: [username(), admin()],
-    advanced: {
-      crossSubDomainCookies: {
-        enabled: true,
-        domain: "iydheko.site",
-      },
-      defaultCookieAttributes: {
-        secure: true,
-        sameSite: "lax",
-      },
-    },
     experimental: {
       joins: true,
     },
+    ...(isProduction && {
+      advanced: {
+        crossSubDomainCookies: {
+          enabled: true,
+          domain: new URL(env.BETTER_AUTH_URL).hostname
+            .split(".")
+            .slice(-2)
+            .join("."),
+        },
+      },
+    }),
     user: {
       additionalFields: {
         noTelepon: {
@@ -89,3 +90,5 @@ export function createAuth(env: Env) {
     },
   });
 }
+
+export type Auth = ReturnType<typeof createAuth>;
