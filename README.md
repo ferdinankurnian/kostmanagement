@@ -87,7 +87,11 @@ apps/
       db/
         schema/         Drizzle table definitions
       routes/           Hono API route handlers
-      middleware/       auth middleware
+      middleware/       auth & rate-limit middleware
+packages/
+  auth/                 better-auth config (shared)
+  db/                   Drizzle schema + DB client (shared)
+  api-types/            Shared Hono RPC client types
 .github/
   workflows/
     deploy.yml          CI/CD: auto-deploy on push to main
@@ -120,8 +124,8 @@ apps/
 | Invite       | `POST /`, `POST /validate`, `POST /use`, `GET /:id` |
 | Onboarding   | `PUT /`                                           |
 | Settings     | `GET /`, `GET /:key`, `PUT /:key`, `POST /verify-pin`, `POST /change-pin` |
-| Upload       | `POST /ktp`, `POST /bukti`                        |
-| Files        | `GET /api/files/*` (R2, cached 1y)                |
+| Upload       | `POST /ktp`, `POST /bukti`, `POST /avatar`  |
+| Files        | `GET /api/files/*` (R2, auth required)       |
 
 ## Deploy
 
@@ -129,6 +133,15 @@ apps/
 - **Web** → Cloudflare Pages (`kost-management.pages.dev`)
 - **CI/CD** → GitHub Actions on push to `main` (parallel deploy)
 - **Cron** → `0 0 1 * *` auto-generates monthly bills for all active tenants
+
+## Security
+
+- **Auth required** for file serving (KTP, payment proofs, avatars)
+- **Upload limits**: max 10MB, restricted to jpeg/png/webp/pdf
+- **Rate limiting**: 20 req/min on auth POST endpoints
+- **CORS**: strict origin validation, no fallback for missing Origin header
+- **Ownership checks**: tagihan GET /:id verifies user owns the bill (or is admin)
+- **PIN**: 4-digit PBKDF2 hashed, required for destructive actions
 
 ## Domain Language
 

@@ -109,14 +109,17 @@ All routes prefixed with `/api`.
 
 ### Upload (authenticated)
 
-| Method | Path                | Description                          |
-| ------ | ------------------- | ------------------------------------ |
-| POST   | `/api/upload/ktp`   | Upload KTP image to R2               |
-| POST   | `/api/upload/bukti` | Upload payment proof to R2           |
+| Method | Path                 | Description                          |
+| ------ | -------------------- | ------------------------------------ |
+| POST   | `/api/upload/ktp`    | Upload KTP image to R2 (max 10MB)    |
+| POST   | `/api/upload/bukti`  | Upload payment proof to R2 (max 10MB)|
+| POST   | `/api/upload/avatar` | Upload profile avatar to R2 (max 10MB)|
+
+Accepted file types: `image/jpeg`, `image/png`, `image/webp`, `application/pdf`
 
 ### Files
 
-`GET /api/files/*` — serve from R2 bucket (cached 1 year)
+`GET /api/files/*` — serve from R2 bucket. **Requires authentication.** Cache: `private, max-age=3600`.
 
 ## Cron
 
@@ -143,4 +146,5 @@ All routes prefixed with `/api`.
 - **Database**: PostgreSQL via Neon (serverless driver)
 - **File storage**: Cloudflare R2 (`kost-bucket`)
 - **Auth**: better-auth with email/password, PBKDF2 PIN hashing
-- **Validation**: Zod + @hono/zod-validator
+- **Validation**: Zod v4 + @hono/zod-validator
+- **Rate limiting**: POST auth endpoints (20 req/min per IP)

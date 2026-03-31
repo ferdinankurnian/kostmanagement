@@ -58,8 +58,10 @@ bunx vitest watch               # watch mode
 | `/pemilik/penghuni/form`              | Create tenant invitation  |
 | `/pemilik/penghuni/created`           | Invitation confirmation   |
 | `/pemilik/pengaturan/informasi-kost`  | Edit kost info cards      |
-| `/pemilik/pengaturan/informasi-pemilik` | Edit owner info (bank)  |
-| `/pemilik/pengaturan/peraturan-kost`  | Edit kost rules           |
+| `/pemilik/pengaturan/informasi-pemilik` | Owner info (bank) list    |
+| `/pemilik/pengaturan/informasi-pemilik/edit` | Edit owner info     |
+| `/pemilik/pengaturan/peraturan-kost`  | Kost rules list           |
+| `/pemilik/pengaturan/peraturan-kost/edit` | Edit kost rules       |
 | `/pemilik/pengaturan/pin`             | PIN settings              |
 | `/pemilik/pengaturan/pin/baru`        | Set new PIN               |
 | `/pemilik/pengaturan/pin/konfirmasi`  | Confirm PIN               |
@@ -100,7 +102,7 @@ bunx vitest watch               # watch mode
 
 | File                  | Purpose                                |
 | --------------------- | -------------------------------------- |
-| `api.ts`              | Hono RPC client (typed)                |
+| `api.ts`              | Hono RPC client (typed, via @repo/api-types) |
 | `auth-client.ts`      | better-auth React client               |
 | `route-guards.ts`     | requireAuth, requireRole, requireGuest |
 | `kamar.ts`            | Room CRUD                              |
