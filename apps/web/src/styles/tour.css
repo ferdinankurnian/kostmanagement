@@ -78,7 +78,7 @@
 }
 
 .driver-popover-footer button:not(:last-child):hover {
-  background-color: var(--secondary / 80);
+  background-color: color-mix(in srgb, var(--secondary), transparent 20%);
 }
 
 .driver-popover-footer button:last-child {
@@ -87,7 +87,7 @@
 }
 
 .driver-popover-footer button:last-child:hover {
-  background-color: var(--primary / 90);
+  background-color: color-mix(in srgb, var(--primary), transparent 10%);
 }
 
 .driver-overlay {
