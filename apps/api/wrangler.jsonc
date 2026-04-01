@@ -28,7 +28,7 @@
   "migrations": [
     {
       "tag": "v1",
-      "new_classes": ["OnboardingDO"]
+      "new_sqlite_classes": ["OnboardingDO"]
     }
   ],
   "observability": {
