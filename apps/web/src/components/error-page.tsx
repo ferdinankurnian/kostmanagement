@@ -10,7 +10,7 @@ interface ErrorPageProps {
 
 export function ErrorPage({
   title = "Terjadi Kesalahan",
-  message = "Waduh, sepertinya ada yang salah di sisi kami. Silakan coba lagi nanti.",
+  message = "Maaf, sepertinya ada yang salah di sisi kami. Silakan coba lagi nanti.",
   code = 500,
 }: ErrorPageProps) {
   const router = useRouter();

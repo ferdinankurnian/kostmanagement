@@ -63,18 +63,13 @@ function RouteComponent() {
           <Empty>
             <EmptyHeader>
               <EmptyMedia variant="icon">
-                <FileText className="size-4" />
+                <FileText />
               </EmptyMedia>
               <EmptyTitle>Belum ada informasi</EmptyTitle>
               <EmptyDescription>
                 Pengumuman untuk penghuni akan muncul di sini setelah dibuat.
               </EmptyDescription>
             </EmptyHeader>
-            <EmptyContent>
-              <Link to="/pemilik/informasi/add">
-                <Button>Tambah informasi</Button>
-              </Link>
-            </EmptyContent>
           </Empty>
         </div>
       ) : (

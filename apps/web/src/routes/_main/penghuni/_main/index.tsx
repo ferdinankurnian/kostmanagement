@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { getInformasiList } from "@/lib/informasi";
 import { getTagihan } from "@/lib/tagihan";
+import { useNotificationFeed } from "@/lib/use-notification-feed";
 
 export const Route = createFileRoute("/_main/penghuni/_main/")({
   component: RouteComponent,
@@ -18,6 +19,9 @@ function formatRupiah(n: number) {
 
 function RouteComponent() {
   const { data: session } = authClient.useSession();
+
+  const { unreadCount } = useNotificationFeed("penghuni");
+
   const { data: informasiList = [] } = useQuery({
     queryKey: ["informasi"],
     queryFn: getInformasiList,
@@ -63,20 +67,32 @@ function RouteComponent() {
         </div>
         <div className="flex flex-row items-center gap-3">
           <Link to="/penghuni/notification">
-            <Button size="icon-lg" variant="outline" className="rounded-full">
+            <Button
+              size="icon-lg"
+              variant="outline"
+              className="rounded-full relative"
+            >
               <Bell />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] flex items-center justify-center bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full px-1">
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </span>
+              )}
             </Button>
           </Link>
-          <Avatar className="size-9">
-            <AvatarImage src={session?.user.image ?? ""} />
-            <AvatarFallback>
-              {session?.user.name?.charAt(0).toUpperCase() ?? "?"}
-            </AvatarFallback>
-          </Avatar>
+          <Link to="/penghuni/profile">
+            <Avatar className="size-9">
+              <AvatarImage src={session?.user.image ?? ""} />
+              <AvatarFallback>
+                {session?.user.name?.charAt(0).toUpperCase() ?? "?"}
+              </AvatarFallback>
+            </Avatar>
+          </Link>
         </div>
       </div>
 
-      <NotificationPromptBanner />
+      {(session?.user as { onboarding?: string | null })?.onboarding !==
+        "tour" && <NotificationPromptBanner />}
 
       <div data-tour="stats" className="grid grid-cols-2 gap-2 px-4">
         <div className="bg-primary text-white p-3 rounded-xl space-y-4">

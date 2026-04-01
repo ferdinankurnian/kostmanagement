@@ -17,6 +17,20 @@
       "bucket_name": "kost-bucket"
     }
   ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "ONBOARDING_DO",
+        "class_name": "OnboardingDO"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_classes": ["OnboardingDO"]
+    }
+  ],
   "observability": {
     "enabled": true,
     "head_sampling_rate": 1

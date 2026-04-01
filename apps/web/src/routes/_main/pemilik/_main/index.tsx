@@ -15,6 +15,7 @@ import { getAllKamar } from "@/lib/kamar";
 import { getKeluhanList, type Keluhan } from "@/lib/keluhan";
 import { getSettings } from "@/lib/settings";
 import { getTagihan } from "@/lib/tagihan";
+import { useNotificationFeed } from "@/lib/use-notification-feed";
 
 export const Route = createFileRoute("/_main/pemilik/_main/")({
   component: RouteComponent,
@@ -22,6 +23,8 @@ export const Route = createFileRoute("/_main/pemilik/_main/")({
 
 function RouteComponent() {
   const { data: session } = authClient.useSession();
+
+  const { unreadCount } = useNotificationFeed("pemilik");
 
   const { data: settings } = useQuery({
     queryKey: ["settings"],
@@ -112,16 +115,27 @@ function RouteComponent() {
         </div>
         <div className="flex flex-row items-center gap-3">
           <Link to="/pemilik/notification">
-            <Button size="icon-lg" variant="outline" className="rounded-full">
+            <Button
+              size="icon-lg"
+              variant="outline"
+              className="rounded-full relative"
+            >
               <Bell />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] flex items-center justify-center bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full px-1">
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </span>
+              )}
             </Button>
           </Link>
+          <Link to="/pemilik/profile">
           <Avatar className="size-9">
             <AvatarImage src={session?.user.image ?? ""} />
             <AvatarFallback>
               {session?.user.name?.charAt(0).toUpperCase() ?? "?"}
             </AvatarFallback>
           </Avatar>
+        </Link>
         </div>
       </div>
       <div className="space-y-3">

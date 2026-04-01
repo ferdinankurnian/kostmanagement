@@ -31,8 +31,6 @@ import {
   isNotificationSupported,
   type NotificationRole,
   requestNotificationAccess,
-  setNotificationEnabled,
-  showDeviceNotification,
 } from "@/lib/pwa-notifications";
 import { useNotificationFeed } from "@/lib/use-notification-feed";
 
@@ -72,7 +70,7 @@ interface NotificationPageProps {
 }
 
 export function NotificationPage({ audience, onBack }: NotificationPageProps) {
-  const { isError, isLoading, notifications, refetch } =
+  const { isError, isLoading, notifications, refetch, markAsRead } =
     useNotificationFeed(audience);
   const [permission, setPermission] = useState(getNotificationPermission());
   const [enabled, setEnabled] = useState(isNotificationEnabled());
@@ -89,27 +87,6 @@ export function NotificationPage({ audience, onBack }: NotificationPageProps) {
     setEnabled(isNotificationEnabled());
   };
 
-  const handleDisableNotification = () => {
-    setNotificationEnabled(false);
-    setEnabled(false);
-  };
-
-  const handleSendTest = async () => {
-    const sent = await showDeviceNotification({
-      body: "Notifikasi device untuk Kost Management sudah aktif.",
-      tag: `test:${audience}`,
-      title: "Tes notifikasi",
-      url:
-        audience === "pemilik"
-          ? "/pemilik/notification"
-          : "/penghuni/notification",
-    });
-
-    if (sent) {
-      setEnabled(true);
-    }
-  };
-
   return (
     <div className="space-y-4 px-4 pt-20 pb-20">
       <TopBar>
@@ -123,54 +100,40 @@ export function NotificationPage({ audience, onBack }: NotificationPageProps) {
         </TopBarCenter>
       </TopBar>
 
-      <div className="rounded-2xl border bg-card p-4 space-y-3">
-        <div className="flex items-start gap-3">
-          <div className="mt-0.5 rounded-xl bg-primary/10 p-2 text-primary">
-            <BellRing className="size-5" />
+      {!enabled && (
+        <div className="rounded-2xl border bg-card p-4 space-y-3">
+          <div className="flex items-start gap-3">
+            <div className="mt-0.5 rounded-xl bg-primary/10 p-2 text-primary">
+              <BellRing className="size-5" />
+            </div>
+            <div className="space-y-1">
+              <h2 className="font-semibold">Notifikasi perangkat</h2>
+              <p className="text-sm text-muted-foreground">
+                Aktifkan izin notifikasi supaya update tagihan, keluhan, dan
+                informasi bisa muncul di device. Supaya terasa seperti app HP,
+                install juga web ini ke home screen.
+              </p>
+            </div>
           </div>
-          <div className="space-y-1">
-            <h2 className="font-semibold">Notifikasi perangkat</h2>
-            <p className="text-sm text-muted-foreground">
-              Aktifkan izin notifikasi supaya update tagihan, keluhan, dan
-              informasi bisa muncul di device. Supaya terasa seperti app HP,
-              install juga web ini ke home screen.
-            </p>
-          </div>
-        </div>
 
-        <div className="rounded-xl bg-muted/40 px-3 py-2 text-sm text-muted-foreground">
-          {!notificationSupported
-            ? "Browser ini belum mendukung notification service worker."
-            : permission === "granted" && enabled
-              ? "Status: aktif."
+          <div className="rounded-xl bg-muted/40 px-3 py-2 text-sm text-muted-foreground">
+            {!notificationSupported
+              ? "Browser ini belum mendukung notification service worker."
               : permission === "denied"
                 ? "Status: diblokir browser. Izinkan lagi dari setting browser."
                 : "Status: belum aktif."}
-        </div>
+          </div>
 
-        <div className="flex flex-wrap gap-2">
-          <Button
-            onClick={() => void handleEnableNotification()}
-            disabled={!notificationSupported || permission === "granted"}
-          >
-            Aktifkan notif
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => void handleSendTest()}
-            disabled={!notificationSupported || permission !== "granted"}
-          >
-            Kirim tes
-          </Button>
-          <Button
-            variant="ghost"
-            onClick={handleDisableNotification}
-            disabled={!enabled}
-          >
-            Matikan
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              onClick={() => void handleEnableNotification()}
+              disabled={!notificationSupported || permission === "denied"}
+            >
+              Aktifkan notif
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
 
       {isLoading ? (
         <div className="flex items-center justify-center pt-12">
@@ -207,8 +170,20 @@ export function NotificationPage({ audience, onBack }: NotificationPageProps) {
                 variant="outline"
                 asChild
                 role="listitem"
+                className={
+                  notification.isRead
+                    ? ""
+                    : "border-l-4 border-l-yellow-500 bg-yellow-50"
+                }
               >
-                <a href={notification.href}>
+                <a
+                  href={notification.href}
+                  onClick={() => {
+                    if (!notification.isRead) {
+                      markAsRead([notification.key]);
+                    }
+                  }}
+                >
                   <ItemMedia variant="icon">
                     <Icon />
                   </ItemMedia>

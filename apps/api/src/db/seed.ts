@@ -33,9 +33,9 @@ async function seed() {
       e.message?.includes("already exists") ||
       e.message?.includes("duplicate")
     ) {
-      console.log("ℹ️ User admin udah ada, skip.");
+      console.log("ℹ️ User admin sudah ada, skip.");
     } else {
-      console.error("❌ Gagal bikin user:", e.message);
+      console.error("❌ Gagal membuat user:", e.message);
     }
   }
 

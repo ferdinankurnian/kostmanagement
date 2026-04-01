@@ -64,7 +64,10 @@ export function TabBar({ config }: { config: TabBarConfig }) {
   const rightTabs = config.tabs.slice(2);
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 max-w-lg mx-auto bg-card md:rounded-t-md border-t md:border-r md:border-l">
+    <div
+      data-tour="tabbar"
+      className="fixed bottom-0 left-0 right-0 max-w-lg mx-auto bg-card md:rounded-t-md border-t md:border-r md:border-l"
+    >
       <div className="grid grid-cols-5 items-center h-16 text-xs">
         {leftTabs.map((tab) => (
           <TabLink

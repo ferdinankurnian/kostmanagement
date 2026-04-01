@@ -18,11 +18,27 @@ type KamarDetail = {
   updatedAt: string | null;
 };
 
+type OngoingOnboarding = {
+  code: string;
+  noKamar: number;
+  name: string;
+  isUsed: boolean;
+  ktpStatus: "pending" | "rejected" | null;
+};
+
 export async function getAllKamar(): Promise<KamarResponse[]> {
   const res = await fetch(`${API_BASE}/kamar`, {
     credentials: "include",
   });
   if (!res.ok) throw new Error("Gagal mengambil data kamar");
+  return res.json();
+}
+
+export async function getOngoingOnboarding(): Promise<OngoingOnboarding[]> {
+  const res = await fetch(`${API_BASE}/kamar/onboarding`, {
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error("Gagal mengambil data onboarding");
   return res.json();
 }
 

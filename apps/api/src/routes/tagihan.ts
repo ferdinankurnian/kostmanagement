@@ -1,11 +1,37 @@
 import { zValidator } from "@hono/zod-validator";
 import { createDB } from "@repo/db";
-import { settings, tagihan, user } from "@repo/db/schema";
+import { invitation, settings, tagihan, user } from "@repo/db/schema";
 import { and, eq, isNotNull } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod/v4";
 import type { Env } from "../app";
 import { getSession } from "../middleware/auth";
+
+async function notifyOnboardingDO(env: Env, inviteCode: string): Promise<void> {
+  try {
+    const doId = env.ONBOARDING_DO.idFromName(inviteCode);
+    const stub = env.ONBOARDING_DO.get(doId);
+    await stub.fetch("https://do/notify");
+  } catch {
+    // DO notification is best-effort
+  }
+}
+
+async function findInviteAndNotify(
+  env: Env,
+  db: ReturnType<typeof createDB>,
+  noKamar: number,
+): Promise<void> {
+  const invites = await db
+    .select({ code: invitation.code })
+    .from(invitation)
+    .where(eq(invitation.noKamar, noKamar))
+    .limit(1);
+
+  if (invites[0]) {
+    await notifyOnboardingDO(env, invites[0].code);
+  }
+}
 
 const app = new Hono<{ Bindings: Env }>();
 const createTagihanSchema = z.object({
@@ -215,6 +241,9 @@ app.put("/:id/submit", zValidator("json", submitTagihanSchema), async (c) => {
     .where(eq(tagihan.id, id))
     .returning();
 
+  // Notify the owner's DO
+  await findInviteAndNotify(c.env, db, existing[0].noKamar);
+
   return c.json(updated);
 });
 
@@ -244,6 +273,9 @@ app.put("/:id/accept", async (c) => {
   bayarSampai.setMonth(bayarSampai.getMonth() + monthsPaid);
 
   await db.update(user).set({ bayarSampai }).where(eq(user.id, updated.userId));
+
+  // Notify the tenant's DO
+  await findInviteAndNotify(c.env, db, updated.noKamar);
 
   return c.json(updated);
 });
@@ -275,6 +307,9 @@ app.put("/:id/reject", zValidator("json", rejectTagihanSchema), async (c) => {
   if (!updated) {
     return c.json({ error: "Tagihan tidak ditemukan" }, 404);
   }
+
+  // Notify the tenant's DO
+  await findInviteAndNotify(c.env, db, updated.noKamar);
 
   return c.json(updated);
 });

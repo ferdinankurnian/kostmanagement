@@ -1,13 +1,12 @@
-import { BellRing, X } from "lucide-react";
+import { BellRing } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  getNotificationPermission,
+  isNotificationEnabled,
   isNotificationSupported,
   requestNotificationAccess,
+  showDeviceNotification,
 } from "@/lib/pwa-notifications";
-
-const DISMISSED_KEY = "kost-management:notif-prompt:dismissed";
 
 export function NotificationPromptBanner() {
   const [visible, setVisible] = useState(false);
@@ -15,14 +14,8 @@ export function NotificationPromptBanner() {
 
   useEffect(() => {
     if (!isNotificationSupported()) return;
-    if (getNotificationPermission() === "granted") return;
-    if (localStorage.getItem(DISMISSED_KEY) === "true") return;
+    if (isNotificationEnabled()) return;
     setVisible(true);
-  }, []);
-
-  const handleDismiss = useCallback(() => {
-    localStorage.setItem(DISMISSED_KEY, "true");
-    setVisible(false);
   }, []);
 
   const handleEnable = useCallback(async () => {
@@ -30,6 +23,12 @@ export function NotificationPromptBanner() {
     const result = await requestNotificationAccess();
     setLoading(false);
     if (result === "granted") {
+      await showDeviceNotification({
+        body: "Notifikasi device untuk Kost Management sudah aktif.",
+        tag: "test:banner",
+        title: "Tes notifikasi",
+        url: "/",
+      });
       setVisible(false);
     }
   }, []);

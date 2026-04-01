@@ -7,6 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { authClient } from "@/lib/auth-client";
+import {
+  setEphemeralSession,
+  setPersistentSession,
+} from "@/lib/ephemeral-session";
 
 export const Route = createFileRoute("/_auth/login")({
   validateSearch: z.object({
@@ -39,6 +43,12 @@ function Page() {
       setError(error.message ?? "Login gagal");
       setLoading(false);
       return;
+    }
+
+    if (remember) {
+      setPersistentSession();
+    } else {
+      setEphemeralSession();
     }
 
     window.location.replace(redirect ?? "/");

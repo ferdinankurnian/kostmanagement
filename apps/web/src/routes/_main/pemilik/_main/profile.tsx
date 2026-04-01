@@ -1,15 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import {
-  Bell,
+  BellRing,
+  DoorClosed,
   FileText,
   Home,
   Lock,
-  User,
-  DoorClosed,
   MessageCircleWarning,
+  User,
 } from "lucide-react";
 import { LogoutButton } from "@/components/logout-button";
 import { MenuList, MenuListItem } from "@/components/menu-list";
+import { PwaInstallBanner } from "@/components/pwa-install-banner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { authClient } from "@/lib/auth-client";
@@ -34,14 +35,12 @@ function RouteComponent() {
             {isPending ? (
               <>
                 <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-full mt-2" />
               </>
             ) : (
               <>
                 <h1 className="text-md text-foreground">
                   {session?.user.name}
                 </h1>
-                <p className="text-xs text-muted-foreground">Rawr certified</p>
               </>
             )}
           </div>
@@ -50,6 +49,11 @@ function RouteComponent() {
           <LogoutButton />
         </div>
       </div>
+
+      <div className="px-4">
+        <PwaInstallBanner />
+      </div>
+
       <div className="space-y-2 px-4">
         <MenuList>
           <MenuListItem
@@ -61,6 +65,11 @@ function RouteComponent() {
             icon={Lock}
             label="Ganti PIN Keamanan"
             to="/pemilik/pengaturan/pin"
+          />
+          <MenuListItem
+            icon={BellRing}
+            label="Notifikasi"
+            to="/pemilik/pengaturan/notification"
           />
           <MenuListItem
             icon={Home}

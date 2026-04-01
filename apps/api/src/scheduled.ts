@@ -1,6 +1,6 @@
 import { createDB } from "@repo/db";
-import { settings, tagihan, user } from "@repo/db/schema";
-import { and, eq, isNotNull } from "drizzle-orm";
+import { notificationRead, settings, tagihan, user } from "@repo/db/schema";
+import { and, eq, isNotNull, lt } from "drizzle-orm";
 
 interface Env {
   DATABASE_URL: string;
@@ -62,4 +62,16 @@ export async function handleScheduled(env: Env) {
   }
 
   console.log(`[CRON] Generated ${created} tagihan for ${periode}`);
+
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+  const cleanupResult = await db
+    .delete(notificationRead)
+    .where(lt(notificationRead.readAt, sevenDaysAgo))
+    .returning();
+
+  console.log(
+    `[CRON] Cleaned up ${cleanupResult.length} read notification records older than 7 days`,
+  );
 }

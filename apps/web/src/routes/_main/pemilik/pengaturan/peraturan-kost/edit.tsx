@@ -1,11 +1,11 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute(
-  '/_main/pemilik/pengaturan/peraturan-kost/edit',
+  "/_main/pemilik/pengaturan/peraturan-kost/edit",
 )({
   component: RouteComponent,
-})
+});
 
 function RouteComponent() {
-  return <div>Hello "/_main/pemilik/pengaturan/peraturan-kost/edit"!</div>
+  return <div>Hello "/_main/pemilik/pengaturan/peraturan-kost/edit"!</div>;
 }

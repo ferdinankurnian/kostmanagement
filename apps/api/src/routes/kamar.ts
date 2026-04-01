@@ -1,7 +1,17 @@
 import { zValidator } from "@hono/zod-validator";
 import { createAuth } from "@repo/auth";
 import { createDB } from "@repo/db";
-import { kamar, settings, user } from "@repo/db/schema";
+import {
+  account,
+  invitation,
+  kamar,
+  keluhan,
+  notificationRead,
+  session,
+  settings,
+  tagihan,
+  user,
+} from "@repo/db/schema";
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod/v4";
@@ -33,6 +43,28 @@ app.get("/", async (c) => {
     .orderBy(kamar.nomor);
 
   return c.json(result);
+});
+
+app.get("/onboarding", async (c) => {
+  const db = createDB(c.env.DATABASE_URL);
+
+  const result = await db
+    .select({
+      code: invitation.code,
+      noKamar: invitation.noKamar,
+      name: invitation.name,
+      isUsed: invitation.isUsed,
+      ktpStatus: user.ktpStatus,
+    })
+    .from(invitation)
+    .leftJoin(user, eq(user.noKamar, invitation.noKamar))
+    .where(eq(invitation.isUsed, true));
+
+  const ongoing = result.filter(
+    (r) => r.ktpStatus !== "approved" && r.ktpStatus !== null,
+  );
+
+  return c.json(ongoing);
 });
 
 app.get("/:nomor", async (c) => {
@@ -92,15 +124,57 @@ app.delete(
       return c.json({ error: "Tidak ada penghuni di kamar ini" }, 404);
     }
 
-    const auth = createAuth(c.env);
-    await auth.api.removeUser({
-      body: { userId: existingUser[0].id },
-    });
+    const userId = existingUser[0].id;
 
-    await db
-      .update(kamar)
-      .set({ status: "kosong", updatedAt: new Date() })
-      .where(eq(kamar.nomor, parsed.data));
+    // Find invite code before deleting user
+    const invites = await db
+      .select({ code: invitation.code })
+      .from(invitation)
+      .where(eq(invitation.noKamar, parsed.data))
+      .limit(1);
+
+    // Delete user and related data (no transaction - neon-http doesn't support it)
+    try {
+      // Delete all related records first
+      await db.delete(tagihan).where(eq(tagihan.userId, userId));
+      await db.delete(keluhan).where(eq(keluhan.userId, userId));
+      await db.delete(session).where(eq(session.userId, userId));
+      await db.delete(account).where(eq(account.userId, userId));
+      await db
+        .delete(notificationRead)
+        .where(eq(notificationRead.userId, userId));
+
+      // Delete invitation
+      if (invites[0]) {
+        await db.delete(invitation).where(eq(invitation.noKamar, parsed.data));
+      }
+
+      // Delete the user
+      await db.delete(user).where(eq(user.id, userId));
+
+      // Update kamar status
+      await db
+        .update(kamar)
+        .set({ status: "kosong", updatedAt: new Date() })
+        .where(eq(kamar.nomor, parsed.data));
+    } catch (err: any) {
+      console.error("Delete user error:", err);
+      return c.json(
+        { error: "Gagal menghapus penghuni", details: err?.message },
+        500,
+      );
+    }
+
+    // Close all WebSocket sessions for this invite
+    if (invites[0]) {
+      try {
+        const doId = c.env.ONBOARDING_DO.idFromName(invites[0].code);
+        const stub = c.env.ONBOARDING_DO.get(doId);
+        await stub.fetch("https://do/close");
+      } catch {
+        // DO cleanup is best-effort
+      }
+    }
 
     return c.json({ success: true });
   },
@@ -177,12 +251,17 @@ app.put(
     }
 
     const auth = createAuth(c.env);
-    await auth.api.setUserPassword({
-      body: {
-        userId: existingUser[0].id,
-        newPassword: parsed.data.newPassword,
-      },
-    });
+    try {
+      await auth.api.setUserPassword({
+        body: {
+          userId: existingUser[0].id,
+          newPassword: parsed.data.newPassword,
+        },
+        headers: c.req.raw.headers,
+      });
+    } catch {
+      return c.json({ error: "Gagal mereset password" }, 500);
+    }
 
     return c.json({ success: true });
   },

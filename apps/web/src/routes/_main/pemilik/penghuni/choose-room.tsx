@@ -48,6 +48,7 @@ function RouteComponent() {
         </div>
       ) : (
         <div className="space-y-6">
+          <h1 className="text-2xl">Pilih kamar yang kosong</h1>
           <div className="grid grid-cols-2 gap-4 justify-between">
             <div className="flex flex-col gap-3 py-4 w-9/10">
               <h1 className="text-sm mt-3">Lantai 1</h1>

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   AlertCircle,
   CheckCircle2,
@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { TopBar, TopBarCenter } from "@/components/top-bar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -89,19 +90,19 @@ function TagihanPage() {
         buktiPembayaran: bukti ?? "",
       }),
     onSuccess: async () => {
-      toast.success("Bukti berhasil diupload ulang");
+      toast.success("Bukti berhasil diunggah kembali");
       setReuploadId(null);
       setBukti(null);
       await queryClient.invalidateQueries({ queryKey: ["tagihan"] });
     },
     onError: () => {
-      toast.error("Gagal upload ulang");
+      toast.error("Gagal mengunggah kembali");
     },
   });
 
   const handleReupload = async (id: string) => {
     if (!bukti) {
-      toast.error("Upload bukti pembayaran dulu");
+      toast.error("Unggah bukti pembayaran terlebih dahulu");
       return;
     }
 
@@ -131,8 +132,12 @@ function TagihanPage() {
   }
 
   return (
-    <div className="px-4 py-6 space-y-4">
-      <h1 className="text-xl font-semibold">Tagihan</h1>
+    <div className="pt-20 space-y-4">
+      <TopBar>
+        <TopBarCenter>
+          <h1 className="text-lg whitespace-nowrap">Tagihan</h1>
+        </TopBarCenter>
+      </TopBar>
 
       {tagihan.length === 0 && (
         <Empty>
@@ -148,100 +153,113 @@ function TagihanPage() {
         </Empty>
       )}
 
-      {tagihan.map((t) => (
-        <div key={t.id} className="rounded-xl border bg-card p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="font-medium">{t.periode}</span>
-            <StatusBadge status={t.status} />
-          </div>
+      <div className="px-4 space-y-3">
+        {tagihan.map((t) => (
+          <div key={t.id} className="rounded-xl border bg-card space-y-3">
+            <Link
+              to="/penghuni/tagihan/detail"
+              search={{ id: t.id }}
+              className="block p-4 space-y-3 cursor-pointer hover:bg-muted/50 transition-colors"
+            >
+              <div className="flex items-center justify-between">
+                <span className="font-medium">{t.periode}</span>
+                <StatusBadge status={t.status} />
+              </div>
 
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Kamar {t.noKamar}</span>
-            <span className="font-semibold">{formatRupiah(t.jumlah)}</span>
-          </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Kamar {t.noKamar}</span>
+                <span className="font-semibold">{formatRupiah(t.jumlah)}</span>
+              </div>
 
-          <div className="text-xs text-muted-foreground">
-            Jatuh tempo:{" "}
-            {new Date(t.tanggalJatuhTempo).toLocaleDateString("id-ID", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            })}
-          </div>
+              <div className="text-xs text-muted-foreground">
+                Jatuh tempo:{" "}
+                {new Date(t.tanggalJatuhTempo).toLocaleDateString("id-ID", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
+              </div>
 
-          {t.status === "ditolak" && t.alasanPenolakan && (
-            <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
-              Ditolak: {t.alasanPenolakan}
-            </div>
-          )}
+              {t.status === "ditolak" && t.alasanPenolakan && (
+                <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+                  Ditolak: {t.alasanPenolakan}
+                </div>
+              )}
 
-          {t.buktiPembayaran && (
-            <div>
-              <p className="text-xs text-muted-foreground mb-1">
-                Bukti Pembayaran:
-              </p>
-              <img
-                src={t.buktiPembayaran}
-                alt="Bukti"
-                className="max-h-32 rounded-lg object-contain"
-              />
-            </div>
-          )}
-
-          {(t.status === "belum_dibayar" || t.status === "ditolak") &&
-            (reuploadId === t.id ? (
-              <div className="space-y-3">
-                <FileUpload
-                  onFilesSelected={async (files: File[]) => {
-                    if (files.length > 0) {
-                      const url = await uploadBukti(files[0]);
-                      setBukti(url);
-                    }
-                  }}
-                  accept="image/*"
-                />
-                {bukti && (
+              {t.buktiPembayaran && (
+                <div>
+                  <p className="text-xs text-muted-foreground mb-1">
+                    Bukti Pembayaran:
+                  </p>
                   <img
-                    src={bukti}
-                    alt="Preview"
+                    src={t.buktiPembayaran}
+                    alt="Bukti"
                     className="max-h-32 rounded-lg object-contain"
                   />
-                )}
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    onClick={() => handleReupload(t.id)}
-                    disabled={submitMutation.isPending || !bukti}
-                  >
-                    {submitMutation.isPending ? (
-                      <Loader2 className="animate-spin mr-1 size-3" />
-                    ) : null}
-                    Submit
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => {
-                      setReuploadId(null);
-                      setBukti(null);
+                </div>
+              )}
+            </Link>
+
+            {(t.status === "belum_dibayar" || t.status === "ditolak") &&
+              (reuploadId === t.id ? (
+                <div className="px-4 pb-4 space-y-3">
+                  <FileUpload
+                    onFilesSelected={async (files: File[]) => {
+                      if (files.length > 0) {
+                        const url = await uploadBukti(files[0]);
+                        setBukti(url);
+                      }
                     }}
+                    accept="image/*"
+                  />
+                  {bukti && (
+                    <img
+                      src={bukti}
+                      alt="Preview"
+                      className="max-h-32 rounded-lg object-contain"
+                    />
+                  )}
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      onClick={() => handleReupload(t.id)}
+                      disabled={submitMutation.isPending || !bukti}
+                    >
+                      {submitMutation.isPending ? (
+                        <Loader2 className="animate-spin mr-1 size-3" />
+                      ) : null}
+                      Kirim
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => {
+                        setReuploadId(null);
+                        setBukti(null);
+                      }}
+                    >
+                      Batal
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="px-4 pb-4">
+                  <Button
+                    size="sm"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setReuploadId(t.id);
+                    }}
+                    className="gap-1.5"
                   >
-                    Batal
+                    <Upload className="size-3.5" />
+                    {t.status === "ditolak" ? "Unggah Ulang" : "Bayar"}
                   </Button>
                 </div>
-              </div>
-            ) : (
-              <Button
-                size="sm"
-                onClick={() => setReuploadId(t.id)}
-                className="gap-1.5"
-              >
-                <Upload className="size-3.5" />
-                {t.status === "ditolak" ? "Upload Ulang" : "Bayar"}
-              </Button>
-            ))}
-        </div>
-      ))}
+              ))}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

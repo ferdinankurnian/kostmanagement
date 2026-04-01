@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { ChevronLeft } from "lucide-react";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { ArrowRight, ChevronLeft, Clock } from "lucide-react";
 import {
   RoomCardDrawerManagement,
   type RoomStatus,
@@ -8,7 +8,7 @@ import {
 import { TopBar, TopBarCenter, TopBarLeft } from "@/components/top-bar";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { getAllKamar } from "@/lib/kamar";
+import { getAllKamar, getOngoingOnboarding } from "@/lib/kamar";
 
 export const Route = createFileRoute("/_main/pemilik/kamar")({
   component: KamarPage,
@@ -20,6 +20,12 @@ function KamarPage() {
   const { data, isLoading } = useQuery({
     queryKey: ["rooms"],
     queryFn: getAllKamar,
+  });
+
+  const { data: ongoingData } = useQuery({
+    queryKey: ["ongoing-onboarding"],
+    queryFn: getOngoingOnboarding,
+    refetchInterval: 5000,
   });
 
   const getRoomData = (nomor: number) =>
@@ -45,6 +51,32 @@ function KamarPage() {
           <h1 className="text-lg whitespace-nowrap">Kelola Kamar</h1>
         </TopBarCenter>
       </TopBar>
+
+      {ongoingData && ongoingData.length > 0 && (
+        <div className="space-y-2">
+          {ongoingData.map((item) => (
+            <Link
+              key={item.code}
+              to="/pemilik/penghuni/created"
+              search={{ code: item.code }}
+            >
+              <div className="flex items-center gap-3 rounded-xl border bg-yellow-500/10 p-4 border-yellow-500/20">
+                <div className="flex size-10 items-center justify-center rounded-full bg-yellow-500/20">
+                  <Clock className="size-5 text-yellow-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">Setup belum selesai</p>
+                  <p className="text-xs text-muted-foreground">
+                    {item.name} - Kamar {item.noKamar}
+                  </p>
+                </div>
+                <ArrowRight className="size-5 text-yellow-600" />
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
+
       {isLoading ? (
         <div className="flex h-[60vh] items-center justify-center">
           <Spinner className="size-8" />

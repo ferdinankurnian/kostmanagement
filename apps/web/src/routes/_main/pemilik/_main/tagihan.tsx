@@ -106,9 +106,11 @@ function TagihanPage() {
               <p className="text-muted-foreground">Menunggu Verifikasi</p>
               <div className="flex flex-col gap-2">
                 {menungguVerifikasi.map((t) => (
-                  <div
+                  <Link
                     key={t.id}
-                    className="border rounded-xl p-4 space-y-3 relative"
+                    to="/pemilik/tagihan/detail"
+                    search={{ id: t.id }}
+                    className="block border rounded-xl p-4 space-y-3 relative cursor-pointer hover:bg-muted/50 transition-colors"
                   >
                     <div className="space-y-1">
                       <h1 className="text-lg">Kamar {t.noKamar}</h1>
@@ -120,15 +122,8 @@ function TagihanPage() {
                       </p>
                     </div>
                     <Separator />
-                    <div className="flex flex-row justify-between items-center">
-                      <h1 className="text-xl">{formatRupiah(t.jumlah)}</h1>
-                      <Link to="/pemilik/tagihan/detail" search={{ id: t.id }}>
-                        <Button size="sm" className="rounded-full">
-                          Detail
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
+                    <h1 className="text-xl">{formatRupiah(t.jumlah)}</h1>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -139,9 +134,11 @@ function TagihanPage() {
               <p className="text-muted-foreground">Semua Tagihan</p>
               <div className="flex flex-col gap-2">
                 {lainnya.map((t) => (
-                  <div
+                  <Link
                     key={t.id}
-                    className="border rounded-xl p-4 space-y-3 relative"
+                    to="/pemilik/tagihan/detail"
+                    search={{ id: t.id }}
+                    className="block border rounded-xl p-4 space-y-3 relative cursor-pointer hover:bg-muted/50 transition-colors"
                   >
                     <div className="space-y-1">
                       <h1 className="text-lg">Kamar {t.noKamar}</h1>
@@ -151,15 +148,8 @@ function TagihanPage() {
                       <StatusText status={t.status} />
                     </div>
                     <Separator />
-                    <div className="flex flex-row justify-between items-center">
-                      <h1 className="text-xl">{formatRupiah(t.jumlah)}</h1>
-                      <Link to="/pemilik/tagihan/detail" search={{ id: t.id }}>
-                        <Button size="sm" className="rounded-full">
-                          Detail
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
+                    <h1 className="text-xl">{formatRupiah(t.jumlah)}</h1>
+                  </Link>
                 ))}
               </div>
             </div>

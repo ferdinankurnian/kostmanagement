@@ -19,6 +19,12 @@ export const onboardingStatus = pgEnum("onboarding_status", [
   "completed",
 ]);
 
+export const ktpVerificationStatus = pgEnum("ktp_verification_status", [
+  "pending",
+  "approved",
+  "rejected",
+]);
+
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
@@ -39,6 +45,8 @@ export const user = pgTable("user", {
   noTelepon: text("no_telepon"),
   noTeleponDarurat: text("no_telepon_darurat"),
   ktp: text("ktp"),
+  ktpStatus: ktpVerificationStatus("ktp_status").default("pending"),
+  ktpRejectionReason: text("ktp_rejection_reason"),
   noKamar: integer("no_kamar"),
   onboarding: onboardingStatus("onboarding").default("greeting"),
   bayarSampai: timestamp("bayar_sampai"),

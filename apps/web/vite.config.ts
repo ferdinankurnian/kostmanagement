@@ -2,19 +2,23 @@ import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
-import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
+  resolve: {
+    tsconfigPaths: true,
+    dedupe: ["react", "react-dom", "@tanstack/react-router"],
+  },
   server: {
     proxy: {
-      "/api": "http://localhost:8787",
+      "/api": {
+        target: "http://localhost:8787",
+        ws: true,
+      },
     },
   },
   plugins: [
-    tsconfigPaths({ projects: ["./tsconfig.json"] }),
     tanstackRouter({
       target: "react",
-      autoCodeSplitting: true,
     }),
     tailwindcss(),
     react(),

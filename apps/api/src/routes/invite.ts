@@ -17,6 +17,16 @@ const codeSchema = z.object({ code: z.string() });
 
 const app = new Hono<{ Bindings: Env }>();
 
+async function notifyOnboardingDO(env: Env, inviteCode: string): Promise<void> {
+  try {
+    const doId = env.ONBOARDING_DO.idFromName(inviteCode);
+    const stub = env.ONBOARDING_DO.get(doId);
+    await stub.fetch("https://do/notify");
+  } catch {
+    // best-effort
+  }
+}
+
 // admin buat invitation
 app.post(
   "/",
@@ -86,7 +96,8 @@ app.post("/use", zValidator("json", codeSchema), async (c) => {
   const code = parsed.data.code.toUpperCase();
   const session = await getSession(c);
 
-  if (!session) return c.json({ error: "Anda harus login dulu" }, 401);
+  if (!session)
+    return c.json({ error: "Anda harus login terlebih dahulu" }, 401);
 
   const result = await db
     .select()
@@ -113,10 +124,10 @@ app.post("/use", zValidator("json", codeSchema), async (c) => {
     .set({ status: "terisi", updatedAt: new Date() })
     .where(eq(kamar.nomor, inv.noKamar));
 
-  // 3. Link user ke kamar dan set role + onboarding
+  // 3. Link user ke kamar dan set role (onboarding dimulai setelah tagihan diverifikasi)
   await db
     .update(user)
-    .set({ noKamar: inv.noKamar, role: "user", onboarding: "greeting" })
+    .set({ noKamar: inv.noKamar, role: "user" })
     .where(eq(user.id, session.user.id));
 
   // 4. Auto-create tagihan pertama
@@ -143,6 +154,9 @@ app.post("/use", zValidator("json", codeSchema), async (c) => {
       tanggalJatuhTempo: new Date(now.getFullYear(), now.getMonth(), 10),
     });
   }
+
+  // 5. Notify the owner's DO that invite was used
+  await notifyOnboardingDO(c.env, inv.code);
 
   return c.json({ success: true });
 });

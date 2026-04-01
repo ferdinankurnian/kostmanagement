@@ -62,7 +62,7 @@ function RouteComponent() {
       const urls = await Promise.all(files.map((file) => uploadBukti(file)));
       setFotoUrls(urls);
     } catch {
-      toast.error("Gagal upload foto");
+      toast.error("Gagal mengunggah foto");
     } finally {
       setIsUploading(false);
     }
@@ -113,12 +113,12 @@ function RouteComponent() {
             onFilesSelected={handleUpload}
             accept="image/*"
             multiple
-            description="Bisa upload beberapa foto (Max. 5MB per file)"
+            description="Bisa mengunggah beberapa foto (Maks. 5MB per berkas)"
           />
           {isUploading ? (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="size-4 animate-spin" />
-              Mengupload foto...
+              Mengunggah foto...
             </div>
           ) : null}
           {fotoUrls.length > 0 ? (

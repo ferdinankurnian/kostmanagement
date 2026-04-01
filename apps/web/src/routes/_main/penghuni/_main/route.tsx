@@ -17,6 +17,12 @@ export const Route = createFileRoute("/_main/penghuni/_main")({
       throw redirect({ to: "/" });
     }
 
+    // If KTP is not approved, send to status page
+    if (!context.user.ktpStatus || context.user.ktpStatus !== "approved") {
+      throw redirect({ to: "/penghuni/status" });
+    }
+
+    // If KTP approved but onboarding incomplete, redirect to onboarding
     if (
       context.user.onboarding &&
       context.user.onboarding !== "completed" &&
@@ -64,7 +70,7 @@ const tourSteps: TourStep[] = [
     popover: {
       title: "Riwayat Pembayaran",
       description:
-        "Semua transaksi pembayaran kamu tercatat di sini. Pantau status lunas atau belum.",
+        "Semua transaksi pembayaran Anda tercatat di sini. Pantau status lunas atau belum.",
       side: "top",
     },
   },
@@ -73,7 +79,7 @@ const tourSteps: TourStep[] = [
     popover: {
       title: "Navigasi",
       description:
-        "Gunakan tab di bawah untuk pindah ke Tagihan, Keluhan, atau Profil kamu.",
+        "Gunakan tab di bawah untuk pindah ke Tagihan, Keluhan, atau Profil Anda.",
       side: "top",
     },
   },
@@ -91,7 +97,7 @@ function RouteComponent() {
       await updateOnboarding("rule");
       navigate({ to: "/penghuni/onboarding/rule" });
     } catch {
-      toast.error("Gagal update onboarding");
+      toast.error("Gagal memperbarui onboarding");
     }
   };
 
@@ -112,9 +118,7 @@ function RouteComponent() {
   return (
     <div className="pb-24">
       <Outlet />
-      <div data-tour="tabbar">
-        <PenghuniTabBar />
-      </div>
+      <PenghuniTabBar />
     </div>
   );
 }

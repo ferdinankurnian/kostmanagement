@@ -1,5 +1,5 @@
 import { type DriveStep, driver } from "driver.js";
-import "driver.js/dist/driver.css";
+import "@/styles/tour.css";
 import { useCallback } from "react";
 
 export interface TourStep {
@@ -27,14 +27,15 @@ export function useTour({ steps, onComplete, onSkip }: UseTourOptions) {
         description: step.popover.description,
         side: step.popover.side ?? "bottom",
         align: step.popover.align ?? "start",
-        showButtons: ["next", "previous", "close"],
-        nextBtnText: "Lanjut",
-        prevBtnText: "Kembali",
       },
     }));
 
     const driverObj = driver({
       showProgress: true,
+      nextBtnText: "Lanjut",
+      prevBtnText: "Kembali",
+      doneBtnText: "Selesai",
+      showButtons: ["next", "previous"],
       steps: driveSteps,
       onDestroyed: () => {
         onComplete?.();
@@ -44,7 +45,7 @@ export function useTour({ steps, onComplete, onSkip }: UseTourOptions) {
         onSkip?.();
       },
       overlayColor: "rgba(0, 0, 0, 0.5)",
-      allowClose: true,
+      allowClose: false,
       smoothScroll: true,
     });
 

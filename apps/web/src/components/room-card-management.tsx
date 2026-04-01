@@ -8,6 +8,7 @@ import {
   User,
 } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
@@ -174,9 +175,11 @@ function KickPenghuniDrawer({
   const removeMutation = useMutation({
     mutationFn: () => removePenghuni(roomNumber, pin),
     onSuccess: () => {
+      toast.success("Penghuni berhasil dihapus");
       queryClient.invalidateQueries({ queryKey: ["rooms"] });
     },
     onError: (e: Error) => {
+      toast.error(e.message || "Gagal menghapus penghuni");
       setError(e.message || "PIN salah");
     },
   });

@@ -19,6 +19,7 @@ export const Route = createFileRoute("/_auth/sign-up/ktp")({
 
 function RouteComponent() {
   const navigate = useNavigate();
+  const { inviteCode } = Route.useSearch();
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm({
@@ -27,7 +28,7 @@ function RouteComponent() {
     },
     validators: {
       onSubmit: z.object({
-        ktpImage: z.instanceof(File, { message: "KTP wajib diupload" }),
+        ktpImage: z.instanceof(File, { message: "KTP wajib diunggah" }),
       }),
     },
     onSubmit: async ({ value }) => {
@@ -37,12 +38,15 @@ function RouteComponent() {
       try {
         await uploadKTP(value.ktpImage);
 
-        toast.success("KTP berhasil diupload!");
+        toast.success("KTP berhasil diunggah!");
 
-        navigate({ to: "/penghuni/onboarding" });
+        navigate({
+          to: "/sign-up/waiting",
+          search: { inviteCode },
+        });
       } catch (err) {
         toast.error(
-          err instanceof Error ? err.message : "Gagal mengupload KTP.",
+          err instanceof Error ? err.message : "Gagal mengunggah KTP.",
         );
       } finally {
         setIsLoading(false);
@@ -63,7 +67,7 @@ function RouteComponent() {
           </Button>
         </TopBarLeft>
         <TopBarCenter>
-          <h1 className="text-lg whitespace-nowrap">Upload KTP</h1>
+          <h1 className="text-lg whitespace-nowrap">Unggah KTP</h1>
         </TopBarCenter>
       </TopBar>
 
@@ -73,7 +77,7 @@ function RouteComponent() {
             Satu langkah lagi!
           </h2>
           <p className="text-muted-foreground">
-            Silakan upload foto KTP Anda untuk verifikasi identitas.
+            Silakan unggah foto KTP Anda untuk verifikasi identitas.
           </p>
         </div>
 

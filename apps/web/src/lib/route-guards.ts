@@ -8,6 +8,8 @@ type User = {
   role: string;
   noKamar?: number | null;
   ktp?: string | null;
+  ktpStatus?: "pending" | "approved" | "rejected" | null;
+  ktpRejectionReason?: string | null;
   onboarding?: string | null;
 };
 
@@ -63,6 +65,7 @@ export function getOnboardingRoute(
     case "rule":
       return "/penghuni/onboarding/rule";
     default:
-      return "/penghuni/onboarding";
+      // null or "greeting" → tagihan first (step 1 of onboarding)
+      return "/penghuni/onboarding/bayar-tagihan";
   }
 }

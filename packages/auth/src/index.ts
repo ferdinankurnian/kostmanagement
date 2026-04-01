@@ -33,6 +33,10 @@ export function createAuth(env: {
       requireEmailVerification: false,
       autoSignIn: true,
     },
+    session: {
+      expiresIn: 60 * 60 * 24 * 30, // 30 days (when rememberMe: true)
+      updateAge: 60 * 60 * 24, // refresh every 1 day
+    },
     plugins: [username(), admin()],
     experimental: {
       joins: true,
@@ -63,6 +67,18 @@ export function createAuth(env: {
           returned: true,
         },
         ktp: {
+          type: "string",
+          required: false,
+          input: true,
+          returned: true,
+        },
+        ktpStatus: {
+          type: "string",
+          required: false,
+          input: true,
+          returned: true,
+        },
+        ktpRejectionReason: {
           type: "string",
           required: false,
           input: true,

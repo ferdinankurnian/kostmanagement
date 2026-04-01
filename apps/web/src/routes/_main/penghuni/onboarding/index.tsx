@@ -19,11 +19,13 @@ function GreetingPage() {
   if (user.user.onboarding !== "greeting") {
     navigate({
       to:
-        user.user.onboarding === "bayar_tagihan"
-          ? "/penghuni/onboarding/bayar-tagihan"
-          : user.user.onboarding === "rule"
-            ? "/penghuni/onboarding/rule"
-            : "/penghuni",
+        user.user.onboarding === "tour"
+          ? "/penghuni"
+          : user.user.onboarding === "bayar_tagihan"
+            ? "/penghuni/onboarding/bayar-tagihan"
+            : user.user.onboarding === "rule"
+              ? "/penghuni/onboarding/rule"
+              : "/penghuni",
     });
     return null;
   }
@@ -31,8 +33,8 @@ function GreetingPage() {
   const handleNext = async () => {
     setIsLoading(true);
     try {
-      await updateOnboarding("bayar_tagihan");
-      navigate({ to: "/penghuni/onboarding/bayar-tagihan" });
+      await updateOnboarding("tour");
+      navigate({ to: "/penghuni" });
     } catch {
       toast.error("Gagal memulai onboarding");
     } finally {
@@ -50,8 +52,8 @@ function GreetingPage() {
         Selamat datang, {user.user.name}!
       </h1>
       <p className="mt-3 max-w-sm text-muted-foreground">
-        Kami bantu kenalin kamu sama aplikasi kost ini. Cuma butuh beberapa
-        menit aja kok.
+        Kami akan membantu memperkenalkan Anda dengan aplikasi kost ini. Hanya
+        membutuhkan beberapa menit.
       </p>
 
       <Button

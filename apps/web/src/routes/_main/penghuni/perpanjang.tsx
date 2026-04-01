@@ -77,12 +77,12 @@ function PerpanjangPage() {
         monthsPaid,
       }),
     onSuccess: async () => {
-      toast.success("Pembayaran berhasil disubmit!");
+      toast.success("Pembayaran berhasil dikirim!");
       await queryClient.invalidateQueries({ queryKey: ["tagihan"] });
       navigate({ to: "/penghuni/tagihan" });
     },
     onError: () => {
-      toast.error("Gagal submit pembayaran");
+      toast.error("Gagal mengirim pembayaran");
     },
   });
 
@@ -93,7 +93,7 @@ function PerpanjangPage() {
       const url = await uploadBukti(files[0]);
       setBukti(url);
     } catch {
-      toast.error("Gagal upload bukti");
+      toast.error("Gagal mengunggah bukti");
     } finally {
       setIsUploading(false);
     }
@@ -101,7 +101,7 @@ function PerpanjangPage() {
 
   const handleSubmit = async () => {
     if (!tagihan || !bukti) {
-      toast.error("Upload bukti pembayaran dulu");
+      toast.error("Unggah bukti pembayaran terlebih dahulu");
       return;
     }
 
@@ -299,7 +299,7 @@ function PerpanjangPage() {
                     : "border-border hover:bg-muted"
                 }`}
               >
-                {m} bln
+                {m} bulan
               </button>
             ))}
           </div>
@@ -347,7 +347,7 @@ function PerpanjangPage() {
           {isUploading && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="size-4 animate-spin" />
-              Mengupload...
+              Mengunggah...
             </div>
           )}
           {bukti && (
@@ -368,7 +368,7 @@ function PerpanjangPage() {
           {submitMutation.isPending ? (
             <Loader2 className="animate-spin mr-2 size-4" />
           ) : null}
-          Submit Pembayaran
+          Kirim Pembayaran
         </Button>
       </div>
     </div>

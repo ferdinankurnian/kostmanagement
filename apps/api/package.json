@@ -5,8 +5,10 @@
     "dev": "wrangler dev",
     "deploy": "wrangler deploy --minify",
     "db:push": "dotenv -e .dev.vars -- drizzle-kit push",
+    "db:push:prod": "dotenv -e .env -- drizzle-kit push",
     "db:studio": "dotenv -e .dev.vars -- drizzle-kit studio",
     "db:seed": "dotenv -e .dev.vars -- tsx src/db/seed.ts",
+    "db:seed:prod": "dotenv -e .env -- tsx src/db/seed.ts",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings"
   },
   "dependencies": {

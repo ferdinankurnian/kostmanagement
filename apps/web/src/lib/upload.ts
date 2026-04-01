@@ -38,6 +38,26 @@ export async function uploadKTP(file: File): Promise<{ url: string }> {
   return res.json();
 }
 
+export async function verifyKTP(data: {
+  noKamar: number;
+  status: "approved" | "rejected";
+  reason?: string;
+}): Promise<{ success: boolean }> {
+  const res = await fetch(`${API_BASE}/upload/ktp/verify`, {
+    method: "PUT",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error || "Gagal verifikasi KTP");
+  }
+
+  return res.json();
+}
+
 export async function uploadBukti(file: File): Promise<string> {
   const data = await uploadPreparedFile(file, "bukti", {
     maxDimension: 1600,

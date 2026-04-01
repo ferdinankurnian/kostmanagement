@@ -5,12 +5,16 @@ import {
   Building2,
   CalendarDays,
   Check,
+  ChevronLeft,
+  Clock,
   Copy,
-  CreditCard,
   Loader2,
+  RotateCcw,
+  XCircle,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { TopBar, TopBarCenter, TopBarLeft } from "@/components/top-bar";
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "@/components/ui/file-upload";
 import { Label } from "@/components/ui/label";
@@ -72,6 +76,16 @@ function BayarTagihanPage() {
     queryKey: ["tagihan"],
     queryFn: getTagihan,
     enabled: canLoadData,
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      const active = data?.find(
+        (t) =>
+          t.status === "menunggu_verifikasi" ||
+          t.status === "ditolak" ||
+          t.status === "belum_dibayar",
+      );
+      return active?.status === "menunggu_verifikasi" ? 3000 : false;
+    },
   });
 
   const {
@@ -87,24 +101,41 @@ function BayarTagihanPage() {
 
   const tagihan =
     tagihanList.find(
-      (tag) => tag.status === "belum_dibayar" || tag.status === "ditolak",
+      (tag) =>
+        tag.status === "belum_dibayar" ||
+        tag.status === "ditolak" ||
+        tag.status === "menunggu_verifikasi",
     ) ?? null;
+
+  const isWaiting = tagihan?.status === "menunggu_verifikasi";
+  const isRejected = tagihan?.status === "ditolak";
+
+  // Tagihan lunas → lanjut ke greeting
+  useEffect(() => {
+    if (tagihan?.status === "lunas") {
+      (async () => {
+        await updateOnboarding("greeting");
+        navigate({ to: "/penghuni/onboarding" });
+      })();
+    }
+  }, [tagihan?.status, navigate]);
 
   const submitMutation = useMutation({
     mutationFn: async () => {
+      if (!tagihan) return;
       await submitTagihan(tagihan.id, {
         metodePembayaran: metode,
         buktiPembayaran: bukti ?? "",
         monthsPaid,
       });
-      await updateOnboarding("rule");
     },
     onSuccess: async () => {
+      setBukti(null);
       await queryClient.invalidateQueries({ queryKey: ["tagihan"] });
-      navigate({ to: "/penghuni/onboarding/rule" });
+      toast.success("Bukti pembayaran terkirim");
     },
     onError: () => {
-      toast.error("Gagal submit pembayaran");
+      toast.error("Gagal mengirim pembayaran");
     },
   });
 
@@ -115,7 +146,7 @@ function BayarTagihanPage() {
       const url = await uploadBukti(files[0]);
       setBukti(url);
     } catch {
-      toast.error("Gagal upload bukti");
+      toast.error("Gagal mengunggah bukti");
     } finally {
       setIsUploading(false);
     }
@@ -123,10 +154,9 @@ function BayarTagihanPage() {
 
   const handleSubmit = async () => {
     if (!tagihan || !bukti) {
-      toast.error("Upload bukti pembayaran dulu");
+      toast.error("Unggah bukti pembayaran terlebih dahulu");
       return;
     }
-
     await submitMutation.mutateAsync();
   };
 
@@ -137,58 +167,157 @@ function BayarTagihanPage() {
 
   if (canLoadData && (isTagihanLoading || isSettingsLoading)) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-muted-foreground" />
+      <div className="flex min-h-screen flex-col">
+        <TopBar>
+          <TopBarLeft>
+            <Button variant="ghost" size="icon" disabled>
+              <ChevronLeft className="size-6" />
+            </Button>
+          </TopBarLeft>
+          <TopBarCenter>
+            <h1 className="text-lg whitespace-nowrap">Bayar Tagihan</h1>
+          </TopBarCenter>
+        </TopBar>
+        <div className="flex flex-1 items-center justify-center">
+          <Loader2 className="size-8 animate-spin text-muted-foreground" />
+        </div>
       </div>
     );
   }
 
   if (canLoadData && (isTagihanError || isSettingsError)) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center px-6 text-center">
-        <h1 className="text-xl font-semibold">Gagal memuat data</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Data tagihan atau pengaturan belum bisa diambil.
-        </p>
-        <Button
-          className="mt-6"
-          variant="outline"
-          onClick={() => {
-            void refetchTagihan();
-            void refetchSettings();
-          }}
-        >
-          Coba lagi
-        </Button>
+      <div className="flex min-h-screen flex-col">
+        <TopBar>
+          <TopBarLeft>
+            <Button variant="ghost" size="icon" disabled>
+              <ChevronLeft className="size-6" />
+            </Button>
+          </TopBarLeft>
+          <TopBarCenter>
+            <h1 className="text-lg whitespace-nowrap">Bayar Tagihan</h1>
+          </TopBarCenter>
+        </TopBar>
+        <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
+          <h1 className="text-xl font-semibold">Gagal memuat data</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Data tagihan atau pengaturan belum bisa diambil.
+          </p>
+          <Button
+            className="mt-6"
+            variant="outline"
+            onClick={() => {
+              void refetchTagihan();
+              void refetchSettings();
+            }}
+          >
+            Coba lagi
+          </Button>
+        </div>
       </div>
     );
   }
 
   if (!tagihan) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center px-6 text-center">
-        <CreditCard className="size-12 text-muted-foreground mb-4" />
-        <h1 className="text-xl font-semibold">Belum ada tagihan</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Tagihan pertama kamu belum dibuat. Hubungi pemilik kost.
-        </p>
-        <Button
-          className="mt-6"
-          onClick={async () => {
-            await updateOnboarding("rule");
-            navigate({ to: "/penghuni/onboarding/rule" });
-          }}
-        >
-          Lanjut ke Peraturan
-        </Button>
+      <div className="flex min-h-screen flex-col">
+        <TopBar>
+          <TopBarLeft>
+            <Button variant="ghost" size="icon" disabled>
+              <ChevronLeft className="size-6" />
+            </Button>
+          </TopBarLeft>
+          <TopBarCenter>
+            <h1 className="text-lg whitespace-nowrap">Bayar Tagihan</h1>
+          </TopBarCenter>
+        </TopBar>
+        <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
+          <h1 className="text-xl font-semibold">Belum ada tagihan</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Tagihan pertama Anda belum dibuat. Hubungi pemilik kost.
+          </p>
+        </div>
       </div>
     );
   }
 
+  // Waiting for owner verification
+  if (isWaiting) {
+    return (
+      <div className="flex min-h-screen flex-col">
+        <TopBar>
+          <TopBarLeft>
+            <Button variant="ghost" size="icon" disabled>
+              <ChevronLeft className="size-6" />
+            </Button>
+          </TopBarLeft>
+          <TopBarCenter>
+            <h1 className="text-lg whitespace-nowrap">Bayar Tagihan</h1>
+          </TopBarCenter>
+        </TopBar>
+        <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
+          <div className="mb-6 flex size-20 items-center justify-center rounded-full bg-yellow-500/10">
+            <Clock className="size-10 text-yellow-500 animate-pulse" />
+          </div>
+          <h1 className="text-xl font-semibold">Menunggu Verifikasi</h1>
+          <p className="mt-3 max-w-sm text-sm text-muted-foreground">
+            Bukti pembayaran Anda sedang diverifikasi oleh pemilik kost. Mohon
+            tunggu sebentar.
+          </p>
+          <div className="mt-6 w-full max-w-sm rounded-xl border bg-card p-4 space-y-2 text-left">
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Kamar</span>
+              <span className="font-medium">Kamar {tagihan.noKamar}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Jumlah</span>
+              <span className="font-medium">
+                {formatRupiah(tagihan.jumlah * (tagihan.monthsPaid ?? 1))}
+              </span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Status</span>
+              <span className="font-medium text-yellow-500">
+                Menunggu Verifikasi
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Billing form (belum_dibayar or ditolak)
   return (
     <div className="flex min-h-screen flex-col">
-      <div className="flex-1 px-4 py-8">
-        <h1 className="mb-6 text-xl font-semibold">Bayar Tagihan Pertama</h1>
+      <TopBar>
+        <TopBarLeft>
+          <Button variant="ghost" size="icon" disabled>
+            <ChevronLeft className="size-6" />
+          </Button>
+        </TopBarLeft>
+        <TopBarCenter>
+          <h1 className="text-lg whitespace-nowrap">Bayar Tagihan</h1>
+        </TopBarCenter>
+      </TopBar>
+
+      <div className="flex-1 px-4 pt-20 pb-28">
+        {isRejected && tagihan.alasanPenolakan && (
+          <div className="mb-4 rounded-xl bg-destructive/10 p-4 space-y-2">
+            <div className="flex items-center gap-2">
+              <XCircle className="size-4 text-destructive" />
+              <p className="text-sm font-medium text-destructive">
+                Pembayaran Ditolak
+              </p>
+            </div>
+            <p className="text-sm text-destructive">
+              {tagihan.alasanPenolakan}
+            </p>
+            <p className="text-xs text-destructive/70">
+              Silakan unggah ulang bukti pembayaran yang valid.
+            </p>
+          </div>
+        )}
 
         <div className="rounded-xl border bg-card p-4 space-y-3">
           <div className="flex items-center justify-between">
@@ -216,43 +345,31 @@ function BayarTagihanPage() {
               })}
             </span>
           </div>
-
-          {tagihan.status === "ditolak" && tagihan.alasanPenolakan && (
-            <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
-              Pembayaran ditolak: {tagihan.alasanPenolakan}
-            </div>
-          )}
         </div>
 
         {settings.no_rekening && (
-          <div className="mt-4 rounded-xl border bg-muted/50 p-4">
+          <div className="mt-4">
             <p className="text-xs font-medium text-muted-foreground mb-2">
-              Info Rekening Pembayaran
+              Transfer ke Rekening
             </p>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm flex items-center gap-1.5">
-                  <Building2 className="size-3.5" />
-                  {settings.nama_bank ?? "Bank"}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-sm font-medium">
-                  {settings.no_rekening}
-                </span>
+            <div className="flex flex-col justify-between rounded-xl bg-primary text-white h-48 p-4">
+              <p className="text-md font-medium">
+                {settings.nama_bank || "Bank -"}
+              </p>
+              <div className="flex items-center justify-center gap-2">
+                <p className="text-3xl">{settings.no_rekening || "-"}</p>
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => handleCopy(settings.no_rekening)}
+                  className="text-white hover:bg-white/20"
+                  onClick={() => handleCopy(settings.no_rekening ?? "")}
                 >
-                  <Copy className="size-3.5" />
+                  <Copy className="size-4" />
                 </Button>
               </div>
-              {settings.nama_pemilik_rekening && (
-                <p className="text-sm text-muted-foreground">
-                  a.n. {settings.nama_pemilik_rekening}
-                </p>
-              )}
+              <p className="text-md text-end">
+                {settings.nama_pemilik_rekening || "-"}
+              </p>
             </div>
           </div>
         )}
@@ -295,7 +412,7 @@ function BayarTagihanPage() {
 
         <div className="mt-6 space-y-3">
           <Label>Bayar berapa bulan?</Label>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             {[1, 2, 3, 4, 6, 12].map((m) => (
               <button
                 key={m}
@@ -307,7 +424,7 @@ function BayarTagihanPage() {
                     : "border-border hover:bg-muted"
                 }`}
               >
-                {m} bln
+                {m} bulan
               </button>
             ))}
           </div>
@@ -322,7 +439,7 @@ function BayarTagihanPage() {
           {isUploading && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="size-4 animate-spin" />
-              Mengupload...
+              Mengunggah...
             </div>
           )}
           {bukti && (
@@ -335,17 +452,19 @@ function BayarTagihanPage() {
         </div>
       </div>
 
-      <div className="sticky bottom-0 border-t bg-background px-4 py-4">
+      <div className="fixed bottom-0 left-0 right-0 px-4 pb-4 pt-8 bg-linear-to-t from-background to-transparent">
         <Button
           onClick={handleSubmit}
           disabled={submitMutation.isPending || !bukti}
-          className="w-full"
+          className="w-full max-w-lg rounded-full mx-auto"
           size="lg"
         >
           {submitMutation.isPending ? (
             <Loader2 className="animate-spin mr-2 size-4" />
+          ) : isRejected ? (
+            <RotateCcw className="mr-2 size-4" />
           ) : null}
-          Submit Pembayaran
+          {isRejected ? "Kirim Ulang Pembayaran" : "Kirim Pembayaran"}
         </Button>
       </div>
     </div>

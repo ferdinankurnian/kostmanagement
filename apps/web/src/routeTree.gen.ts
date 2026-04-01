@@ -12,13 +12,16 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as MainRouteImport } from './routes/_main'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as MainIndexRouteImport } from './routes/_main/index'
+import { Route as AuthLogoutRouteImport } from './routes/_auth/logout'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
 import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-password'
 import { Route as AuthSignUpIndexRouteImport } from './routes/_auth/sign-up/index'
+import { Route as MainPenghuniStatusRouteImport } from './routes/_main/penghuni/status'
 import { Route as MainPenghuniPerpanjangRouteImport } from './routes/_main/penghuni/perpanjang'
 import { Route as MainPenghuniNotificationRouteImport } from './routes/_main/penghuni/notification'
 import { Route as MainPemilikNotificationRouteImport } from './routes/_main/pemilik/notification'
 import { Route as MainPemilikKamarRouteImport } from './routes/_main/pemilik/kamar'
+import { Route as AuthSignUpWaitingRouteImport } from './routes/_auth/sign-up/waiting'
 import { Route as AuthSignUpKtpRouteImport } from './routes/_auth/sign-up/ktp'
 import { Route as AuthSignUpFormRouteImport } from './routes/_auth/sign-up/form'
 import { Route as MainPenghuniOnboardingRouteRouteImport } from './routes/_main/penghuni/onboarding/route'
@@ -28,6 +31,7 @@ import { Route as MainPenghuniOnboardingIndexRouteImport } from './routes/_main/
 import { Route as MainPenghuniMainIndexRouteImport } from './routes/_main/penghuni/_main/index'
 import { Route as MainPemilikKeluhanIndexRouteImport } from './routes/_main/pemilik/keluhan/index'
 import { Route as MainPemilikMainIndexRouteImport } from './routes/_main/pemilik/_main/index'
+import { Route as MainPenghuniTagihanDetailRouteImport } from './routes/_main/penghuni/tagihan/detail'
 import { Route as MainPenghuniProfilePeraturanKostRouteImport } from './routes/_main/penghuni/profile/peraturan-kost'
 import { Route as MainPenghuniProfileNomerDaruratRouteImport } from './routes/_main/penghuni/profile/nomer-darurat'
 import { Route as MainPenghuniProfileInformasiDiriRouteImport } from './routes/_main/penghuni/profile/informasi-diri'
@@ -44,6 +48,7 @@ import { Route as MainPemilikTagihanDetailRouteImport } from './routes/_main/pem
 import { Route as MainPemilikPenghuniFormRouteImport } from './routes/_main/pemilik/penghuni/form'
 import { Route as MainPemilikPenghuniCreatedRouteImport } from './routes/_main/pemilik/penghuni/created'
 import { Route as MainPemilikPenghuniChooseRoomRouteImport } from './routes/_main/pemilik/penghuni/choose-room'
+import { Route as MainPemilikPengaturanNotificationRouteImport } from './routes/_main/pemilik/pengaturan/notification'
 import { Route as MainPemilikPengaturanInformasiKostRouteImport } from './routes/_main/pemilik/pengaturan/informasi-kost'
 import { Route as MainPemilikKeluhanDetailRouteImport } from './routes/_main/pemilik/keluhan/detail'
 import { Route as MainPemilikInformasiDetailRouteImport } from './routes/_main/pemilik/informasi/detail'
@@ -72,6 +77,11 @@ const MainIndexRoute = MainIndexRouteImport.update({
   path: '/',
   getParentRoute: () => MainRoute,
 } as any)
+const AuthLogoutRoute = AuthLogoutRouteImport.update({
+  id: '/logout',
+  path: '/logout',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
 const AuthLoginRoute = AuthLoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -86,6 +96,11 @@ const AuthSignUpIndexRoute = AuthSignUpIndexRouteImport.update({
   id: '/sign-up/',
   path: '/sign-up/',
   getParentRoute: () => AuthRouteRoute,
+} as any)
+const MainPenghuniStatusRoute = MainPenghuniStatusRouteImport.update({
+  id: '/penghuni/status',
+  path: '/penghuni/status',
+  getParentRoute: () => MainRoute,
 } as any)
 const MainPenghuniPerpanjangRoute = MainPenghuniPerpanjangRouteImport.update({
   id: '/penghuni/perpanjang',
@@ -107,6 +122,11 @@ const MainPemilikKamarRoute = MainPemilikKamarRouteImport.update({
   id: '/pemilik/kamar',
   path: '/pemilik/kamar',
   getParentRoute: () => MainRoute,
+} as any)
+const AuthSignUpWaitingRoute = AuthSignUpWaitingRouteImport.update({
+  id: '/sign-up/waiting',
+  path: '/sign-up/waiting',
+  getParentRoute: () => AuthRouteRoute,
 } as any)
 const AuthSignUpKtpRoute = AuthSignUpKtpRouteImport.update({
   id: '/sign-up/ktp',
@@ -155,6 +175,12 @@ const MainPemilikMainIndexRoute = MainPemilikMainIndexRouteImport.update({
   path: '/',
   getParentRoute: () => MainPemilikMainRouteRoute,
 } as any)
+const MainPenghuniTagihanDetailRoute =
+  MainPenghuniTagihanDetailRouteImport.update({
+    id: '/penghuni/tagihan/detail',
+    path: '/penghuni/tagihan/detail',
+    getParentRoute: () => MainRoute,
+  } as any)
 const MainPenghuniProfilePeraturanKostRoute =
   MainPenghuniProfilePeraturanKostRouteImport.update({
     id: '/penghuni/profile/peraturan-kost',
@@ -246,6 +272,12 @@ const MainPemilikPenghuniChooseRoomRoute =
     path: '/pemilik/penghuni/choose-room',
     getParentRoute: () => MainRoute,
   } as any)
+const MainPemilikPengaturanNotificationRoute =
+  MainPemilikPengaturanNotificationRouteImport.update({
+    id: '/pemilik/pengaturan/notification',
+    path: '/pemilik/pengaturan/notification',
+    getParentRoute: () => MainRoute,
+  } as any)
 const MainPemilikPengaturanInformasiKostRoute =
   MainPemilikPengaturanInformasiKostRouteImport.update({
     id: '/pemilik/pengaturan/informasi-kost',
@@ -332,15 +364,18 @@ export interface FileRoutesByFullPath {
   '/': typeof MainIndexRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
+  '/logout': typeof AuthLogoutRoute
   '/pemilik': typeof MainPemilikMainRouteRouteWithChildren
   '/penghuni': typeof MainPenghuniMainRouteRouteWithChildren
   '/penghuni/onboarding': typeof MainPenghuniOnboardingRouteRouteWithChildren
   '/sign-up/form': typeof AuthSignUpFormRoute
   '/sign-up/ktp': typeof AuthSignUpKtpRoute
+  '/sign-up/waiting': typeof AuthSignUpWaitingRoute
   '/pemilik/kamar': typeof MainPemilikKamarRoute
   '/pemilik/notification': typeof MainPemilikNotificationRoute
   '/penghuni/notification': typeof MainPenghuniNotificationRoute
   '/penghuni/perpanjang': typeof MainPenghuniPerpanjangRoute
+  '/penghuni/status': typeof MainPenghuniStatusRoute
   '/sign-up/': typeof AuthSignUpIndexRoute
   '/pemilik/informasi': typeof MainPemilikMainInformasiRoute
   '/pemilik/profile': typeof MainPemilikMainProfileRoute
@@ -349,6 +384,7 @@ export interface FileRoutesByFullPath {
   '/pemilik/informasi/detail': typeof MainPemilikInformasiDetailRoute
   '/pemilik/keluhan/detail': typeof MainPemilikKeluhanDetailRoute
   '/pemilik/pengaturan/informasi-kost': typeof MainPemilikPengaturanInformasiKostRoute
+  '/pemilik/pengaturan/notification': typeof MainPemilikPengaturanNotificationRoute
   '/pemilik/penghuni/choose-room': typeof MainPemilikPenghuniChooseRoomRoute
   '/pemilik/penghuni/created': typeof MainPemilikPenghuniCreatedRoute
   '/pemilik/penghuni/form': typeof MainPemilikPenghuniFormRoute
@@ -365,6 +401,7 @@ export interface FileRoutesByFullPath {
   '/penghuni/profile/informasi-diri': typeof MainPenghuniProfileInformasiDiriRoute
   '/penghuni/profile/nomer-darurat': typeof MainPenghuniProfileNomerDaruratRoute
   '/penghuni/profile/peraturan-kost': typeof MainPenghuniProfilePeraturanKostRoute
+  '/penghuni/tagihan/detail': typeof MainPenghuniTagihanDetailRoute
   '/pemilik/': typeof MainPemilikMainIndexRoute
   '/pemilik/keluhan/': typeof MainPemilikKeluhanIndexRoute
   '/penghuni/': typeof MainPenghuniMainIndexRoute
@@ -381,12 +418,15 @@ export interface FileRoutesByTo {
   '/': typeof MainIndexRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
   '/login': typeof AuthLoginRoute
+  '/logout': typeof AuthLogoutRoute
   '/sign-up/form': typeof AuthSignUpFormRoute
   '/sign-up/ktp': typeof AuthSignUpKtpRoute
+  '/sign-up/waiting': typeof AuthSignUpWaitingRoute
   '/pemilik/kamar': typeof MainPemilikKamarRoute
   '/pemilik/notification': typeof MainPemilikNotificationRoute
   '/penghuni/notification': typeof MainPenghuniNotificationRoute
   '/penghuni/perpanjang': typeof MainPenghuniPerpanjangRoute
+  '/penghuni/status': typeof MainPenghuniStatusRoute
   '/sign-up': typeof AuthSignUpIndexRoute
   '/pemilik/informasi': typeof MainPemilikMainInformasiRoute
   '/pemilik/profile': typeof MainPemilikMainProfileRoute
@@ -395,6 +435,7 @@ export interface FileRoutesByTo {
   '/pemilik/informasi/detail': typeof MainPemilikInformasiDetailRoute
   '/pemilik/keluhan/detail': typeof MainPemilikKeluhanDetailRoute
   '/pemilik/pengaturan/informasi-kost': typeof MainPemilikPengaturanInformasiKostRoute
+  '/pemilik/pengaturan/notification': typeof MainPemilikPengaturanNotificationRoute
   '/pemilik/penghuni/choose-room': typeof MainPemilikPenghuniChooseRoomRoute
   '/pemilik/penghuni/created': typeof MainPemilikPenghuniCreatedRoute
   '/pemilik/penghuni/form': typeof MainPemilikPenghuniFormRoute
@@ -411,6 +452,7 @@ export interface FileRoutesByTo {
   '/penghuni/profile/informasi-diri': typeof MainPenghuniProfileInformasiDiriRoute
   '/penghuni/profile/nomer-darurat': typeof MainPenghuniProfileNomerDaruratRoute
   '/penghuni/profile/peraturan-kost': typeof MainPenghuniProfilePeraturanKostRoute
+  '/penghuni/tagihan/detail': typeof MainPenghuniTagihanDetailRoute
   '/pemilik': typeof MainPemilikMainIndexRoute
   '/pemilik/keluhan': typeof MainPemilikKeluhanIndexRoute
   '/penghuni': typeof MainPenghuniMainIndexRoute
@@ -429,16 +471,19 @@ export interface FileRoutesById {
   '/_main': typeof MainRouteWithChildren
   '/_auth/forgot-password': typeof AuthForgotPasswordRoute
   '/_auth/login': typeof AuthLoginRoute
+  '/_auth/logout': typeof AuthLogoutRoute
   '/_main/': typeof MainIndexRoute
   '/_main/pemilik/_main': typeof MainPemilikMainRouteRouteWithChildren
   '/_main/penghuni/_main': typeof MainPenghuniMainRouteRouteWithChildren
   '/_main/penghuni/onboarding': typeof MainPenghuniOnboardingRouteRouteWithChildren
   '/_auth/sign-up/form': typeof AuthSignUpFormRoute
   '/_auth/sign-up/ktp': typeof AuthSignUpKtpRoute
+  '/_auth/sign-up/waiting': typeof AuthSignUpWaitingRoute
   '/_main/pemilik/kamar': typeof MainPemilikKamarRoute
   '/_main/pemilik/notification': typeof MainPemilikNotificationRoute
   '/_main/penghuni/notification': typeof MainPenghuniNotificationRoute
   '/_main/penghuni/perpanjang': typeof MainPenghuniPerpanjangRoute
+  '/_main/penghuni/status': typeof MainPenghuniStatusRoute
   '/_auth/sign-up/': typeof AuthSignUpIndexRoute
   '/_main/pemilik/_main/informasi': typeof MainPemilikMainInformasiRoute
   '/_main/pemilik/_main/profile': typeof MainPemilikMainProfileRoute
@@ -447,6 +492,7 @@ export interface FileRoutesById {
   '/_main/pemilik/informasi/detail': typeof MainPemilikInformasiDetailRoute
   '/_main/pemilik/keluhan/detail': typeof MainPemilikKeluhanDetailRoute
   '/_main/pemilik/pengaturan/informasi-kost': typeof MainPemilikPengaturanInformasiKostRoute
+  '/_main/pemilik/pengaturan/notification': typeof MainPemilikPengaturanNotificationRoute
   '/_main/pemilik/penghuni/choose-room': typeof MainPemilikPenghuniChooseRoomRoute
   '/_main/pemilik/penghuni/created': typeof MainPemilikPenghuniCreatedRoute
   '/_main/pemilik/penghuni/form': typeof MainPemilikPenghuniFormRoute
@@ -463,6 +509,7 @@ export interface FileRoutesById {
   '/_main/penghuni/profile/informasi-diri': typeof MainPenghuniProfileInformasiDiriRoute
   '/_main/penghuni/profile/nomer-darurat': typeof MainPenghuniProfileNomerDaruratRoute
   '/_main/penghuni/profile/peraturan-kost': typeof MainPenghuniProfilePeraturanKostRoute
+  '/_main/penghuni/tagihan/detail': typeof MainPenghuniTagihanDetailRoute
   '/_main/pemilik/_main/': typeof MainPemilikMainIndexRoute
   '/_main/pemilik/keluhan/': typeof MainPemilikKeluhanIndexRoute
   '/_main/penghuni/_main/': typeof MainPenghuniMainIndexRoute
@@ -481,15 +528,18 @@ export interface FileRouteTypes {
     | '/'
     | '/forgot-password'
     | '/login'
+    | '/logout'
     | '/pemilik'
     | '/penghuni'
     | '/penghuni/onboarding'
     | '/sign-up/form'
     | '/sign-up/ktp'
+    | '/sign-up/waiting'
     | '/pemilik/kamar'
     | '/pemilik/notification'
     | '/penghuni/notification'
     | '/penghuni/perpanjang'
+    | '/penghuni/status'
     | '/sign-up/'
     | '/pemilik/informasi'
     | '/pemilik/profile'
@@ -498,6 +548,7 @@ export interface FileRouteTypes {
     | '/pemilik/informasi/detail'
     | '/pemilik/keluhan/detail'
     | '/pemilik/pengaturan/informasi-kost'
+    | '/pemilik/pengaturan/notification'
     | '/pemilik/penghuni/choose-room'
     | '/pemilik/penghuni/created'
     | '/pemilik/penghuni/form'
@@ -514,6 +565,7 @@ export interface FileRouteTypes {
     | '/penghuni/profile/informasi-diri'
     | '/penghuni/profile/nomer-darurat'
     | '/penghuni/profile/peraturan-kost'
+    | '/penghuni/tagihan/detail'
     | '/pemilik/'
     | '/pemilik/keluhan/'
     | '/penghuni/'
@@ -530,12 +582,15 @@ export interface FileRouteTypes {
     | '/'
     | '/forgot-password'
     | '/login'
+    | '/logout'
     | '/sign-up/form'
     | '/sign-up/ktp'
+    | '/sign-up/waiting'
     | '/pemilik/kamar'
     | '/pemilik/notification'
     | '/penghuni/notification'
     | '/penghuni/perpanjang'
+    | '/penghuni/status'
     | '/sign-up'
     | '/pemilik/informasi'
     | '/pemilik/profile'
@@ -544,6 +599,7 @@ export interface FileRouteTypes {
     | '/pemilik/informasi/detail'
     | '/pemilik/keluhan/detail'
     | '/pemilik/pengaturan/informasi-kost'
+    | '/pemilik/pengaturan/notification'
     | '/pemilik/penghuni/choose-room'
     | '/pemilik/penghuni/created'
     | '/pemilik/penghuni/form'
@@ -560,6 +616,7 @@ export interface FileRouteTypes {
     | '/penghuni/profile/informasi-diri'
     | '/penghuni/profile/nomer-darurat'
     | '/penghuni/profile/peraturan-kost'
+    | '/penghuni/tagihan/detail'
     | '/pemilik'
     | '/pemilik/keluhan'
     | '/penghuni'
@@ -577,16 +634,19 @@ export interface FileRouteTypes {
     | '/_main'
     | '/_auth/forgot-password'
     | '/_auth/login'
+    | '/_auth/logout'
     | '/_main/'
     | '/_main/pemilik/_main'
     | '/_main/penghuni/_main'
     | '/_main/penghuni/onboarding'
     | '/_auth/sign-up/form'
     | '/_auth/sign-up/ktp'
+    | '/_auth/sign-up/waiting'
     | '/_main/pemilik/kamar'
     | '/_main/pemilik/notification'
     | '/_main/penghuni/notification'
     | '/_main/penghuni/perpanjang'
+    | '/_main/penghuni/status'
     | '/_auth/sign-up/'
     | '/_main/pemilik/_main/informasi'
     | '/_main/pemilik/_main/profile'
@@ -595,6 +655,7 @@ export interface FileRouteTypes {
     | '/_main/pemilik/informasi/detail'
     | '/_main/pemilik/keluhan/detail'
     | '/_main/pemilik/pengaturan/informasi-kost'
+    | '/_main/pemilik/pengaturan/notification'
     | '/_main/pemilik/penghuni/choose-room'
     | '/_main/pemilik/penghuni/created'
     | '/_main/pemilik/penghuni/form'
@@ -611,6 +672,7 @@ export interface FileRouteTypes {
     | '/_main/penghuni/profile/informasi-diri'
     | '/_main/penghuni/profile/nomer-darurat'
     | '/_main/penghuni/profile/peraturan-kost'
+    | '/_main/penghuni/tagihan/detail'
     | '/_main/pemilik/_main/'
     | '/_main/pemilik/keluhan/'
     | '/_main/penghuni/_main/'
@@ -652,6 +714,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MainIndexRouteImport
       parentRoute: typeof MainRoute
     }
+    '/_auth/logout': {
+      id: '/_auth/logout'
+      path: '/logout'
+      fullPath: '/logout'
+      preLoaderRoute: typeof AuthLogoutRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
     '/_auth/login': {
       id: '/_auth/login'
       path: '/login'
@@ -672,6 +741,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/sign-up/'
       preLoaderRoute: typeof AuthSignUpIndexRouteImport
       parentRoute: typeof AuthRouteRoute
+    }
+    '/_main/penghuni/status': {
+      id: '/_main/penghuni/status'
+      path: '/penghuni/status'
+      fullPath: '/penghuni/status'
+      preLoaderRoute: typeof MainPenghuniStatusRouteImport
+      parentRoute: typeof MainRoute
     }
     '/_main/penghuni/perpanjang': {
       id: '/_main/penghuni/perpanjang'
@@ -700,6 +776,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/pemilik/kamar'
       preLoaderRoute: typeof MainPemilikKamarRouteImport
       parentRoute: typeof MainRoute
+    }
+    '/_auth/sign-up/waiting': {
+      id: '/_auth/sign-up/waiting'
+      path: '/sign-up/waiting'
+      fullPath: '/sign-up/waiting'
+      preLoaderRoute: typeof AuthSignUpWaitingRouteImport
+      parentRoute: typeof AuthRouteRoute
     }
     '/_auth/sign-up/ktp': {
       id: '/_auth/sign-up/ktp'
@@ -763,6 +846,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/pemilik/'
       preLoaderRoute: typeof MainPemilikMainIndexRouteImport
       parentRoute: typeof MainPemilikMainRouteRoute
+    }
+    '/_main/penghuni/tagihan/detail': {
+      id: '/_main/penghuni/tagihan/detail'
+      path: '/penghuni/tagihan/detail'
+      fullPath: '/penghuni/tagihan/detail'
+      preLoaderRoute: typeof MainPenghuniTagihanDetailRouteImport
+      parentRoute: typeof MainRoute
     }
     '/_main/penghuni/profile/peraturan-kost': {
       id: '/_main/penghuni/profile/peraturan-kost'
@@ -876,6 +966,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MainPemilikPenghuniChooseRoomRouteImport
       parentRoute: typeof MainRoute
     }
+    '/_main/pemilik/pengaturan/notification': {
+      id: '/_main/pemilik/pengaturan/notification'
+      path: '/pemilik/pengaturan/notification'
+      fullPath: '/pemilik/pengaturan/notification'
+      preLoaderRoute: typeof MainPemilikPengaturanNotificationRouteImport
+      parentRoute: typeof MainRoute
+    }
     '/_main/pemilik/pengaturan/informasi-kost': {
       id: '/_main/pemilik/pengaturan/informasi-kost'
       path: '/pemilik/pengaturan/informasi-kost'
@@ -980,16 +1077,20 @@ declare module '@tanstack/react-router' {
 interface AuthRouteRouteChildren {
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthLoginRoute: typeof AuthLoginRoute
+  AuthLogoutRoute: typeof AuthLogoutRoute
   AuthSignUpFormRoute: typeof AuthSignUpFormRoute
   AuthSignUpKtpRoute: typeof AuthSignUpKtpRoute
+  AuthSignUpWaitingRoute: typeof AuthSignUpWaitingRoute
   AuthSignUpIndexRoute: typeof AuthSignUpIndexRoute
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
   AuthForgotPasswordRoute: AuthForgotPasswordRoute,
   AuthLoginRoute: AuthLoginRoute,
+  AuthLogoutRoute: AuthLogoutRoute,
   AuthSignUpFormRoute: AuthSignUpFormRoute,
   AuthSignUpKtpRoute: AuthSignUpKtpRoute,
+  AuthSignUpWaitingRoute: AuthSignUpWaitingRoute,
   AuthSignUpIndexRoute: AuthSignUpIndexRoute,
 }
 
@@ -1061,10 +1162,12 @@ interface MainRouteChildren {
   MainPemilikNotificationRoute: typeof MainPemilikNotificationRoute
   MainPenghuniNotificationRoute: typeof MainPenghuniNotificationRoute
   MainPenghuniPerpanjangRoute: typeof MainPenghuniPerpanjangRoute
+  MainPenghuniStatusRoute: typeof MainPenghuniStatusRoute
   MainPemilikInformasiAddRoute: typeof MainPemilikInformasiAddRoute
   MainPemilikInformasiDetailRoute: typeof MainPemilikInformasiDetailRoute
   MainPemilikKeluhanDetailRoute: typeof MainPemilikKeluhanDetailRoute
   MainPemilikPengaturanInformasiKostRoute: typeof MainPemilikPengaturanInformasiKostRoute
+  MainPemilikPengaturanNotificationRoute: typeof MainPemilikPengaturanNotificationRoute
   MainPemilikPenghuniChooseRoomRoute: typeof MainPemilikPenghuniChooseRoomRoute
   MainPemilikPenghuniCreatedRoute: typeof MainPemilikPenghuniCreatedRoute
   MainPemilikPenghuniFormRoute: typeof MainPemilikPenghuniFormRoute
@@ -1076,6 +1179,7 @@ interface MainRouteChildren {
   MainPenghuniProfileInformasiDiriRoute: typeof MainPenghuniProfileInformasiDiriRoute
   MainPenghuniProfileNomerDaruratRoute: typeof MainPenghuniProfileNomerDaruratRoute
   MainPenghuniProfilePeraturanKostRoute: typeof MainPenghuniProfilePeraturanKostRoute
+  MainPenghuniTagihanDetailRoute: typeof MainPenghuniTagihanDetailRoute
   MainPemilikKeluhanIndexRoute: typeof MainPemilikKeluhanIndexRoute
   MainPemilikPengaturanInformasiPemilikEditRoute: typeof MainPemilikPengaturanInformasiPemilikEditRoute
   MainPemilikPengaturanPeraturanKostEditRoute: typeof MainPemilikPengaturanPeraturanKostEditRoute
@@ -1096,11 +1200,14 @@ const MainRouteChildren: MainRouteChildren = {
   MainPemilikNotificationRoute: MainPemilikNotificationRoute,
   MainPenghuniNotificationRoute: MainPenghuniNotificationRoute,
   MainPenghuniPerpanjangRoute: MainPenghuniPerpanjangRoute,
+  MainPenghuniStatusRoute: MainPenghuniStatusRoute,
   MainPemilikInformasiAddRoute: MainPemilikInformasiAddRoute,
   MainPemilikInformasiDetailRoute: MainPemilikInformasiDetailRoute,
   MainPemilikKeluhanDetailRoute: MainPemilikKeluhanDetailRoute,
   MainPemilikPengaturanInformasiKostRoute:
     MainPemilikPengaturanInformasiKostRoute,
+  MainPemilikPengaturanNotificationRoute:
+    MainPemilikPengaturanNotificationRoute,
   MainPemilikPenghuniChooseRoomRoute: MainPemilikPenghuniChooseRoomRoute,
   MainPemilikPenghuniCreatedRoute: MainPemilikPenghuniCreatedRoute,
   MainPemilikPenghuniFormRoute: MainPemilikPenghuniFormRoute,
@@ -1112,6 +1219,7 @@ const MainRouteChildren: MainRouteChildren = {
   MainPenghuniProfileInformasiDiriRoute: MainPenghuniProfileInformasiDiriRoute,
   MainPenghuniProfileNomerDaruratRoute: MainPenghuniProfileNomerDaruratRoute,
   MainPenghuniProfilePeraturanKostRoute: MainPenghuniProfilePeraturanKostRoute,
+  MainPenghuniTagihanDetailRoute: MainPenghuniTagihanDetailRoute,
   MainPemilikKeluhanIndexRoute: MainPemilikKeluhanIndexRoute,
   MainPemilikPengaturanInformasiPemilikEditRoute:
     MainPemilikPengaturanInformasiPemilikEditRoute,

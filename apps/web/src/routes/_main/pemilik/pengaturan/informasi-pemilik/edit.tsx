@@ -77,7 +77,7 @@ function EditForm({
             noTelepon: value.noTelepon,
           }),
         }).then((res) => {
-          if (!res.ok) throw new Error("Gagal update profil");
+          if (!res.ok) throw new Error("Gagal memperbarui profil");
         }),
         updateSetting("nama_bank", value.namaBank),
         updateSetting("nama_pemilik_rekening", value.namaPemilik),
@@ -102,10 +102,10 @@ function EditForm({
     onSuccess: (url) => {
       setAvatarUrl(url);
       queryClient.invalidateQueries({ queryKey: ["session"] });
-      toast.success("Foto profil diupdate");
+      toast.success("Foto profil diperbarui");
     },
     onError: () => {
-      toast.error("Gagal mengupload foto profil");
+      toast.error("Gagal mengunggah foto profil");
     },
   });
 

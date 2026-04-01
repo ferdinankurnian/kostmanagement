@@ -1,11 +1,11 @@
 import { zValidator } from "@hono/zod-validator";
 import { createDB } from "@repo/db";
-import { user } from "@repo/db/schema";
+import { invitation, user } from "@repo/db/schema";
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod/v4";
 import type { Env } from "../app";
-import { getSession } from "../middleware/auth";
+import { ensureAdmin, getSession } from "../middleware/auth";
 
 const app = new Hono<{ Bindings: Env }>();
 const MAX_BASE64_LENGTH = 13_653_333; // ~10MB decoded
@@ -20,6 +20,41 @@ const uploadSchema = z.object({
   ]),
   base64: z.string().max(MAX_BASE64_LENGTH),
 });
+
+async function notifyOnboardingDO(env: Env, inviteCode: string): Promise<void> {
+  try {
+    const doId = env.ONBOARDING_DO.idFromName(inviteCode);
+    const stub = env.ONBOARDING_DO.get(doId);
+    await stub.fetch("https://do/notify");
+  } catch {
+    // DO notification is best-effort
+  }
+}
+
+async function findInviteAndNotify(
+  env: Env,
+  db: ReturnType<typeof createDB>,
+  userId: string,
+): Promise<void> {
+  const users = await db
+    .select({ noKamar: user.noKamar })
+    .from(user)
+    .where(eq(user.id, userId))
+    .limit(1);
+
+  const noKamar = users[0]?.noKamar;
+  if (!noKamar) return;
+
+  const invites = await db
+    .select({ code: invitation.code })
+    .from(invitation)
+    .where(eq(invitation.noKamar, noKamar))
+    .limit(1);
+
+  if (invites[0]) {
+    await notifyOnboardingDO(env, invites[0].code);
+  }
+}
 
 app.post("/ktp", zValidator("json", uploadSchema), async (c) => {
   const session = await getSession(c);
@@ -49,7 +84,13 @@ app.post("/ktp", zValidator("json", uploadSchema), async (c) => {
 
   // Update user profile
   const db = createDB(c.env.DATABASE_URL);
-  await db.update(user).set({ ktp: url }).where(eq(user.id, session.user.id));
+  await db
+    .update(user)
+    .set({ ktp: url, ktpStatus: "pending", ktpRejectionReason: null })
+    .where(eq(user.id, session.user.id));
+
+  // Notify the owner's DO
+  await findInviteAndNotify(c.env, db, session.user.id);
 
   return c.json({ url });
 });
@@ -106,5 +147,54 @@ app.post("/avatar", zValidator("json", uploadSchema), async (c) => {
 
   return c.json({ url });
 });
+
+const verifyKtpSchema = z.object({
+  noKamar: z.number().int().min(1).max(12),
+  status: z.enum(["approved", "rejected"]),
+  reason: z.string().optional(),
+});
+
+app.put(
+  "/ktp/verify",
+  ensureAdmin,
+  zValidator("json", verifyKtpSchema),
+  async (c) => {
+    const db = createDB(c.env.DATABASE_URL);
+    const parsed = verifyKtpSchema.safeParse(c.req.valid("json"));
+
+    if (!parsed.success) {
+      return c.json({ error: z.prettifyError(parsed.error) }, 400);
+    }
+
+    const { noKamar, status, reason } = parsed.data;
+
+    const result = await db
+      .update(user)
+      .set({
+        ktpStatus: status,
+        ktpRejectionReason: status === "rejected" ? (reason ?? null) : null,
+        onboarding: status === "approved" ? "bayar_tagihan" : null,
+      })
+      .where(eq(user.noKamar, noKamar))
+      .returning({ id: user.id });
+
+    if (!result[0]) {
+      return c.json({ error: "Penghuni tidak ditemukan" }, 404);
+    }
+
+    // Notify the DO
+    const invites = await db
+      .select({ code: invitation.code })
+      .from(invitation)
+      .where(eq(invitation.noKamar, noKamar))
+      .limit(1);
+
+    if (invites[0]) {
+      await notifyOnboardingDO(c.env, invites[0].code);
+    }
+
+    return c.json({ success: true });
+  },
+);
 
 export default app;

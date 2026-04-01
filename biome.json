@@ -29,7 +29,8 @@
       "quoteStyle": "double",
       "semicolons": "always",
       "trailingCommas": "all"
-    }
+    },
+    "globals": ["WebSocketPair"]
   },
   "files": {
     "includes": [

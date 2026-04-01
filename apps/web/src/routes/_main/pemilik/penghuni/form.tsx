@@ -5,7 +5,7 @@ import {
   useNavigate,
   useRouter,
 } from "@tanstack/react-router";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, ShieldAlert } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -13,10 +13,14 @@ import { TopBar, TopBarCenter, TopBarLeft } from "@/components/top-bar";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
+  DrawerClose,
   DrawerContent,
   DrawerDescription,
   DrawerFooter,
+  DrawerHeader,
+  DrawerNestedRoot,
   DrawerTitle,
+  DrawerTrigger,
 } from "@/components/ui/drawer";
 import {
   Field,
@@ -25,9 +29,15 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 import { Separator } from "@/components/ui/separator";
 import { SlideToConfirm } from "@/components/ui/slide-to-confirm";
 import { createInvite } from "@/lib/invite";
+import { verifyPin } from "@/lib/settings";
 
 const searchSchema = z.object({
   kamar: z.number().or(z.string()).transform(Number),
@@ -47,6 +57,9 @@ function RouteComponent() {
   const navigate = useNavigate();
   const { kamar } = Route.useSearch();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [pin, setPin] = useState("");
+  const [pinError, setPinError] = useState("");
+  const [nestedOpen, setNestedOpen] = useState(false);
 
   const form = useForm({
     defaultValues: {
@@ -67,7 +80,7 @@ function RouteComponent() {
       navigate({
         to: "/pemilik/penghuni/created",
         search: {
-          inviteId: result.id,
+          code: result.code,
         },
       });
     },
@@ -76,9 +89,16 @@ function RouteComponent() {
     },
   });
 
-  const handleFinalSubmit = () => {
-    mutate({ name: form.state.values.name, noKamar: kamar });
-  };
+  const verifyMutation = useMutation({
+    mutationFn: () => verifyPin(pin),
+    onSuccess: () => {
+      setPinError("");
+      mutate({ name: form.state.values.name, noKamar: kamar });
+    },
+    onError: (e: Error) => {
+      setPinError(e.message || "PIN salah");
+    },
+  });
 
   return (
     <div className="pt-20 space-y-6">
@@ -148,7 +168,7 @@ function RouteComponent() {
         </Button>
 
         <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-          <DrawerContent drag={false}>
+          <DrawerContent>
             <div className="p-6 text-left">
               <DrawerTitle>Konfirmasi Data</DrawerTitle>
               <DrawerDescription>
@@ -172,12 +192,79 @@ function RouteComponent() {
                 <span className="text-lg font-medium">{kamar}</span>
               </div>
             </div>
-            <DrawerFooter className="pt-6">
-              <SlideToConfirm
-                onConfirm={handleFinalSubmit}
-                isLoading={isPending}
-                text="Geser untuk Konfirmasi"
-              />
+
+            <div className="px-6 pt-6 space-y-2">
+              <DrawerNestedRoot
+                open={nestedOpen}
+                onOpenChange={(open) => {
+                  setNestedOpen(open);
+                  if (!open) {
+                    setPin("");
+                    setPinError("");
+                  }
+                }}
+              >
+                <DrawerTrigger asChild>
+                  <Button className="w-full">Lanjut</Button>
+                </DrawerTrigger>
+                <DrawerContent>
+                  <DrawerHeader className="text-center">
+                    <div className="mx-auto mb-2 flex size-10 items-center justify-center rounded-full bg-red-100">
+                      <ShieldAlert className="size-5 text-red-600" />
+                    </div>
+                    <DrawerTitle>Masukkan PIN Keamanan</DrawerTitle>
+                    <DrawerDescription>
+                      PIN diperlukan untuk melanjutkan pembuatan undangan
+                      penghuni baru.
+                    </DrawerDescription>
+                  </DrawerHeader>
+
+                  <div className="px-6 space-y-5 pb-4">
+                    <div className="flex justify-center">
+                      <InputOTP
+                        maxLength={4}
+                        value={pin}
+                        onChange={(v) => {
+                          setPin(v);
+                          setPinError("");
+                        }}
+                      >
+                        <InputOTPGroup>
+                          <InputOTPSlot index={0} className="size-12 text-lg" />
+                          <InputOTPSlot index={1} className="size-12 text-lg" />
+                          <InputOTPSlot index={2} className="size-12 text-lg" />
+                          <InputOTPSlot index={3} className="size-12 text-lg" />
+                        </InputOTPGroup>
+                      </InputOTP>
+                    </div>
+
+                    {pinError && (
+                      <p className="text-sm text-red-600 text-center">
+                        {pinError}
+                      </p>
+                    )}
+
+                    <SlideToConfirm
+                      onConfirm={() => verifyMutation.mutate()}
+                      isLoading={verifyMutation.isPending || isPending}
+                      disabled={pin.length < 4}
+                      text="Geser untuk Konfirmasi"
+                    />
+                  </div>
+
+                  <DrawerFooter>
+                    <DrawerClose asChild>
+                      <Button variant="outline">Batal</Button>
+                    </DrawerClose>
+                  </DrawerFooter>
+                </DrawerContent>
+              </DrawerNestedRoot>
+            </div>
+
+            <DrawerFooter className="pt-2">
+              <DrawerClose asChild>
+                <Button variant="outline">Batal</Button>
+              </DrawerClose>
             </DrawerFooter>
           </DrawerContent>
         </Drawer>
