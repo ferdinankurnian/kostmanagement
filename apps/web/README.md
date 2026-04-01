@@ -1,6 +1,6 @@
 # Kost Management — Web
 
-React 19 SPA with TanStack Router, Tailwind CSS v4, shadcn/ui, deployed to Cloudflare Pages.
+React 19 SPA with TanStack Router, Tailwind CSS v4, shadcn/ui. Deploys to Cloudflare Pages.
 
 ## Dev
 
@@ -13,8 +13,8 @@ Runs on `http://localhost:3000`. API requests proxied to `http://localhost:8787`
 ## Build & Deploy
 
 ```bash
-bun run build                    # vite build
-bun run deploy                   # build + wrangler pages deploy
+bun run build   # vite build (tsc + vite)
+bun run deploy  # build + wrangler pages deploy
 ```
 
 Production: `https://kost-management.pages.dev`
@@ -22,10 +22,12 @@ Production: `https://kost-management.pages.dev`
 ## Tests
 
 ```bash
-bun run test                     # run all tests
-bun run test -- --run <pattern>  # run single test
-bunx vitest watch               # watch mode
+bun run test                     # run all tests (Vitest)
+bun run test -- --run <pattern>  # run single test by filename
+bunx vitest watch                # watch mode
 ```
+
+Test framework: Vitest + @testing-library/react + jsdom. Config in `vite.config.ts`.
 
 ## Routes
 

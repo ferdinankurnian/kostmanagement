@@ -59,18 +59,20 @@ bun run deploy:web   # deploy web only
 ### API DB
 
 ```bash
-cd apps/api && bun run db:push       # push Drizzle schema to DB
-cd apps/api && bun run db:seed       # seed the database
-cd apps/api && bun run db:studio     # open Drizzle Studio
-cd apps/api && bun run cf-typegen    # regenerate Cloudflare types
+cd apps/api && bun run db:push   # push Drizzle schema to DB (dev)
+cd apps/api && bun run db:seed   # seed the database (dev)
+cd apps/api && bun run db:studio # open Drizzle Studio
+cd apps/api && bun run cf-typegen # regenerate Cloudflare types
 ```
+
+For production DB operations, use `db:push:prod` and `db:seed:prod`.
 
 ### Tests
 
 ```bash
-cd apps/web && bun run test                     # run all tests
-cd apps/web && bun run test -- --run <pattern>  # run single test
-cd apps/web && bunx vitest watch               # watch mode
+cd apps/web && bun run test                     # run all tests (Vitest)
+cd apps/web && bun run test -- --run <pattern>  # run single test by filename
+cd apps/web && bunx vitest watch                # watch mode
 ```
 
 ## Project Structure
@@ -112,7 +114,7 @@ packages/
 | informasi    | announcements (priority-based)       |
 | settings     | key-value config (kost info, PIN)    |
 
-## API Endends
+## API Endpoints
 
 | Resource     | Endpoints                                         |
 | ------------ | ------------------------------------------------- |

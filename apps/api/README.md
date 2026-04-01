@@ -1,6 +1,6 @@
 # Kost Management — API
 
-Hono on Cloudflare Workers with Drizzle ORM + PostgreSQL (Neon).
+Hono on Cloudflare Workers with Drizzle ORM + PostgreSQL (Neon). Deploys to Cloudflare Workers.
 
 ## Dev
 
@@ -13,21 +13,23 @@ Runs on `http://localhost:8787`.
 ## Database
 
 ```bash
-bun run db:push       # push schema to DB
-bun run db:seed       # seed the database
-bun run db:studio     # open Drizzle Studio
+bun run db:push   # push schema to DB (dev)
+bun run db:seed   # seed the database (dev)
+bun run db:studio # open Drizzle Studio
 ```
+
+For production, use `db:push:prod` and `db:seed:prod`.
 
 ## Types
 
 ```bash
-bun run cf-typegen    # regenerate Cloudflare types
+bun run cf-typegen  # regenerate Cloudflare types
 ```
 
 ## Deploy
 
 ```bash
-bun run deploy        # wrangler deploy --minify
+bun run deploy  # wrangler deploy --minify
 ```
 
 Production: `https://api.ferdinankurnian.workers.dev`
