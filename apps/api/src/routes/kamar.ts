@@ -115,7 +115,7 @@ app.delete(
     }
 
     const existingUser = await db
-      .select({ id: user.id })
+      .select({ id: user.id, ktp: user.ktp, image: user.image })
       .from(user)
       .where(eq(user.noKamar, parsed.data))
       .limit(1);
@@ -147,6 +147,16 @@ app.delete(
       // Delete invitation
       if (invites[0]) {
         await db.delete(invitation).where(eq(invitation.noKamar, parsed.data));
+      }
+
+      // Delete files from R2 storage
+      if (existingUser[0].ktp) {
+        const ktpKey = existingUser[0].ktp.replace(/^\//, "");
+        await c.env.STORAGE.delete(ktpKey);
+      }
+      if (existingUser[0].image) {
+        const imageKey = existingUser[0].image.replace(/^\//, "");
+        await c.env.STORAGE.delete(imageKey);
       }
 
       // Delete the user
