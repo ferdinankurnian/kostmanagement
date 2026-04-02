@@ -12,6 +12,7 @@ export interface Tagihan {
   id: string;
   noKamar: number;
   userId: string;
+  namaPenghuni: string | null;
   jumlah: number;
   periode: string;
   status: TagihanStatus;

@@ -65,12 +65,33 @@ app.get("/", async (c) => {
   const role = session.user.role;
   const noKamar = (session.user as { noKamar?: number | null }).noKamar;
 
-  let rows: (typeof tagihan.$inferSelect)[];
+  let rows: (typeof tagihan.$inferSelect & { namaPenghuni: string | null })[];
 
   if (role === "admin") {
-    rows = await db.select().from(tagihan);
+    const tagihanRows = await db
+      .select({
+        tagihan,
+        namaPenghuni: user.name,
+      })
+      .from(tagihan)
+      .leftJoin(user, eq(tagihan.userId, user.id));
+    rows = tagihanRows.map((row) => ({
+      ...row.tagihan,
+      namaPenghuni: row.namaPenghuni,
+    }));
   } else if (noKamar) {
-    rows = await db.select().from(tagihan).where(eq(tagihan.noKamar, noKamar));
+    const tagihanRows = await db
+      .select({
+        tagihan,
+        namaPenghuni: user.name,
+      })
+      .from(tagihan)
+      .leftJoin(user, eq(tagihan.userId, user.id))
+      .where(eq(tagihan.noKamar, noKamar));
+    rows = tagihanRows.map((row) => ({
+      ...row.tagihan,
+      namaPenghuni: row.namaPenghuni,
+    }));
   } else {
     rows = [];
   }
@@ -88,8 +109,12 @@ app.get("/:id", async (c) => {
 
   const id = c.req.param("id");
   const rows = await db
-    .select()
+    .select({
+      tagihan,
+      namaPenghuni: user.name,
+    })
     .from(tagihan)
+    .leftJoin(user, eq(tagihan.userId, user.id))
     .where(eq(tagihan.id, id))
     .limit(1);
 
@@ -97,11 +122,17 @@ app.get("/:id", async (c) => {
     return c.json({ error: "Tagihan tidak ditemukan" }, 404);
   }
 
-  if (session.user.role !== "admin" && rows[0].userId !== session.user.id) {
+  if (
+    session.user.role !== "admin" &&
+    rows[0].tagihan.userId !== session.user.id
+  ) {
     return c.json({ error: "Forbidden" }, 403);
   }
 
-  return c.json(rows[0]);
+  return c.json({
+    ...rows[0].tagihan,
+    namaPenghuni: rows[0].namaPenghuni,
+  });
 });
 
 app.post("/", zValidator("json", createTagihanSchema), async (c) => {
