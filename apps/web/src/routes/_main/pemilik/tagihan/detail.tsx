@@ -1,24 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import {
-  Check,
-  ChevronLeft,
-  Clock,
-  Image as ImageIcon,
-  Loader2,
-  XCircle,
-} from "lucide-react";
+import { Check, ChevronLeft, Clock, Loader2, XCircle } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { TopBar, TopBarCenter, TopBarLeft } from "@/components/top-bar";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import {
   acceptTagihan,
@@ -70,7 +57,6 @@ function RouteComponent() {
   const { id } = Route.useSearch();
   const [alasan, setAlasan] = useState("");
   const [showReject, setShowReject] = useState(false);
-  const [showBukti, setShowBukti] = useState(false);
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["tagihan", id],
@@ -123,221 +109,197 @@ function RouteComponent() {
   const StatusIcon = statusConfig[data.status].icon;
 
   return (
-    <>
-      <div className="min-h-screen bg-background pb-24">
-        <TopBar>
-          <TopBarLeft>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => router.history.back()}
-            >
-              <ChevronLeft className="size-6" />
-            </Button>
-          </TopBarLeft>
-          <TopBarCenter>
-            <h1 className="text-lg whitespace-nowrap">Detail Pembayaran</h1>
-          </TopBarCenter>
-        </TopBar>
+    <div className="min-h-screen bg-background pb-24">
+      <TopBar>
+        <TopBarLeft>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => router.history.back()}
+          >
+            <ChevronLeft className="size-6" />
+          </Button>
+        </TopBarLeft>
+        <TopBarCenter>
+          <h1 className="text-lg whitespace-nowrap">Detail Pembayaran</h1>
+        </TopBarCenter>
+      </TopBar>
 
-        <div className="pt-24 px-4 space-y-6">
-          {/* Status Icon */}
-          <div className="flex justify-center">
-            <div
-              className={`size-16 rounded-full flex items-center justify-center ${statusConfig[data.status].color}`}
-            >
-              <StatusIcon className="size-8" strokeWidth={2.5} />
+      <div className="pt-24 px-4 space-y-6">
+        {/* Status Icon */}
+        <div className="flex justify-center">
+          <div
+            className={`size-16 rounded-full flex items-center justify-center ${statusConfig[data.status].color}`}
+          >
+            <StatusIcon className="size-8" strokeWidth={2.5} />
+          </div>
+        </div>
+
+        {/* Amount & Period */}
+        <div className="text-center space-y-1">
+          <h2 className="text-3xl font-semibold">
+            {formatRupiah(data.jumlah)}
+          </h2>
+          <p className="text-sm text-muted-foreground">{data.periode}</p>
+        </div>
+
+        {/* Bukti Pembayaran Card */}
+        {data.buktiPembayaran && (
+          <div className="space-y-2">
+            <p className="text-sm font-medium">Foto Bukti Pembayaran</p>
+            <div className="rounded-xl border bg-muted/30 p-2">
+              <img
+                src={data.buktiPembayaran}
+                alt="Bukti Pembayaran"
+                className="w-full rounded-lg object-contain max-h-96"
+              />
             </div>
           </div>
+        )}
 
-          {/* Amount & Period */}
-          <div className="text-center space-y-1">
-            <h2 className="text-3xl font-semibold">
-              {formatRupiah(data.jumlah)}
-            </h2>
-            <p className="text-sm text-muted-foreground">{data.periode}</p>
+        {/* Info Rows */}
+        <div className="space-y-4">
+          <div className="flex justify-between items-center py-3 border-b">
+            <span className="text-sm text-muted-foreground">Invoice ID</span>
+            <span className="text-sm font-medium">{data.id.slice(0, 8)}</span>
           </div>
 
-          {/* Bukti Pembayaran Button */}
-          {data.buktiPembayaran && (
-            <Button
-              variant="default"
-              className="w-full"
-              onClick={() => setShowBukti(true)}
-            >
-              Bukti Pembayaran
-            </Button>
+          <div className="flex justify-between items-center py-3 border-b">
+            <span className="text-sm text-muted-foreground">Nama Penghuni</span>
+            <span className="text-sm font-medium">
+              {data.namaPenghuni || "-"}
+            </span>
+          </div>
+
+          <div className="flex justify-between items-center py-3 border-b">
+            <span className="text-sm text-muted-foreground">No Kamar</span>
+            <span className="text-sm font-medium">{data.noKamar}</span>
+          </div>
+
+          <div className="flex justify-between items-center py-3 border-b">
+            <span className="text-sm text-muted-foreground">Periode</span>
+            <span className="text-sm font-medium">{data.periode}</span>
+          </div>
+
+          {data.tanggalJatuhTempo && (
+            <div className="flex justify-between items-center py-3 border-b">
+              <span className="text-sm text-muted-foreground">Jatuh Tempo</span>
+              <span className="text-sm font-medium">
+                {new Date(data.tanggalJatuhTempo).toLocaleDateString("id-ID", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
+              </span>
+            </div>
           )}
 
-          {/* Info Rows */}
-          <div className="space-y-4">
-            <div className="flex justify-between items-center py-3 border-b">
-              <span className="text-sm text-muted-foreground">Invoice ID</span>
-              <span className="text-sm font-medium">{data.id.slice(0, 8)}</span>
-            </div>
-
+          {data.tanggalBayar && (
             <div className="flex justify-between items-center py-3 border-b">
               <span className="text-sm text-muted-foreground">
-                Nama Penghuni
+                Tanggal Bayar
               </span>
               <span className="text-sm font-medium">
-                {data.namaPenghuni || "-"}
+                {new Date(data.tanggalBayar).toLocaleDateString("id-ID", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
               </span>
             </div>
+          )}
 
+          {data.metodePembayaran && (
             <div className="flex justify-between items-center py-3 border-b">
-              <span className="text-sm text-muted-foreground">No Kamar</span>
-              <span className="text-sm font-medium">{data.noKamar}</span>
+              <span className="text-sm text-muted-foreground">
+                Metode Bayar
+              </span>
+              <span className="text-sm font-medium capitalize">
+                {data.metodePembayaran}
+              </span>
             </div>
+          )}
 
+          {data.monthsPaid && data.monthsPaid > 1 && (
             <div className="flex justify-between items-center py-3 border-b">
-              <span className="text-sm text-muted-foreground">Periode</span>
-              <span className="text-sm font-medium">{data.periode}</span>
-            </div>
-
-            {data.tanggalJatuhTempo && (
-              <div className="flex justify-between items-center py-3 border-b">
-                <span className="text-sm text-muted-foreground">
-                  Jatuh Tempo
-                </span>
-                <span className="text-sm font-medium">
-                  {new Date(data.tanggalJatuhTempo).toLocaleDateString(
-                    "id-ID",
-                    {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    },
-                  )}
-                </span>
-              </div>
-            )}
-
-            {data.tanggalBayar && (
-              <div className="flex justify-between items-center py-3 border-b">
-                <span className="text-sm text-muted-foreground">
-                  Tanggal Bayar
-                </span>
-                <span className="text-sm font-medium">
-                  {new Date(data.tanggalBayar).toLocaleDateString("id-ID", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
-                </span>
-              </div>
-            )}
-
-            {data.metodePembayaran && (
-              <div className="flex justify-between items-center py-3 border-b">
-                <span className="text-sm text-muted-foreground">
-                  Metode Bayar
-                </span>
-                <span className="text-sm font-medium capitalize">
-                  {data.metodePembayaran}
-                </span>
-              </div>
-            )}
-
-            {data.monthsPaid && data.monthsPaid > 1 && (
-              <div className="flex justify-between items-center py-3 border-b">
-                <span className="text-sm text-muted-foreground">
-                  Bulan Dibayar
-                </span>
-                <span className="text-sm font-medium">
-                  {data.monthsPaid} bulan
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* Alasan Penolakan */}
-          {data.alasanPenolakan && (
-            <div className="rounded-xl bg-red-50 border border-red-200 p-4 space-y-2">
-              <p className="text-sm font-medium text-red-900">
-                Alasan Penolakan
-              </p>
-              <p className="text-sm text-red-700">{data.alasanPenolakan}</p>
+              <span className="text-sm text-muted-foreground">
+                Bulan Dibayar
+              </span>
+              <span className="text-sm font-medium">
+                {data.monthsPaid} bulan
+              </span>
             </div>
           )}
         </div>
 
-        {/* Action Buttons */}
-        {data.status === "menunggu_verifikasi" && (
-          <div className="fixed bottom-0 left-0 right-0 mx-auto w-full max-w-lg border-t bg-background p-4 space-y-3">
-            {showReject ? (
-              <>
-                <Textarea
-                  value={alasan}
-                  onChange={(e) => setAlasan(e.target.value)}
-                  placeholder="Alasan penolakan..."
-                  rows={3}
-                />
-                <div className="flex gap-2">
-                  <Button
-                    variant="destructive"
-                    className="flex-1"
-                    onClick={() => rejectMutation.mutate()}
-                    disabled={rejectMutation.isPending || !alasan.trim()}
-                  >
-                    {rejectMutation.isPending ? (
-                      <Loader2 className="size-4 animate-spin" />
-                    ) : (
-                      "Tolak"
-                    )}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setShowReject(false);
-                      setAlasan("");
-                    }}
-                  >
-                    Batal
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <div className="flex gap-2">
-                <Button
-                  className="flex-1"
-                  onClick={() => acceptMutation.mutate()}
-                  disabled={acceptMutation.isPending}
-                >
-                  {acceptMutation.isPending ? (
-                    <Loader2 className="size-4 animate-spin" />
-                  ) : (
-                    "Terima"
-                  )}
-                </Button>
-                <Button
-                  variant="destructive"
-                  className="flex-1"
-                  onClick={() => setShowReject(true)}
-                >
-                  Tolak
-                </Button>
-              </div>
-            )}
+        {/* Alasan Penolakan */}
+        {data.alasanPenolakan && (
+          <div className="rounded-xl bg-red-50 border border-red-200 p-4 space-y-2">
+            <p className="text-sm font-medium text-red-900">Alasan Penolakan</p>
+            <p className="text-sm text-red-700">{data.alasanPenolakan}</p>
           </div>
         )}
       </div>
 
-      {/* Bukti Pembayaran Dialog */}
-      <Dialog open={showBukti} onOpenChange={setShowBukti}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Bukti Pembayaran</DialogTitle>
-          </DialogHeader>
-          {data.buktiPembayaran && (
-            <img
-              src={data.buktiPembayaran}
-              alt="Bukti Pembayaran"
-              className="w-full rounded-lg object-contain max-h-[70vh]"
-            />
+      {/* Action Buttons */}
+      {data.status === "menunggu_verifikasi" && (
+        <div className="fixed bottom-0 left-0 right-0 mx-auto w-full max-w-lg border-t bg-background p-4 space-y-3">
+          {showReject ? (
+            <>
+              <Textarea
+                value={alasan}
+                onChange={(e) => setAlasan(e.target.value)}
+                placeholder="Alasan penolakan..."
+                rows={3}
+              />
+              <div className="flex gap-2">
+                <Button
+                  variant="destructive"
+                  className="flex-1"
+                  onClick={() => rejectMutation.mutate()}
+                  disabled={rejectMutation.isPending || !alasan.trim()}
+                >
+                  {rejectMutation.isPending ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    "Tolak"
+                  )}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowReject(false);
+                    setAlasan("");
+                  }}
+                >
+                  Batal
+                </Button>
+              </div>
+            </>
+          ) : (
+            <div className="flex gap-2">
+              <Button
+                className="flex-1"
+                onClick={() => acceptMutation.mutate()}
+                disabled={acceptMutation.isPending}
+              >
+                {acceptMutation.isPending ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  "Terima"
+                )}
+              </Button>
+              <Button
+                variant="destructive"
+                className="flex-1"
+                onClick={() => setShowReject(true)}
+              >
+                Tolak
+              </Button>
+            </div>
           )}
-        </DialogContent>
-      </Dialog>
-    </>
+        </div>
+      )}
+    </div>
   );
 }
