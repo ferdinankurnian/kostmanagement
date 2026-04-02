@@ -452,20 +452,22 @@ function BayarTagihanPage() {
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 px-4 pb-4 pt-8 bg-linear-to-t from-background to-transparent">
-        <Button
-          onClick={handleSubmit}
-          disabled={submitMutation.isPending || !bukti}
-          className="w-full max-w-lg rounded-full mx-auto"
-          size="lg"
-        >
-          {submitMutation.isPending ? (
-            <Loader2 className="animate-spin mr-2 size-4" />
-          ) : isRejected ? (
-            <RotateCcw className="mr-2 size-4" />
-          ) : null}
-          {isRejected ? "Kirim Ulang Pembayaran" : "Kirim Pembayaran"}
-        </Button>
+      <div className="fixed bottom-0 left-0 right-0 bg-linear-to-t from-background to-transparent">
+        <div className="mx-auto max-w-lg px-4 pb-4 pt-8">
+          <Button
+            onClick={handleSubmit}
+            disabled={submitMutation.isPending || !bukti}
+            className="w-full rounded-full"
+            size="lg"
+          >
+            {submitMutation.isPending ? (
+              <Loader2 className="animate-spin mr-2 size-4" />
+            ) : isRejected ? (
+              <RotateCcw className="mr-2 size-4" />
+            ) : null}
+            {isRejected ? "Kirim Ulang Pembayaran" : "Kirim Pembayaran"}
+          </Button>
+        </div>
       </div>
     </div>
   );
