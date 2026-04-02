@@ -33,11 +33,13 @@ self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  if (
-    request.method !== "GET" ||
-    url.origin !== self.location.origin ||
-    url.pathname.startsWith("/api")
-  ) {
+  if (request.method !== "GET" || url.origin !== self.location.origin) {
+    return;
+  }
+
+  // API requests: network-first
+  if (url.pathname.startsWith("/api")) {
+    event.respondWith(fetch(request));
     return;
   }
 
@@ -51,6 +53,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  // Static assets: cache-first
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
       const networkResponse = fetch(request)
