@@ -150,13 +150,14 @@ app.delete(
       }
 
       // Delete files from R2 storage
+      // Works with all URL formats: /api/files/ktp/xxx, https://api.kost.iydheko.site/files/ktp/xxx, https://cdn.kost.iydheko.site/files/ktp/xxx
       if (existingUser[0].ktp) {
-        const ktpKey = existingUser[0].ktp.replace(/^\/api\/files\//, "");
-        await c.env.R2_BUCKET.delete(ktpKey);
+        const ktpKey = existingUser[0].ktp.split("/files/").pop() || "";
+        if (ktpKey) await c.env.R2_BUCKET.delete(ktpKey);
       }
       if (existingUser[0].image) {
-        const imageKey = existingUser[0].image.replace(/^\/api\/files\//, "");
-        await c.env.R2_BUCKET.delete(imageKey);
+        const imageKey = existingUser[0].image.split("/files/").pop() || "";
+        if (imageKey) await c.env.R2_BUCKET.delete(imageKey);
       }
 
       // Delete the user

@@ -79,8 +79,8 @@ app.post("/ktp", zValidator("json", uploadSchema), async (c) => {
     httpMetadata: { contentType: parsed.data.fileType },
   });
 
-  // Save the key as URL path
-  const url = `/api/files/${key}`;
+  // Save the key as full URL pointing to API worker subdomain
+  const url = `https://cdn.kost.iydheko.site/files/${key}`;
 
   // Update user profile
   const db = createDB(c.env.DATABASE_URL);
@@ -115,7 +115,7 @@ app.post("/bukti", zValidator("json", uploadSchema), async (c) => {
     httpMetadata: { contentType: parsed.data.fileType },
   });
 
-  const url = `/api/files/${key}`;
+  const url = `https://cdn.kost.iydheko.site/files/${key}`;
 
   return c.json({ url });
 });
@@ -140,7 +140,7 @@ app.post("/avatar", zValidator("json", uploadSchema), async (c) => {
     httpMetadata: { contentType: parsed.data.fileType },
   });
 
-  const url = `/api/files/${key}`;
+  const url = `https://cdn.kost.iydheko.site/files/${key}`;
 
   const db = createDB(c.env.DATABASE_URL);
   await db.update(user).set({ image: url }).where(eq(user.id, session.user.id));
