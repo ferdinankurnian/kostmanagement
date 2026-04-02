@@ -1,6 +1,6 @@
 const LEGACY_SHA256_PATTERN = /^[0-9a-f]{64}$/;
 const PBKDF2_PREFIX = "pbkdf2_sha256";
-const PBKDF2_ITERATIONS = 120_000;
+const PBKDF2_ITERATIONS = 100_000;
 const DEFAULT_PIN = "1234";
 
 function bytesToHex(bytes: Uint8Array): string {

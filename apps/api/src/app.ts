@@ -24,6 +24,12 @@ export interface Env {
 
 export const app = new Hono<{ Bindings: Env }>();
 
+// Global error handler
+app.onError((error, c) => {
+  console.error("API Error:", error);
+  return c.json({ error: "Internal server error" }, { status: 500 });
+});
+
 const defaultOrigins = ["http://localhost:3000", "http://localhost:5173"];
 
 app.use("*", (c, next) => {

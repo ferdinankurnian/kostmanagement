@@ -42,7 +42,12 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (request.mode === "navigate") {
-    event.respondWith(fetch(request).catch(() => caches.match("/")));
+    event.respondWith(
+      fetch(request).catch(async () => {
+        const cached = await caches.match("/");
+        return cached || new Response("Offline", { status: 503 });
+      }),
+    );
     return;
   }
 
