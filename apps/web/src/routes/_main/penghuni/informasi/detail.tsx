@@ -1,10 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, Loader2 } from "lucide-react";
-import { useState } from "react";
 import { z } from "zod";
 import { TopBar, TopBarCenter, TopBarLeft } from "@/components/top-bar";
 import { Button } from "@/components/ui/button";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { getInformasiById } from "@/lib/informasi";
 
 export const Route = createFileRoute("/_main/penghuni/informasi/detail")({
@@ -17,7 +23,6 @@ export const Route = createFileRoute("/_main/penghuni/informasi/detail")({
 function InformasiDetailPage() {
   const navigate = useNavigate();
   const { id } = Route.useSearch();
-  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["informasi", id],
@@ -58,28 +63,28 @@ function InformasiDetailPage() {
         <div className="flex-1 pt-20 pb-6">
           {/* Photo carousel */}
           {data.fotoUrls.length > 0 && (
-            <div className="relative">
-              <div className="aspect-video w-full overflow-hidden">
-                <img
-                  src={data.fotoUrls[currentPhotoIndex]}
-                  alt={data.judul}
-                  className="h-full w-full object-cover"
-                />
-              </div>
-              {data.fotoUrls.length > 1 && (
-                <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5">
-                  {data.fotoUrls.map((_, index) => (
-                    <button
-                      type="button"
-                      key={index}
-                      onClick={() => setCurrentPhotoIndex(index)}
-                      className={`size-2 rounded-full transition-colors ${
-                        index === currentPhotoIndex ? "bg-white" : "bg-white/50"
-                      }`}
-                    />
+            <div className="px-12">
+              <Carousel className="w-full">
+                <CarouselContent>
+                  {data.fotoUrls.map((url) => (
+                    <CarouselItem key={url}>
+                      <div className="aspect-video w-full overflow-hidden rounded-xl">
+                        <img
+                          src={url}
+                          alt={data.judul}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    </CarouselItem>
                   ))}
-                </div>
-              )}
+                </CarouselContent>
+                {data.fotoUrls.length > 1 && (
+                  <>
+                    <CarouselPrevious />
+                    <CarouselNext />
+                  </>
+                )}
+              </Carousel>
             </div>
           )}
 
@@ -102,34 +107,6 @@ function InformasiDetailPage() {
                 {data.deskripsi}
               </p>
             </div>
-
-            {data.fotoUrls.length > 1 && (
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">
-                  Foto Lainnya
-                </p>
-                <div className="grid grid-cols-3 gap-2">
-                  {data.fotoUrls.map((url, index) => (
-                    <button
-                      type="button"
-                      key={url}
-                      onClick={() => setCurrentPhotoIndex(index)}
-                      className={`aspect-square overflow-hidden rounded-lg border-2 transition-colors ${
-                        index === currentPhotoIndex
-                          ? "border-primary"
-                          : "border-transparent"
-                      }`}
-                    >
-                      <img
-                        src={url}
-                        alt={`Foto ${index + 1}`}
-                        className="h-full w-full object-cover"
-                      />
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </div>
       )}
