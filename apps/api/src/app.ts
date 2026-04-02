@@ -64,15 +64,25 @@ app.all("/api/auth/*", async (c) => {
 
 app.get("/api/files/*", async (c) => {
   const session = await getSession(c);
-  if (!session) return c.json({ error: "Unauthorized" }, 401);
+  if (!session) {
+    console.log("[FILES] Unauthorized access attempt:", c.req.path);
+    return c.json({ error: "Unauthorized" }, 401);
+  }
 
   const path = c.req.path.replace("/api/files/", "");
+  console.log("[FILES] Fetching from R2:", {
+    requestPath: c.req.path,
+    r2Key: path,
+  });
+
   const object = await c.env.R2_BUCKET.get(path);
 
   if (!object) {
-    return c.json({ error: "File tidak ditemukan" }, 404);
+    console.log("[FILES] File not found in R2:", path);
+    return c.json({ error: "File tidak ditemukan", r2Key: path }, 404);
   }
 
+  console.log("[FILES] File found, serving:", path);
   const headers = new Headers();
   object.writeHttpMetadata(headers);
   headers.set("etag", object.httpEtag);
