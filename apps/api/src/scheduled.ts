@@ -40,7 +40,8 @@ export async function handleScheduled(env: Env) {
     year: "numeric",
   }).format(now);
 
-  const jatuhTempo = new Date(now.getFullYear(), now.getMonth(), 10);
+  // Last day of current month (28/29/30/31 depending on month)
+  const jatuhTempo = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
   let created = 0;
 
@@ -48,7 +49,7 @@ export async function handleScheduled(env: Env) {
     if (!p.noKamar) continue;
 
     // Skip if penghuni has paid ahead
-    if (p.bayarSampai && new Date(p.bayarSampai) > jatuhTempo) continue;
+    if (p.bayarSampai && new Date(p.bayarSampai) >= jatuhTempo) continue;
 
     // Check if tagihan for this periode already exists
     const existing = await db

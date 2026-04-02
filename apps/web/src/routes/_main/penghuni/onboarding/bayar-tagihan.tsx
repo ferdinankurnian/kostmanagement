@@ -347,33 +347,6 @@ function BayarTagihanPage() {
           </div>
         </div>
 
-        {settings.no_rekening && (
-          <div className="mt-4">
-            <p className="text-xs font-medium text-muted-foreground mb-2">
-              Transfer ke Rekening
-            </p>
-            <div className="flex flex-col justify-between rounded-xl bg-primary text-white h-48 p-4">
-              <p className="text-md font-medium">
-                {settings.nama_bank || "Bank -"}
-              </p>
-              <div className="flex items-center justify-center gap-2">
-                <p className="text-3xl">{settings.no_rekening || "-"}</p>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-white hover:bg-white/20"
-                  onClick={() => handleCopy(settings.no_rekening ?? "")}
-                >
-                  <Copy className="size-4" />
-                </Button>
-              </div>
-              <p className="text-md text-end">
-                {settings.nama_pemilik_rekening || "-"}
-              </p>
-            </div>
-          </div>
-        )}
-
         <div className="mt-6 space-y-3">
           <Label>Metode Pembayaran</Label>
           <div className="grid grid-cols-2 gap-3">
@@ -410,6 +383,33 @@ function BayarTagihanPage() {
           </div>
         </div>
 
+        {metode === "transfer" && settings.no_rekening && (
+          <div className="mt-4">
+            <p className="text-xs font-medium text-muted-foreground mb-2">
+              Transfer ke Rekening
+            </p>
+            <div className="flex flex-col justify-between rounded-xl bg-primary text-white h-48 p-4">
+              <p className="text-md font-medium">
+                {settings.nama_bank || "Bank -"}
+              </p>
+              <div className="flex items-center justify-center gap-2">
+                <p className="text-3xl">{settings.no_rekening || "-"}</p>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-white hover:bg-white/20"
+                  onClick={() => handleCopy(settings.no_rekening ?? "")}
+                >
+                  <Copy className="size-4" />
+                </Button>
+              </div>
+              <p className="text-md text-end">
+                {settings.nama_pemilik_rekening || "-"}
+              </p>
+            </div>
+          </div>
+        )}
+
         <div className="mt-6 space-y-3">
           <Label>Bayar berapa bulan?</Label>
           <div className="flex gap-2 flex-wrap">
@@ -428,9 +428,20 @@ function BayarTagihanPage() {
               </button>
             ))}
           </div>
-          <p className="text-sm text-muted-foreground">
-            Total: {formatRupiah(tagihan.jumlah * monthsPaid)}
-          </p>
+        </div>
+
+        <div className="mt-6 rounded-xl border bg-card p-4">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">
+              {monthsPaid} bulan x {formatRupiah(tagihan.jumlah)}
+            </span>
+          </div>
+          <div className="mt-2 flex items-center justify-between">
+            <span className="text-base font-semibold">Total Bayar</span>
+            <span className="text-2xl font-bold">
+              {formatRupiah(tagihan.jumlah * monthsPaid)}
+            </span>
+          </div>
         </div>
 
         <div className="mt-6 space-y-3">
