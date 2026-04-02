@@ -59,7 +59,7 @@ function StatusPage() {
   // KTP rejected — show re-upload form
   if (user.ktpStatus === "rejected") {
     return (
-      <div className="flex min-h-screen flex-col items-center px-6 pt-20 text-center">
+      <div className="flex min-h-screen flex-col items-center px-6 pt-20 pb-24 text-center">
         <TopBar>
           <TopBarCenter>
             <h1 className="text-lg">Status KTP</h1>
@@ -91,12 +91,13 @@ function StatusPage() {
               value={ktpFile ? [ktpFile] : []}
             />
           </Field>
+        </div>
 
+        <div className="fixed bottom-0 left-0 right-0 px-4 pb-4 pt-8 bg-linear-to-t from-background to-transparent text-center">
           <Button
             onClick={handleReupload}
             disabled={isUploading || !ktpFile}
-            className="w-full rounded-full"
-            size="lg"
+            className="w-full max-w-lg rounded-full mx-auto"
           >
             {isUploading ? (
               <Loader2 className="mr-2 size-4 animate-spin" />
