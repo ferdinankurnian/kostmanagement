@@ -1,8 +1,9 @@
 import { createAuth } from "@repo/auth";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { getSession } from "./middleware/auth";
+import { verifySignedToken } from "./lib/signing";
 import { rateLimiter } from "./middleware/rate-limit";
+import fileRoutes from "./routes/files";
 import informasiRoutes from "./routes/informasi";
 import inviteRoutes from "./routes/invite";
 import kamarRoutes from "./routes/kamar";
@@ -20,6 +21,7 @@ export interface Env {
   CORS_ORIGINS: string;
   R2_BUCKET: R2Bucket;
   ONBOARDING_DO: DurableObjectNamespace;
+  ALWAYS_PERSISTENCE_KOST_DATA: string;
 }
 
 export const app = new Hono<{ Bindings: Env }>();
@@ -63,26 +65,50 @@ app.all("/api/auth/*", async (c) => {
 });
 
 app.get("/files/*", async (c) => {
-  const session = await getSession(c);
-  if (!session) {
-    console.log("[FILES] Unauthorized access attempt:", c.req.path);
-    return c.json({ error: "Unauthorized" }, 401);
-  }
-
   const path = c.req.path.replace("/files/", "");
-  console.log("[FILES] Fetching from R2:", {
-    requestPath: c.req.path,
-    r2Key: path,
+  const token = c.req.query("token");
+  const expires = c.req.query("expires");
+
+  console.log("[FILES] Request:", {
+    path,
+    hasToken: !!token,
+    hasExpires: !!expires,
   });
 
+  // Validate token and expiry
+  if (!token || !expires) {
+    console.log("[FILES] Missing token or expires");
+    return c.json({ error: "Missing token" }, 403);
+  }
+
+  const expiresNum = parseInt(expires, 10);
+  if (Number.isNaN(expiresNum)) {
+    console.log("[FILES] Invalid expires value:", expires);
+    return c.json({ error: "Invalid expires" }, 403);
+  }
+
+  // Check if token expired
+  if (Date.now() > expiresNum * 1000) {
+    console.log("[FILES] Token expired");
+    return c.json({ error: "Token expired" }, 403);
+  }
+
+  // Verify token
+  const isValid = await verifySignedToken(c.env, path, token, expiresNum);
+  if (!isValid) {
+    console.log("[FILES] Invalid token");
+    return c.json({ error: "Invalid token" }, 403);
+  }
+
+  // Fetch from R2
   const object = await c.env.R2_BUCKET.get(path);
 
   if (!object) {
     console.log("[FILES] File not found in R2:", path);
-    return c.json({ error: "File tidak ditemukan", r2Key: path }, 404);
+    return c.json({ error: "File tidak ditemukan" }, 404);
   }
 
-  console.log("[FILES] File found, serving:", path);
+  console.log("[FILES] Serving file:", path);
   const headers = new Headers();
   object.writeHttpMetadata(headers);
   headers.set("etag", object.httpEtag);
@@ -91,6 +117,7 @@ app.get("/files/*", async (c) => {
   return new Response(object.body, { headers });
 });
 
+app.route("/api/files", fileRoutes);
 app.route("/api/informasi", informasiRoutes);
 app.route("/api/kamar", kamarRoutes);
 app.route("/api/keluhan", keluhanRoutes);

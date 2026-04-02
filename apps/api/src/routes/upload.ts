@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod/v4";
 import type { Env } from "../app";
+import { generateSignedUrlAsync } from "../lib/signing";
 import { ensureAdmin, getSession } from "../middleware/auth";
 
 const app = new Hono<{ Bindings: Env }>();
@@ -56,6 +57,13 @@ async function findInviteAndNotify(
   }
 }
 
+function extractKeyFromUrl(url: string): string | null {
+  // URL format: https://api.kost.iydheko.site/files/ktp/xxx?token=...&expires=...
+  // or: https://api.kost.iydheko.site/files/ktp/xxx
+  const match = url.match(/\/files\/([^?]+)/);
+  return match ? match[1] : null;
+}
+
 app.post("/ktp", zValidator("json", uploadSchema), async (c) => {
   const session = await getSession(c);
   if (!session) return c.json({ error: "Unauthorized" }, 401);
@@ -79,8 +87,8 @@ app.post("/ktp", zValidator("json", uploadSchema), async (c) => {
     httpMetadata: { contentType: parsed.data.fileType },
   });
 
-  // Save the key as full URL pointing to API worker subdomain
-  const url = `https://cdn.kost.iydheko.site/files/${key}`;
+  // Generate signed URL (24 hour expiry)
+  const url = await generateSignedUrlAsync(c.env, key);
 
   // Update user profile
   const db = createDB(c.env.DATABASE_URL);
@@ -115,7 +123,7 @@ app.post("/bukti", zValidator("json", uploadSchema), async (c) => {
     httpMetadata: { contentType: parsed.data.fileType },
   });
 
-  const url = `https://cdn.kost.iydheko.site/files/${key}`;
+  const url = await generateSignedUrlAsync(c.env, key);
 
   return c.json({ url });
 });
@@ -140,7 +148,7 @@ app.post("/avatar", zValidator("json", uploadSchema), async (c) => {
     httpMetadata: { contentType: parsed.data.fileType },
   });
 
-  const url = `https://cdn.kost.iydheko.site/files/${key}`;
+  const url = await generateSignedUrlAsync(c.env, key);
 
   const db = createDB(c.env.DATABASE_URL);
   await db.update(user).set({ image: url }).where(eq(user.id, session.user.id));
@@ -168,18 +176,34 @@ app.put(
 
     const { noKamar, status, reason } = parsed.data;
 
-    const result = await db
+    // Get user's current KTP URL before updating
+    const currentUser = await db
+      .select({ id: user.id, ktp: user.ktp })
+      .from(user)
+      .where(eq(user.noKamar, noKamar))
+      .limit(1);
+
+    if (!currentUser[0]) {
+      return c.json({ error: "Penghuni tidak ditemukan" }, 404);
+    }
+
+    await db
       .update(user)
       .set({
         ktpStatus: status,
         ktpRejectionReason: status === "rejected" ? (reason ?? null) : null,
         onboarding: status === "approved" ? "bayar_tagihan" : null,
+        ktp: status === "rejected" ? null : currentUser[0].ktp,
       })
-      .where(eq(user.noKamar, noKamar))
-      .returning({ id: user.id });
+      .where(eq(user.noKamar, noKamar));
 
-    if (!result[0]) {
-      return c.json({ error: "Penghuni tidak ditemukan" }, 404);
+    // Delete rejected KTP photo from R2
+    if (status === "rejected" && currentUser[0].ktp) {
+      const key = extractKeyFromUrl(currentUser[0].ktp);
+      if (key) {
+        console.log("[UPLOAD] Deleting rejected KTP from R2:", key);
+        await c.env.R2_BUCKET.delete(key);
+      }
     }
 
     // Notify the DO

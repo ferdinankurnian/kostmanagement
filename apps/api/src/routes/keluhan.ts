@@ -8,6 +8,11 @@ import type { Env } from "../app";
 import { parseFotoUrls, serializeFotoUrls } from "../lib/foto-urls";
 import { getSession } from "../middleware/auth";
 
+function extractKeyFromUrl(url: string): string | null {
+  const match = url.match(/\/files\/([^?]+)/);
+  return match ? match[1] : null;
+}
+
 const app = new Hono<{ Bindings: Env }>();
 
 const createKeluhanSchema = z.object({
@@ -195,6 +200,18 @@ app.delete("/:id", async (c) => {
 
   if (!deleted) {
     return c.json({ error: "Keluhan tidak ditemukan" }, 404);
+  }
+
+  // Delete fotoUrls from R2
+  if (deleted.fotoUrls) {
+    const urls = parseFotoUrls(deleted.fotoUrls);
+    for (const url of urls) {
+      const key = extractKeyFromUrl(url);
+      if (key) {
+        console.log("[KELUHAN] Deleting foto from R2:", key);
+        await c.env.R2_BUCKET.delete(key);
+      }
+    }
   }
 
   return c.json({ success: true });

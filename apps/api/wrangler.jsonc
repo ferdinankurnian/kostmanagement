@@ -8,15 +8,12 @@
     {
       "pattern": "api.kost.iydheko.site",
       "custom_domain": true
-    },
-    {
-      "pattern": "cdn.kost.iydheko.site",
-      "custom_domain": true
     }
   ],
   "vars": {
     "BETTER_AUTH_URL": "https://api.kost.iydheko.site",
-    "CORS_ORIGINS": "https://kost.iydheko.site, http://localhost:3000, http://localhost:5173"
+    "CORS_ORIGINS": "https://kost.iydheko.site, http://localhost:3000, http://localhost:5173",
+    "ALWAYS_PERSISTENCE_KOST_DATA": "false"
   },
   "triggers": {
     "crons": ["0 0 1 * *"]

@@ -7,6 +7,13 @@ import { z } from "zod/v4";
 import type { Env } from "../app";
 import { getSession } from "../middleware/auth";
 
+function extractKeyFromUrl(url: string): string | null {
+  // URL format: https://api.kost.iydheko.site/files/ktp/xxx?token=...&expires=...
+  // or: https://api.kost.iydheko.site/files/ktp/xxx
+  const match = url.match(/\/files\/([^?]+)/);
+  return match ? match[1] : null;
+}
+
 async function notifyOnboardingDO(env: Env, inviteCode: string): Promise<void> {
   try {
     const doId = env.ONBOARDING_DO.idFromName(inviteCode);
@@ -300,12 +307,22 @@ app.put("/:id/reject", zValidator("json", rejectTagihanSchema), async (c) => {
     .set({
       status: "ditolak",
       alasanPenolakan: parsed.data.alasan,
+      buktiPembayaran: null, // Clear bukti so tenant re-uploads
     })
     .where(eq(tagihan.id, id))
     .returning();
 
   if (!updated) {
     return c.json({ error: "Tagihan tidak ditemukan" }, 404);
+  }
+
+  // Delete rejected buktiPembayaran from R2
+  if (updated.buktiPembayaran) {
+    const key = extractKeyFromUrl(updated.buktiPembayaran);
+    if (key) {
+      console.log("[TAGIHAN] Deleting rejected bukti from R2:", key);
+      await c.env.R2_BUCKET.delete(key);
+    }
   }
 
   // Notify the tenant's DO

@@ -31,6 +31,7 @@ export const tagihan = pgTable("tagihan", {
   status: tagihanStatus("status").notNull().default("belum_dibayar"),
   metodePembayaran: metodePembayaran("metode_pembayaran"),
   buktiPembayaran: text("bukti_pembayaran"),
+  buktiPembayaranLastAccess: timestamp("bukti_pembayaran_last_access"),
   alasanPenolakan: text("alasan_penolakan"),
   tanggalJatuhTempo: timestamp("tanggal_jatuh_tempo").notNull(),
   tanggalBayar: timestamp("tanggal_bayar"),
