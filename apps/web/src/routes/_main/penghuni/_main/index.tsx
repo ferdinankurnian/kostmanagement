@@ -124,36 +124,46 @@ function RouteComponent() {
       <div data-tour="informasi" className="flex flex-col gap-2">
         <div className="flex flex-row justify-between px-4">
           <h1 className="text-lg">Informasi Kost</h1>
-          <p className="text-sm text-muted-foreground">
-            {informasiList.length} informasi
-          </p>
+          <Link to="/penghuni/informasi">
+            <p className="text-sm text-muted-foreground hover:text-foreground">
+              Lihat Semua
+            </p>
+          </Link>
         </div>
 
         <div className="flex flex-row gap-3 overflow-x-auto px-4 pb-2 scrollbar-none">
-          {informasiList.map((item) => (
-            <div
-              key={item.id}
-              className="relative min-w-48 h-24 rounded-xl overflow-hidden flex-shrink-0 cursor-pointer"
-            >
-              {item.fotoUrls[0] ? (
-                <img
-                  src={item.fotoUrls[0]}
-                  alt={item.judul}
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-              ) : null}
-              <div className="absolute inset-0 bg-black/40" />
-              <div className="absolute bottom-0 left-0 p-3">
-                <p className="text-white font-semibold text-sm">{item.judul}</p>
-                <p className="text-white/80 text-xs truncate max-w-[120px]">
-                  {item.deskripsi}
-                </p>
-              </div>
-              <div className="absolute bottom-4 right-4 text-white">
-                <ArrowUpRight size={18} />
-              </div>
-            </div>
-          ))}
+          {informasiList.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Belum ada informasi</p>
+          ) : (
+            informasiList.map((item) => (
+              <Link
+                key={item.id}
+                to="/penghuni/informasi/detail"
+                search={{ id: item.id }}
+                className="relative min-w-48 h-24 rounded-xl overflow-hidden flex-shrink-0 cursor-pointer"
+              >
+                {item.fotoUrls[0] ? (
+                  <img
+                    src={item.fotoUrls[0]}
+                    alt={item.judul}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                ) : null}
+                <div className="absolute inset-0 bg-black/40" />
+                <div className="absolute bottom-0 left-0 p-3">
+                  <p className="text-white font-semibold text-sm">
+                    {item.judul}
+                  </p>
+                  <p className="text-white/80 text-xs truncate max-w-[120px]">
+                    {item.deskripsi}
+                  </p>
+                </div>
+                <div className="absolute bottom-4 right-4 text-white">
+                  <ArrowUpRight size={18} />
+                </div>
+              </Link>
+            ))
+          )}
         </div>
       </div>
 
