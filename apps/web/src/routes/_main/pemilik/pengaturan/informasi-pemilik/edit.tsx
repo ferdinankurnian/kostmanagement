@@ -99,9 +99,11 @@ function EditForm({
       const { url } = await uploadAvatar(file);
       return url;
     },
-    onSuccess: (url) => {
+    onSuccess: async (url) => {
       setAvatarUrl(url);
-      queryClient.invalidateQueries({ queryKey: ["session"] });
+      // Force session refetch from better-auth
+      await authClient.api.getSession({ query: { disableRefresh: false } });
+      await queryClient.invalidateQueries({ queryKey: ["session"] });
       toast.success("Foto profil diperbarui");
     },
     onError: () => {
