@@ -133,11 +133,11 @@ function BayarTagihanPage() {
     },
   });
 
-  // Payment verified → update onboarding to next step
+  // Payment verified → update onboarding to next step (tour)
   useEffect(() => {
     if (lunasTagihan) {
       (async () => {
-        await updateOnboarding("rule");
+        await updateOnboarding("tour");
       })();
     }
   }, [lunasTagihan]);
@@ -184,7 +184,6 @@ function BayarTagihanPage() {
           <h1 className="text-xl font-semibold">Pembayaran Terverifikasi!</h1>
           <p className="mt-3 max-w-sm text-sm text-muted-foreground">
             Selamat! Pembayaran Anda telah diverifikasi oleh pemilik kost.
-            Selamat tinggal di kost!
           </p>
           <div className="mt-6 w-full max-w-sm rounded-xl border bg-card p-4 space-y-2 text-left">
             <div className="flex justify-between text-sm">
@@ -207,7 +206,7 @@ function BayarTagihanPage() {
           <div className="mt-6 w-full max-w-sm">
             <Link to="/penghuni">
               <Button className="w-full rounded-full" size="lg">
-                Ke Dashboard
+                Lanjut ke Aplikasi
               </Button>
             </Link>
           </div>
