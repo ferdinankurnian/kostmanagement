@@ -1,11 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   Banknote,
   Building2,
   CalendarDays,
   Check,
-  ChevronLeft,
+  CheckCircle2,
   Clock,
   Copy,
   Loader2,
@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { TopBar, TopBarCenter, TopBarLeft } from "@/components/top-bar";
+import { TopBar, TopBarCenter } from "@/components/top-bar";
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "@/components/ui/file-upload";
 import { Label } from "@/components/ui/label";
@@ -110,16 +110,10 @@ function BayarTagihanPage() {
   const isWaiting = tagihan?.status === "menunggu_verifikasi";
   const isRejected = tagihan?.status === "ditolak";
 
-  // Tagihan lunas → lanjut ke greeting
-  useEffect(() => {
-    if (tagihan?.status === "lunas") {
-      (async () => {
-        await updateOnboarding("greeting");
-        navigate({ to: "/penghuni/onboarding" });
-      })();
-    }
-  }, [tagihan?.status, navigate]);
+  // Check if there's a lunas tagihan (payment verified)
+  const lunasTagihan = tagihanList.find((tag) => tag.status === "lunas");
 
+  // All hooks must be called before any conditional returns
   const submitMutation = useMutation({
     mutationFn: async () => {
       if (!tagihan) return;
@@ -138,6 +132,15 @@ function BayarTagihanPage() {
       toast.error("Gagal mengirim pembayaran");
     },
   });
+
+  // Payment verified → update onboarding to next step
+  useEffect(() => {
+    if (lunasTagihan) {
+      (async () => {
+        await updateOnboarding("rule");
+      })();
+    }
+  }, [lunasTagihan]);
 
   const handleFileSelected = async (files: File[]) => {
     if (files.length === 0) return;
@@ -165,15 +168,58 @@ function BayarTagihanPage() {
     toast.success("Disalin!");
   };
 
+  // Payment verified success screen
+  if (lunasTagihan) {
+    return (
+      <div className="flex min-h-screen flex-col">
+        <TopBar>
+          <TopBarCenter>
+            <h1 className="text-lg whitespace-nowrap">Bayar Tagihan</h1>
+          </TopBarCenter>
+        </TopBar>
+        <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
+          <div className="mb-6 flex size-20 items-center justify-center rounded-full bg-green-500/10">
+            <CheckCircle2 className="size-10 text-green-500" />
+          </div>
+          <h1 className="text-xl font-semibold">Pembayaran Terverifikasi!</h1>
+          <p className="mt-3 max-w-sm text-sm text-muted-foreground">
+            Selamat! Pembayaran Anda telah diverifikasi oleh pemilik kost.
+            Selamat tinggal di kost!
+          </p>
+          <div className="mt-6 w-full max-w-sm rounded-xl border bg-card p-4 space-y-2 text-left">
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Kamar</span>
+              <span className="font-medium">Kamar {lunasTagihan.noKamar}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Jumlah</span>
+              <span className="font-medium">
+                {formatRupiah(
+                  lunasTagihan.jumlah * (lunasTagihan.monthsPaid ?? 1),
+                )}
+              </span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Status</span>
+              <span className="font-medium text-green-500">Lunas</span>
+            </div>
+          </div>
+          <div className="mt-6 w-full max-w-sm">
+            <Link to="/penghuni">
+              <Button className="w-full rounded-full" size="lg">
+                Ke Dashboard
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (canLoadData && (isTagihanLoading || isSettingsLoading)) {
     return (
       <div className="flex min-h-screen flex-col">
         <TopBar>
-          <TopBarLeft>
-            <Button variant="ghost" size="icon" disabled>
-              <ChevronLeft className="size-6" />
-            </Button>
-          </TopBarLeft>
           <TopBarCenter>
             <h1 className="text-lg whitespace-nowrap">Bayar Tagihan</h1>
           </TopBarCenter>
@@ -189,11 +235,6 @@ function BayarTagihanPage() {
     return (
       <div className="flex min-h-screen flex-col">
         <TopBar>
-          <TopBarLeft>
-            <Button variant="ghost" size="icon" disabled>
-              <ChevronLeft className="size-6" />
-            </Button>
-          </TopBarLeft>
           <TopBarCenter>
             <h1 className="text-lg whitespace-nowrap">Bayar Tagihan</h1>
           </TopBarCenter>
@@ -222,11 +263,6 @@ function BayarTagihanPage() {
     return (
       <div className="flex min-h-screen flex-col">
         <TopBar>
-          <TopBarLeft>
-            <Button variant="ghost" size="icon" disabled>
-              <ChevronLeft className="size-6" />
-            </Button>
-          </TopBarLeft>
           <TopBarCenter>
             <h1 className="text-lg whitespace-nowrap">Bayar Tagihan</h1>
           </TopBarCenter>
@@ -246,11 +282,6 @@ function BayarTagihanPage() {
     return (
       <div className="flex min-h-screen flex-col">
         <TopBar>
-          <TopBarLeft>
-            <Button variant="ghost" size="icon" disabled>
-              <ChevronLeft className="size-6" />
-            </Button>
-          </TopBarLeft>
           <TopBarCenter>
             <h1 className="text-lg whitespace-nowrap">Bayar Tagihan</h1>
           </TopBarCenter>
@@ -291,11 +322,6 @@ function BayarTagihanPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <TopBar>
-        <TopBarLeft>
-          <Button variant="ghost" size="icon" disabled>
-            <ChevronLeft className="size-6" />
-          </Button>
-        </TopBarLeft>
         <TopBarCenter>
           <h1 className="text-lg whitespace-nowrap">Bayar Tagihan</h1>
         </TopBarCenter>
