@@ -1,5 +1,6 @@
 import { neon } from "@neondatabase/serverless";
 import { schema } from "@repo/db";
+import bcryptjs from "bcryptjs";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin, username } from "better-auth/plugins";
@@ -32,6 +33,10 @@ export function createAuth(env: {
       enabled: true,
       requireEmailVerification: false,
       autoSignIn: true,
+      password: {
+        hash: (password) => bcryptjs.hash(password, 8),
+        verify: ({ hash, password }) => bcryptjs.compare(password, hash),
+      },
     },
     session: {
       expiresIn: 60 * 60 * 24 * 30, // 30 days (when rememberMe: true)
