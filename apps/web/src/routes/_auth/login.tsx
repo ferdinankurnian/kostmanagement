@@ -36,7 +36,6 @@ function Page() {
     const { error } = await authClient.signIn.username({
       username,
       password,
-      rememberMe: true,
     });
 
     if (error) {
@@ -45,11 +44,8 @@ function Page() {
       return;
     }
 
-    if (remember) {
-      setPersistentSession();
-    } else {
-      setEphemeralSession();
-    }
+    // Always set persistent session to prevent logout on browser close
+    setPersistentSession();
 
     window.location.replace(redirect ?? "/");
   };
