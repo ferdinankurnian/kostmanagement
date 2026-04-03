@@ -7,7 +7,12 @@ import {
   Wrench,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { TopBar, TopBarCenter, TopBarLeft } from "@/components/top-bar";
+import {
+  TopBar,
+  TopBarCenter,
+  TopBarLeft,
+  TopBarRight,
+} from "@/components/top-bar";
 import { Button } from "@/components/ui/button";
 import {
   Empty,
@@ -98,6 +103,25 @@ export function NotificationPage({ audience, onBack }: NotificationPageProps) {
         <TopBarCenter>
           <h1 className="text-lg whitespace-nowrap">Notifikasi</h1>
         </TopBarCenter>
+        <TopBarRight>
+          {notifications.length > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                const unreadKeys = notifications
+                  .filter((n) => !n.isRead)
+                  .map((n) => n.key);
+                if (unreadKeys.length > 0) {
+                  void markAsRead(unreadKeys);
+                }
+              }}
+              disabled={notifications.every((n) => n.isRead)}
+            >
+              Mark all read
+            </Button>
+          )}
+        </TopBarRight>
       </TopBar>
 
       {!enabled && (
