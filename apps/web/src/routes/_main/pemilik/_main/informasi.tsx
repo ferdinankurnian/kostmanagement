@@ -35,7 +35,7 @@ function RouteComponent() {
         </TopBarCenter>
       </TopBar>
 
-      <div className="fixed bottom-14 right-4 z-50">
+      <div className="fixed bottom-24 right-4 z-50">
         <Link to="/pemilik/informasi/add">
           <Button size="icon-lg" className="h-12 w-12 rounded-full shadow-lg">
             <Plus className="size-6" />
