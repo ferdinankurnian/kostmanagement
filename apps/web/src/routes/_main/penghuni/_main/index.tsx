@@ -1,6 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowUpRight, Bell, Clipboard, ReceiptText } from "lucide-react";
+import {
+  ArrowUpRight,
+  Bell,
+  ChevronRight,
+  Clipboard,
+  ReceiptText,
+} from "lucide-react";
 import { NotificationPromptBanner } from "@/components/notification-prompt-banner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -95,30 +101,44 @@ function RouteComponent() {
         "tour" && <NotificationPromptBanner />}
 
       <div data-tour="stats" className="grid grid-cols-2 gap-2 px-4">
-        <div className="bg-primary text-white p-3 rounded-xl space-y-4">
-          <div className="flex flex-row justify-between">
-            <p className="text-sm">Kamar Saya</p>
-            <span className="p-1 bg-white rounded-sm">
-              <Clipboard className="size-4 text-primary" />
-            </span>
+        <Link to="/penghuni/tagihan">
+          <div className="bg-primary text-white p-3 rounded-xl space-y-4 hover:bg-primary/90 transition-colors h-full">
+            <div className="flex flex-row justify-between items-center">
+              <p className="text-sm font-medium">Tagihan</p>
+              <ChevronRight className="size-4" />
+            </div>
+            <div className="flex flex-row items-center justify-between">
+              <div className="flex flex-col">
+                <p className="text-2xl font-semibold leading-none">
+                  {tagihanBelumLunas}
+                </p>
+                <p className="text-xs opacity-80">Belum Lunas</p>
+              </div>
+              <div className="p-2 bg-white/20 rounded-lg">
+                <ReceiptText className="size-5" />
+              </div>
+            </div>
           </div>
-          <div className="flex flex-row items-end gap-2">
-            <p className="text-2xl leading-none">{noKamar ?? "-"}</p>
-            <p className="text-sm">Kamar</p>
+        </Link>
+        <Link to="/penghuni/notification">
+          <div className="bg-primary text-white p-3 rounded-xl space-y-4 hover:bg-primary/90 transition-colors h-full">
+            <div className="flex flex-row justify-between items-center">
+              <p className="text-sm font-medium">Pemberitahuan</p>
+              <ChevronRight className="size-4" />
+            </div>
+            <div className="flex flex-row items-center justify-between">
+              <div className="flex flex-col">
+                <p className="text-2xl font-semibold leading-none">
+                  {unreadCount}
+                </p>
+                <p className="text-xs opacity-80">Belum Dibaca</p>
+              </div>
+              <div className="p-2 bg-white/20 rounded-lg">
+                <Bell className="size-5" />
+              </div>
+            </div>
           </div>
-        </div>
-        <div className="bg-primary text-white p-3 rounded-xl space-y-4">
-          <div className="flex flex-row justify-between">
-            <p className="text-sm">Tagihan</p>
-            <span className="p-1 bg-white rounded-sm">
-              <Clipboard className="size-4 text-primary" />
-            </span>
-          </div>
-          <div className="flex flex-row items-end gap-2">
-            <p className="text-2xl leading-none">{tagihanBelumLunas}</p>
-            <p className="text-sm">Belum Lunas</p>
-          </div>
-        </div>
+        </Link>
       </div>
 
       <div data-tour="informasi" className="flex flex-col gap-2">
