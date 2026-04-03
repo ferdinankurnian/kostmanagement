@@ -6,6 +6,7 @@ import {
   Clock,
   Loader2,
   Upload,
+  X,
   XCircle,
 } from "lucide-react";
 import { useState } from "react";
@@ -60,6 +61,7 @@ function DetailTagihanPage() {
   const { id } = Route.useSearch();
   const [bukti, setBukti] = useState<string | null>(null);
   const [showUpload, setShowUpload] = useState(false);
+  const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["tagihan", id],
@@ -105,150 +107,184 @@ function DetailTagihanPage() {
   const StatusIcon = statusConfig[data.status].icon;
 
   return (
-    <div className="min-h-screen bg-background pb-24">
-      <TopBar>
-        <TopBarLeft>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => router.history.back()}
+    <>
+      {/* Fullscreen Image Overlay */}
+      {fullscreenImage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
+          onClick={() => setFullscreenImage(null)}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") setFullscreenImage(null);
+          }}
+          role="dialog"
+        >
+          <img
+            src={fullscreenImage}
+            alt="Fullscreen"
+            className="max-w-full max-h-full"
+          />
+          <button
+            type="button"
+            className="absolute top-4 right-4 text-white hover:text-gray-300"
+            onClick={() => setFullscreenImage(null)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") setFullscreenImage(null);
+            }}
           >
-            <ChevronLeft className="size-6" />
-          </Button>
-        </TopBarLeft>
-        <TopBarCenter>
-          <h1 className="text-lg whitespace-nowrap">Detail Pembayaran</h1>
-        </TopBarCenter>
-      </TopBar>
-
-      <div className="pt-24 px-4 space-y-4">
-        {/* Status Icon */}
-        <div className="flex justify-center pt-4">
-          <div
-            className={`size-16 rounded-full flex items-center justify-center ${statusConfig[data.status].color}`}
-          >
-            <StatusIcon className="size-8" strokeWidth={2.5} />
-          </div>
+            <X className="size-8" />
+          </button>
         </div>
+      )}
 
-        {/* Amount & Period */}
-        <div className="text-center space-y-1">
-          <h2 className="text-3xl font-bold">{formatRupiah(data.jumlah)}</h2>
-          <p className="text-sm text-muted-foreground">{data.periode}</p>
-        </div>
+      <div className="min-h-screen bg-background pb-24">
+        <TopBar>
+          <TopBarLeft>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => router.history.back()}
+            >
+              <ChevronLeft className="size-6" />
+            </Button>
+          </TopBarLeft>
+          <TopBarCenter>
+            <h1 className="text-lg whitespace-nowrap">Detail Pembayaran</h1>
+          </TopBarCenter>
+        </TopBar>
 
-        {/* Bukti Pembayaran Button (if exists) */}
-        {data.buktiPembayaran && (
-          <Button variant="default" className="w-full">
-            Bukti Pembayaran
-          </Button>
-        )}
-
-        {/* Info Grid */}
-        <div className="space-y-4 pt-2">
-          <div className="grid grid-cols-2 gap-x-4">
-            <span className="text-sm">Invoice ID</span>
-            <span className="text-sm text-right">{data.id.slice(0, 10)}</span>
+        <div className="pt-24 px-4 space-y-4">
+          {/* Status Icon */}
+          <div className="flex justify-center pt-4">
+            <div
+              className={`size-16 rounded-full flex items-center justify-center ${statusConfig[data.status].color}`}
+            >
+              <StatusIcon className="size-8" strokeWidth={2.5} />
+            </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-x-4">
-            <span className="text-sm">Nama Penghuni</span>
-            <span className="text-sm text-right">
-              {data.namaPenghuni || "-"}
-            </span>
+          {/* Amount & Period */}
+          <div className="text-center space-y-1">
+            <h2 className="text-3xl font-bold">{formatRupiah(data.jumlah)}</h2>
+            <p className="text-sm text-muted-foreground">{data.periode}</p>
           </div>
 
-          <div className="grid grid-cols-2 gap-x-4">
-            <span className="text-sm">No Kamar</span>
-            <span className="text-sm text-right">{data.noKamar}</span>
+          {/* Info Grid */}
+          <div className="space-y-4 pt-2">
+            <div className="grid grid-cols-2 gap-x-4">
+              <span className="text-sm">Invoice ID</span>
+              <span className="text-sm text-right">{data.id.slice(0, 10)}</span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-x-4">
+              <span className="text-sm">Nama Penghuni</span>
+              <span className="text-sm text-right">
+                {data.namaPenghuni || "-"}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-x-4">
+              <span className="text-sm">No Kamar</span>
+              <span className="text-sm text-right">{data.noKamar}</span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-x-4">
+              <span className="text-sm">Periode</span>
+              <span className="text-sm text-right">{data.periode}</span>
+            </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-x-4">
-            <span className="text-sm">Periode</span>
-            <span className="text-sm text-right">{data.periode}</span>
-          </div>
-        </div>
+          {/* Bukti Pembayaran (if exists and not uploading) */}
+          {data.buktiPembayaran && !showUpload && (
+            <div
+              className="cursor-pointer hover:opacity-90 transition-opacity rounded-lg overflow-hidden"
+              onClick={() => setFullscreenImage(data.buktiPembayaran!)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ")
+                  setFullscreenImage(data.buktiPembayaran!);
+              }}
+              role="button"
+              tabIndex={0}
+            >
+              <img
+                src={data.buktiPembayaran}
+                alt="Bukti Pembayaran"
+                className="w-full h-auto rounded-lg"
+              />
+            </div>
+          )}
 
-        {/* Upload Bukti Section or Foto Button */}
-        {(data.status === "belum_dibayar" || data.status === "ditolak") && (
-          <div className="space-y-3">
-            {!showUpload ? (
-              <Button
-                variant="default"
-                className="w-full"
-                onClick={() => setShowUpload(true)}
-              >
-                Foto Bukti Pembayaran
-              </Button>
-            ) : (
-              <>
-                <FileUpload
-                  onFilesSelected={async (files: File[]) => {
-                    if (files.length > 0) {
-                      const url = await uploadBukti(files[0]);
-                      setBukti(url);
-                    }
-                  }}
-                  accept="image/*"
-                />
-                {bukti && (
-                  <div className="rounded-lg bg-muted h-48 overflow-hidden">
-                    <img
-                      src={bukti}
-                      alt="Preview"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
-                <div className="flex gap-2">
-                  <Button
-                    className="flex-1"
-                    onClick={() => submitMutation.mutate()}
-                    disabled={submitMutation.isPending || !bukti}
-                  >
-                    {submitMutation.isPending ? (
-                      <Loader2 className="size-4 animate-spin" />
-                    ) : (
-                      <>
-                        <Upload className="size-4 mr-2" />
-                        Kirim
-                      </>
-                    )}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setShowUpload(false);
-                      setBukti(null);
+          {/* Upload Bukti Section */}
+          {(data.status === "belum_dibayar" || data.status === "ditolak") && (
+            <div className="space-y-3">
+              {!showUpload ? (
+                <Button
+                  variant="default"
+                  className="w-full"
+                  onClick={() => setShowUpload(true)}
+                >
+                  Foto Bukti Pembayaran
+                </Button>
+              ) : (
+                <>
+                  <FileUpload
+                    onFilesSelected={async (files: File[]) => {
+                      if (files.length > 0) {
+                        const url = await uploadBukti(files[0]);
+                        setBukti(url);
+                      }
                     }}
-                  >
-                    Batal
-                  </Button>
-                </div>
-              </>
-            )}
-          </div>
-        )}
+                    accept="image/*"
+                  />
+                  {bukti && (
+                    <div className="rounded-lg bg-muted h-48 overflow-hidden">
+                      <img
+                        src={bukti}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                  <div className="flex gap-2">
+                    <Button
+                      className="flex-1"
+                      onClick={() => submitMutation.mutate()}
+                      disabled={submitMutation.isPending || !bukti}
+                    >
+                      {submitMutation.isPending ? (
+                        <Loader2 className="size-4 animate-spin" />
+                      ) : (
+                        <>
+                          <Upload className="size-4 mr-2" />
+                          Kirim
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setShowUpload(false);
+                        setBukti(null);
+                      }}
+                    >
+                      Batal
+                    </Button>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
 
-        {/* Show bukti if already uploaded */}
-        {data.buktiPembayaran && (
-          <div className="rounded-lg bg-muted h-48 overflow-hidden">
-            <img
-              src={data.buktiPembayaran}
-              alt="Bukti Pembayaran"
-              className="w-full h-full object-cover"
-            />
-          </div>
-        )}
-
-        {/* Alasan Penolakan */}
-        {data.alasanPenolakan && (
-          <div className="rounded-xl bg-red-50 border border-red-200 p-4 space-y-2">
-            <p className="text-sm font-medium text-red-900">Alasan Penolakan</p>
-            <p className="text-sm text-red-700">{data.alasanPenolakan}</p>
-          </div>
-        )}
+          {/* Alasan Penolakan */}
+          {data.alasanPenolakan && (
+            <div className="rounded-xl bg-red-50 border border-red-200 p-4 space-y-2">
+              <p className="text-sm font-medium text-red-900">
+                Alasan Penolakan
+              </p>
+              <p className="text-sm text-red-700">{data.alasanPenolakan}</p>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

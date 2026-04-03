@@ -172,6 +172,31 @@ function RouteComponent() {
             <p className="text-sm text-muted-foreground">{data.periode}</p>
           </div>
 
+          {/* Info Grid */}
+          <div className="space-y-4 pt-2">
+            <div className="grid grid-cols-2 gap-x-4">
+              <span className="text-sm">Invoice ID</span>
+              <span className="text-sm text-right">{data.id.slice(0, 10)}</span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-x-4">
+              <span className="text-sm">Nama Penghuni</span>
+              <span className="text-sm text-right">
+                {data.namaPenghuni || "-"}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-x-4">
+              <span className="text-sm">No Kamar</span>
+              <span className="text-sm text-right">{data.noKamar}</span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-x-4">
+              <span className="text-sm">Periode</span>
+              <span className="text-sm text-right">{data.periode}</span>
+            </div>
+          </div>
+
           {/* Bukti Pembayaran Card */}
           {data.buktiPembayaran && (
             <Card>
@@ -198,58 +223,6 @@ function RouteComponent() {
               </CardContent>
             </Card>
           )}
-
-          {/* Foto Bukti Pembayaran Card */}
-          {data.buktiPembayaran && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Foto Bukti Pembayaran</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div
-                  className="cursor-pointer hover:opacity-90 transition-opacity rounded-lg overflow-hidden"
-                  onClick={() => setFullscreenImage(data.buktiPembayaran!)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ")
-                      setFullscreenImage(data.buktiPembayaran!);
-                  }}
-                  role="button"
-                  tabIndex={0}
-                >
-                  <img
-                    src={data.buktiPembayaran}
-                    alt="Foto Bukti Pembayaran"
-                    className="w-full h-auto"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Info Grid */}
-          <div className="space-y-4 pt-2">
-            <div className="grid grid-cols-2 gap-x-4">
-              <span className="text-sm">Invoice ID</span>
-              <span className="text-sm text-right">{data.id.slice(0, 10)}</span>
-            </div>
-
-            <div className="grid grid-cols-2 gap-x-4">
-              <span className="text-sm">Nama Penghuni</span>
-              <span className="text-sm text-right">
-                {data.namaPenghuni || "-"}
-              </span>
-            </div>
-
-            <div className="grid grid-cols-2 gap-x-4">
-              <span className="text-sm">No Kamar</span>
-              <span className="text-sm text-right">{data.noKamar}</span>
-            </div>
-
-            <div className="grid grid-cols-2 gap-x-4">
-              <span className="text-sm">Periode</span>
-              <span className="text-sm text-right">{data.periode}</span>
-            </div>
-          </div>
 
           {/* Alasan Penolakan */}
           {data.alasanPenolakan && (
