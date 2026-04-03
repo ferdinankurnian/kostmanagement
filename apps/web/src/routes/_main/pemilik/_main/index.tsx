@@ -172,9 +172,7 @@ function RouteComponent() {
           <div className="bg-primary text-white p-3 rounded-xl space-y-4 active:scale-95 transition-all">
             <div className="flex flex-row justify-between">
               <p className="text-sm">Total Penghuni</p>
-              <span className="p-1 bg-white rounded-sm">
-                <Clipboard className="size-4 text-primary" />
-              </span>
+              <ChevronRight className="size-4" />
             </div>
             <div className="flex flex-row items-end gap-2">
               <p className="text-2xl leading-none">{totalPenghuni}</p>
@@ -186,9 +184,7 @@ function RouteComponent() {
           <div className="bg-primary text-white p-3 rounded-xl space-y-4 active:scale-95 transition-all">
             <div className="flex flex-row justify-between">
               <p className="text-sm">Tagihan</p>
-              <span className="p-1 bg-white rounded-sm">
-                <Clipboard className="size-4 text-primary" />
-              </span>
+              <ChevronRight className="size-4" />
             </div>
             <div className="flex flex-row items-end gap-2">
               <p className="text-2xl leading-none">{tagihanBelumLunas}</p>
