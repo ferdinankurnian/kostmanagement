@@ -325,9 +325,12 @@ function ResetPasswordDrawer({
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Ulangi password baru"
             />
-            {confirmPassword.length > 0 && newPassword !== confirmPassword && (
-              <p className="text-xs text-red-500">Password tidak cocok</p>
-            )}
+            <div className="h-5">
+              {confirmPassword.length > 0 &&
+                newPassword !== confirmPassword && (
+                  <p className="text-xs text-red-500">Password tidak cocok</p>
+                )}
+            </div>
           </div>
 
           <DrawerNestedRoot open={drawer3Open} onOpenChange={setDrawer3Open}>
