@@ -53,6 +53,36 @@ async function seed() {
 
   // --- settings ---
   try {
+    const peraturanCards = JSON.stringify([
+      {
+        id: "1",
+        title: "Jam Malam",
+        description:
+          "Jam malam dimulai pukul 22.00. Setelah itu, harap menjaga ketenangan.",
+      },
+      {
+        id: "2",
+        title: "Larangan Merokok",
+        description: "Dilarang merokok di dalam kamar dan area umum.",
+      },
+      {
+        id: "3",
+        title: "Pembayaran Tagihan",
+        description:
+          "Pembayaran tagihan dilakukan maksimal tanggal 10 setiap bulannya.",
+      },
+      {
+        id: "4",
+        title: "Kebersihan",
+        description: "Jaga kebersihan kamar dan fasilitas bersama.",
+      },
+      {
+        id: "5",
+        title: "Lapor Kerusakan",
+        description: "Laporkan kerusakan fasilitas melalui fitur Keluhan.",
+      },
+    ]);
+
     await db
       .insert(settings)
       .values([
@@ -61,7 +91,15 @@ async function seed() {
         { key: "nama_bank", value: "BCA" },
         { key: "no_rekening", value: "1234567890" },
         { key: "nama_pemilik_rekening", value: "Rina" },
-        { key: "peraturan_kost", value: "Dilarang merokok di dalam kamar." },
+        {
+          key: "peraturan_kost_cards",
+          value: peraturanCards,
+        },
+        {
+          key: "peraturan_kost",
+          value:
+            "Jam Malam: Jam malam dimulai pukul 22.00. Setelah itu, harap menjaga ketenangan.\nLarangan Merokok: Dilarang merokok di dalam kamar dan area umum.\nPembayaran Tagihan: Pembayaran tagihan dilakukan maksimal tanggal 10 setiap bulannya.\nKebersihan: Jaga kebersihan kamar dan fasilitas bersama.\nLapor Kerusakan: Laporkan kerusakan fasilitas melalui fitur Keluhan.",
+        },
         { key: "security_pin", value: "1234" },
       ])
       .onConflictDoNothing();
