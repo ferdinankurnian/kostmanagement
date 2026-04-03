@@ -5,7 +5,6 @@ import { TopBar, TopBarCenter } from "@/components/top-bar";
 import { Button } from "@/components/ui/button";
 import {
   Empty,
-  EmptyContent,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
@@ -36,11 +35,13 @@ function RouteComponent() {
         </TopBarCenter>
       </TopBar>
 
-      <div className="fixed bottom-0 left-0 right-0 px-4 pb-4 pt-8 bg-linear-to-t from-background to-transparent text-center">
+      <div className="fixed inset-x-0 bottom-14 z-50 mx-auto flex max-w-lg justify-end px-4 pointer-events-none">
         <Link to="/pemilik/informasi/add">
-          <Button className="w-full max-w-lg rounded-full mx-auto">
-            <Plus className="size-4 mr-2" />
-            Tambah Informasi
+          <Button
+            size="icon-lg"
+            className="pointer-events-auto h-12 w-20 rounded-xl border border-black/20"
+          >
+            <Plus className="size-6" />
           </Button>
         </Link>
       </div>
