@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   Check,
@@ -7,7 +7,6 @@ import {
   Clock,
   Copy,
   Loader2,
-  ReceiptText,
   UserCheck,
   UserCog,
   XCircle,
@@ -30,7 +29,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { Textarea } from "@/components/ui/textarea";
-import { getTagihan, type Tagihan } from "@/lib/tagihan";
+import { acceptTagihan, rejectTagihan } from "@/lib/tagihan";
 import { verifyKTP } from "@/lib/upload";
 import { connectOnboardingWS, type OnboardingStatus } from "@/lib/ws";
 
@@ -77,7 +76,7 @@ function RouteComponent() {
 
   const approveMutation = useMutation({
     mutationFn: () =>
-      verifyKTP({ noKamar: status!.noKamar, status: "approved" }),
+      verifyKTP({ noKamar: status?.noKamar, status: "approved" }),
     onSuccess: () => {
       toast.success("KTP diterima!");
       queryClient.invalidateQueries({ queryKey: ["rooms"] });
@@ -90,7 +89,7 @@ function RouteComponent() {
   const rejectMutation = useMutation({
     mutationFn: () =>
       verifyKTP({
-        noKamar: status!.noKamar,
+        noKamar: status?.noKamar,
         status: "rejected",
         reason: rejectReason,
       }),
@@ -350,27 +349,9 @@ function formatRupiah(n: number) {
   }).format(n);
 }
 
-const tagihanStatusMap: Record<
-  Tagihan["status"],
-  { label: string; color: string; icon: typeof Clock }
-> = {
-  belum_dibayar: {
-    label: "Belum Dibayar",
-    color: "text-muted-foreground",
-    icon: ReceiptText,
-  },
-  menunggu_verifikasi: {
-    label: "Menunggu Verifikasi",
-    color: "text-yellow-500",
-    icon: Clock,
-  },
-  lunas: { label: "Lunas", color: "text-green-500", icon: CheckCircle2 },
-  ditolak: { label: "Ditolak", color: "text-red-500", icon: XCircle },
-};
-
 function KtpApprovedState({ status }: { status: OnboardingStatus }) {
   const { userName, noKamar } = {
-    userName: status.user!.name,
+    userName: status.user?.name,
     noKamar: status.noKamar,
   };
   const tagihan = status.tagihan;
@@ -401,62 +382,9 @@ function KtpApprovedState({ status }: { status: OnboardingStatus }) {
     );
   }
 
-  // Tagihan menunggu verifikasi → show bukti
+  // Tagihan menunggu verifikasi → show bukti + inline buttons
   if (tagihan?.status === "menunggu_verifikasi") {
-    const statusInfo = tagihanStatusMap[tagihan.status];
-    return (
-      <div className="flex flex-col p-4 pb-20">
-        <div className="flex flex-col justify-center items-center gap-2 py-8">
-          <div className="p-3 rounded-full bg-yellow-500">
-            <Clock size={28} className="text-white animate-pulse" />
-          </div>
-          <div className="flex flex-col justify-center items-center gap-1">
-            <h1 className="text-xl font-semibold">Verifikasi Pembayaran</h1>
-            <p className="text-muted-foreground text-sm">
-              {userName} di Kamar {noKamar}
-            </p>
-          </div>
-        </div>
-
-        <div className="rounded-xl border bg-card p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Periode</span>
-            <span className="text-sm font-medium">{tagihan.periode}</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Jumlah</span>
-            <span className="text-sm font-medium">
-              {formatRupiah(tagihan.jumlah * (tagihan.monthsPaid ?? 1))}
-            </span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Status</span>
-            <span className={`text-sm font-medium ${statusInfo.color}`}>
-              {statusInfo.label}
-            </span>
-          </div>
-        </div>
-
-        {tagihan.buktiPembayaran && (
-          <div className="mt-4 space-y-2">
-            <p className="text-sm font-medium">Bukti Pembayaran</p>
-            <img
-              src={tagihan.buktiPembayaran}
-              alt="Bukti Pembayaran"
-              className="w-full rounded-xl border object-contain max-h-96"
-            />
-          </div>
-        )}
-
-        <div className="mt-8 text-center">
-          <Link to="/pemilik/tagihan/detail" search={{ id: tagihan.id }}>
-            <Button className="w-full max-w-sm rounded-full" size="lg">
-              Lihat Detail & Verifikasi
-            </Button>
-          </Link>
-        </div>
-      </div>
-    );
+    return <VerifikasiPembayaranOnboarding status={status} />;
   }
 
   // Tagihan ditolak → show status
@@ -506,6 +434,157 @@ function KtpApprovedState({ status }: { status: OnboardingStatus }) {
       <div className="mt-8 flex items-center gap-2 text-sm text-muted-foreground">
         <Loader2 className="size-4 animate-spin" />
         Menunggu pembayaran
+      </div>
+    </div>
+  );
+}
+
+function VerifikasiPembayaranOnboarding({
+  status,
+}: {
+  status: OnboardingStatus;
+}) {
+  const queryClient = useQueryClient();
+  const [showReject, setShowReject] = useState(false);
+  const [alasan, setAlasan] = useState("");
+
+  const { userName, noKamar } = {
+    userName: status.user?.name,
+    noKamar: status.noKamar,
+  };
+  const tagihan = status.tagihan!;
+
+  const acceptMutation = useMutation({
+    mutationFn: () => acceptTagihan(tagihan.id),
+    onSuccess: () => {
+      toast.success("Pembayaran diterima!");
+      queryClient.invalidateQueries({ queryKey: ["tagihan"] });
+    },
+    onError: () => {
+      toast.error("Gagal menerima pembayaran");
+    },
+  });
+
+  const rejectMutation = useMutation({
+    mutationFn: () => rejectTagihan(tagihan.id, alasan),
+    onSuccess: () => {
+      toast.success("Pembayaran ditolak, penghuni diminta mengunggah kembali");
+      setShowReject(false);
+      setAlasan("");
+      queryClient.invalidateQueries({ queryKey: ["tagihan"] });
+    },
+    onError: () => {
+      toast.error("Gagal menolak pembayaran");
+    },
+  });
+
+  return (
+    <div className="flex flex-col p-4 pb-32">
+      <div className="flex flex-col justify-center items-center gap-2 py-8">
+        <div className="p-3 rounded-full bg-primary">
+          <CheckCircle2 size={28} className="text-white" />
+        </div>
+        <div className="flex flex-col justify-center items-center gap-1">
+          <h1 className="text-xl font-semibold">Verifikasi Pembayaran</h1>
+          <p className="text-muted-foreground text-sm">
+            {userName} di Kamar {noKamar}
+          </p>
+        </div>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Detail Tagihan</CardTitle>
+          <CardDescription>
+            Periksa bukti pembayaran di bawah. Jika sesuai, klik Terima. Jika
+            tidak, klik Tolak.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="rounded-xl border bg-muted/30 p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Periode</span>
+              <span className="text-sm font-medium">{tagihan.periode}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Jumlah</span>
+              <span className="text-sm font-medium">
+                {formatRupiah(tagihan.jumlah * (tagihan.monthsPaid ?? 1))}
+              </span>
+            </div>
+          </div>
+
+          {tagihan.buktiPembayaran && (
+            <div className="space-y-2">
+              <p className="text-sm font-medium">Bukti Pembayaran</p>
+              <img
+                src={tagihan.buktiPembayaran}
+                alt="Bukti Pembayaran"
+                className="w-full rounded-xl border object-contain max-h-96"
+              />
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <div className="fixed bottom-0 left-0 right-0 mx-auto w-full max-w-lg border-t bg-background p-4 space-y-3">
+        {showReject ? (
+          <>
+            <Textarea
+              value={alasan}
+              onChange={(e) => setAlasan(e.target.value)}
+              placeholder="Alasan penolakan..."
+              rows={3}
+            />
+            <div className="flex gap-2">
+              <Button
+                variant="destructive"
+                className="flex-1 gap-1.5"
+                onClick={() => rejectMutation.mutate()}
+                disabled={rejectMutation.isPending || !alasan.trim()}
+              >
+                {rejectMutation.isPending ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <XCircle className="size-4" />
+                )}
+                Tolak
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowReject(false);
+                  setAlasan("");
+                }}
+              >
+                Batal
+              </Button>
+            </div>
+          </>
+        ) : (
+          <div className="flex gap-2">
+            <Button
+              className="flex-1 gap-1.5"
+              onClick={() => acceptMutation.mutate()}
+              disabled={acceptMutation.isPending}
+            >
+              {acceptMutation.isPending ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Check className="size-4" />
+              )}
+              Terima
+            </Button>
+            <Button
+              variant="destructive"
+              className="flex-1 gap-1.5"
+              onClick={() => setShowReject(true)}
+            >
+              <XCircle className="size-4" />
+              Tolak
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
