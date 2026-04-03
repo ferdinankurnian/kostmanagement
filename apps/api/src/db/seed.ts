@@ -95,11 +95,6 @@ async function seed() {
           key: "peraturan_kost_cards",
           value: peraturanCards,
         },
-        {
-          key: "peraturan_kost",
-          value:
-            "Jam Malam: Jam malam dimulai pukul 22.00. Setelah itu, harap menjaga ketenangan.\nLarangan Merokok: Dilarang merokok di dalam kamar dan area umum.\nPembayaran Tagihan: Pembayaran tagihan dilakukan maksimal tanggal 10 setiap bulannya.\nKebersihan: Jaga kebersihan kamar dan fasilitas bersama.\nLapor Kerusakan: Laporkan kerusakan fasilitas melalui fitur Keluhan.",
-        },
         { key: "security_pin", value: "1234" },
       ])
       .onConflictDoNothing();

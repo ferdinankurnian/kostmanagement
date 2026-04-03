@@ -50,9 +50,7 @@ function RulePage() {
       ? cards.map((c) =>
           c.title ? `${c.title}: ${c.description}` : c.description,
         )
-      : settings?.peraturan_kost
-        ? settings.peraturan_kost.split("\n").filter((r) => r.trim())
-        : defaultRules;
+      : defaultRules;
 
   const handleConfirm = async () => {
     setIsLoading(true);

@@ -55,41 +55,13 @@ function RouteComponent() {
       return;
     }
 
-    if (settings.peraturan_kost) {
-      setCards([
-        {
-          ...createInformasiKostCard(),
-          title: "Peraturan Utama",
-          description: settings.peraturan_kost,
-        },
-      ]);
-      return;
-    }
-
     setCards([]);
   }, [settings]);
 
   const saveMutation = useMutation({
     mutationFn: async () => {
       const serializedCards = serializeInformasiKostCards(cards);
-      const fallbackText = cards
-        .map((card) => {
-          const title = card.title.trim();
-          const description = card.description.trim();
-
-          if (title && description) {
-            return `${title}: ${description}`;
-          }
-
-          return title || description;
-        })
-        .filter((value) => value.length > 0)
-        .join("\n");
-
-      await Promise.all([
-        updateSetting("peraturan_kost_cards", serializedCards),
-        updateSetting("peraturan_kost", fallbackText),
-      ]);
+      await updateSetting("peraturan_kost_cards", serializedCards);
     },
     onSuccess: () => {
       toast.success("Peraturan kost disimpan");

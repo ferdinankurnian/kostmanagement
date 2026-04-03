@@ -52,7 +52,6 @@ export interface Settings {
   nama_bank?: string;
   no_rekening?: string;
   nama_pemilik_rekening?: string;
-  peraturan_kost?: string;
   peraturan_kost_cards?: string;
   is_default_pin?: string;
   [key: string]: string | undefined;
