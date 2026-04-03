@@ -36,7 +36,7 @@ function Page() {
     const { error } = await authClient.signIn.username({
       username,
       password,
-      rememberMe: remember,
+      rememberMe: true,
     });
 
     if (error) {

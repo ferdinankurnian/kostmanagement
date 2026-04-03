@@ -83,6 +83,8 @@ function RouteComponent() {
           data: {
             noTelepon: value.noTelepon,
           },
+          callbackURL: "/sign-up/ktp",
+          rememberMe: true,
           fetchOptions: {
             onSuccess: async () => {
               try {
