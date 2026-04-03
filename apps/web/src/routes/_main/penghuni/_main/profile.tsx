@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { BellRing, FileText, Phone, User } from "lucide-react";
+import { BellRing, Building2, FileText, Phone, User } from "lucide-react";
 import { LogoutButton } from "@/components/logout-button";
 import { MenuList, MenuListItem } from "@/components/menu-list";
 import { PwaInstallBanner } from "@/components/pwa-install-banner";
@@ -70,9 +70,14 @@ function RouteComponent() {
         <p className="text-sm text-muted-foreground">Pengaturan</p>
         <MenuList>
           <MenuListItem
+            icon={Building2}
+            label="Informasi Kost"
+            to="/penghuni/pengaturan/informasi-kost"
+          />
+          <MenuListItem
             icon={BellRing}
             label="Notifikasi"
-            to="/penghuni/pengaturan/notification"
+            to="/penghuni/notification"
           />
           <MenuListItem
             icon={FileText}
