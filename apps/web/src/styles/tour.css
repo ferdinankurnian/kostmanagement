@@ -91,14 +91,12 @@
 }
 
 .driver-overlay {
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.7);
   opacity: 1;
 }
 
 .driver-active-element,
 .driver-highlighted-element {
-  box-shadow: 0 0 0 4px hsl(var(--primary)) !important;
-  background-color: hsl(var(--background)) !important;
-  border-radius: var(--radius) !important;
-  z-index: 9999 !important;
+  opacity: 1 !important;
+  filter: brightness(1.1) !important;
 }
