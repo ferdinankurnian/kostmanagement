@@ -50,15 +50,11 @@ function RouteComponent() {
     tagihanList?.filter((t) => t.status === "belum_dibayar").length ?? 0;
 
   const pembayaranMasuk =
-    tagihanList
-      ?.filter(
-        (t) => t.status === "menunggu_verifikasi" || t.status === "lunas",
-      )
-      .sort(
-        (a, b) =>
-          new Date(b.tanggalBayar ?? b.createdAt).getTime() -
-          new Date(a.tanggalBayar ?? a.createdAt).getTime(),
-      ) ?? [];
+    tagihanList?.sort(
+      (a, b) =>
+        new Date(b.tanggalBayar ?? b.createdAt).getTime() -
+        new Date(a.tanggalBayar ?? a.createdAt).getTime(),
+    ) ?? [];
 
   const pembayaranHariIni = pembayaranMasuk.filter((t) => {
     if (!t.tanggalBayar) return false;
@@ -106,6 +102,13 @@ function RouteComponent() {
   const laporan = keluhanList
     .filter((item) => item.status !== "selesai")
     .slice(0, 5);
+
+  const getTagihanIconColor = (status: string) => {
+    if (status === "belum_dibayar") return "text-red-600";
+    if (status === "lunas" || status === "menunggu_verifikasi")
+      return "text-green-600";
+    return "text-muted-foreground";
+  };
   return (
     <div className="pt-6 space-y-6">
       <div className="flex flex-row justify-between items-center px-4">
@@ -129,13 +132,13 @@ function RouteComponent() {
             </Button>
           </Link>
           <Link to="/pemilik/profile">
-          <Avatar className="size-9">
-            <AvatarImage src={session?.user.image ?? ""} />
-            <AvatarFallback>
-              {session?.user.name?.charAt(0).toUpperCase() ?? "?"}
-            </AvatarFallback>
-          </Avatar>
-        </Link>
+            <Avatar className="size-9">
+              <AvatarImage src={session?.user.image ?? ""} />
+              <AvatarFallback>
+                {session?.user.name?.charAt(0).toUpperCase() ?? "?"}
+              </AvatarFallback>
+            </Avatar>
+          </Link>
         </div>
       </div>
       <div className="space-y-3">
@@ -262,7 +265,10 @@ function RouteComponent() {
                     >
                       <div className="flex flex-row gap-3">
                         <div className="p-2 border rounded-md">
-                          <ReceiptText className="size-6" strokeWidth={1.3} />
+                          <ReceiptText
+                            className={`size-6 ${getTagihanIconColor(t.status)}`}
+                            strokeWidth={1.3}
+                          />
                         </div>
                         <div>
                           <p>Kamar {t.noKamar}</p>
@@ -288,7 +294,10 @@ function RouteComponent() {
                     >
                       <div className="flex flex-row gap-3">
                         <div className="p-2 border rounded-md">
-                          <ReceiptText className="size-6" strokeWidth={1.3} />
+                          <ReceiptText
+                            className={`size-6 ${getTagihanIconColor(t.status)}`}
+                            strokeWidth={1.3}
+                          />
                         </div>
                         <div>
                           <p>Kamar {t.noKamar}</p>

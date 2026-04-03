@@ -1,15 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { TopBar, TopBarCenter, TopBarLeft } from "@/components/top-bar";
 import { Button } from "@/components/ui/button";
 import {
   Carousel,
+  type CarouselApi,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
 import { getInformasiById } from "@/lib/informasi";
 
@@ -23,11 +23,56 @@ export const Route = createFileRoute("/_main/penghuni/informasi/detail")({
 function InformasiDetailPage() {
   const navigate = useNavigate();
   const { id } = Route.useSearch();
+  const [api, setApi] = useState<CarouselApi>();
+  const [fullscreenOpen, setFullscreenOpen] = useState(false);
+  const [fullscreenIndex, setFullscreenIndex] = useState(0);
+  const autoScrollTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["informasi", id],
     queryFn: () => getInformasiById(id),
   });
+
+  // Auto-scroll every 5 seconds
+  useEffect(() => {
+    if (!api || !data || data.fotoUrls.length <= 1) {
+      return;
+    }
+
+    const startAutoScroll = () => {
+      autoScrollTimerRef.current = setInterval(() => {
+        api.scrollNext();
+      }, 5000);
+    };
+
+    startAutoScroll();
+
+    // Restart timer on user interaction
+    const handleSelect = () => {
+      if (autoScrollTimerRef.current) {
+        clearInterval(autoScrollTimerRef.current);
+      }
+      startAutoScroll();
+    };
+
+    api.on("select", handleSelect);
+
+    return () => {
+      if (autoScrollTimerRef.current) {
+        clearInterval(autoScrollTimerRef.current);
+      }
+      api.off("select", handleSelect);
+    };
+  }, [api, data]);
+
+  const openFullscreen = (index: number) => {
+    setFullscreenIndex(index);
+    setFullscreenOpen(true);
+  };
+
+  const closeFullscreen = () => {
+    setFullscreenOpen(false);
+  };
 
   return (
     <div className="flex min-h-screen flex-col">

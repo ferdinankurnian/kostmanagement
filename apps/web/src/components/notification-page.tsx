@@ -145,8 +145,8 @@ export function NotificationPage({ audience, onBack }: NotificationPageProps) {
             {!notificationSupported
               ? "Browser ini belum mendukung notification service worker."
               : permission === "denied"
-                ? "Status: diblokir browser. Izinkan lagi dari setting browser."
-                : "Status: belum aktif."}
+                ? "Diblokir browser. Izinkan lagi dari setting browser."
+                : null}
           </div>
 
           <div className="flex flex-wrap gap-2">

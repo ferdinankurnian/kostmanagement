@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { FileText, Loader2 } from "lucide-react";
 import { TopBar, TopBarCenter } from "@/components/top-bar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Empty,
@@ -25,16 +26,37 @@ function formatRupiah(n: number) {
   }).format(n);
 }
 
-const statusMap: Record<Tagihan["status"], { label: string; color: string }> = {
-  belum_dibayar: { label: "Belum Dibayar", color: "text-muted-foreground" },
-  menunggu_verifikasi: { label: "Menunggu", color: "text-yellow-500" },
-  lunas: { label: "Lunas", color: "text-green-500" },
-  ditolak: { label: "Ditolak", color: "text-red-500" },
+const statusMap: Record<
+  Tagihan["status"],
+  {
+    label: string;
+    color: string;
+    variant:
+      | "default"
+      | "secondary"
+      | "destructive"
+      | "outline"
+      | "ghost"
+      | "link";
+  }
+> = {
+  belum_dibayar: {
+    label: "Belum Dibayar",
+    color: "text-muted-foreground",
+    variant: "outline",
+  },
+  menunggu_verifikasi: {
+    label: "Menunggu",
+    color: "text-yellow-500",
+    variant: "outline",
+  },
+  lunas: { label: "Lunas", color: "text-green-500", variant: "secondary" },
+  ditolak: { label: "Ditolak", color: "text-red-500", variant: "destructive" },
 };
 
 function StatusText({ status }: { status: Tagihan["status"] }) {
-  const { label, color } = statusMap[status];
-  return <p className={`${color} text-sm absolute top-4 right-4`}>{label}</p>;
+  const { label, variant } = statusMap[status];
+  return <Badge variant={variant}>{label}</Badge>;
 }
 
 function TagihanPage() {
@@ -110,16 +132,16 @@ function TagihanPage() {
                     key={t.id}
                     to="/pemilik/tagihan/detail"
                     search={{ id: t.id }}
-                    className="block border rounded-xl p-4 space-y-3 relative cursor-pointer hover:bg-muted/50 transition-colors"
+                    className="block border rounded-xl p-4 space-y-3 cursor-pointer hover:bg-muted/50 transition-colors"
                   >
-                    <div className="space-y-1">
-                      <h1 className="text-lg">Kamar {t.noKamar}</h1>
-                      <p className="text-sm text-muted-foreground">
-                        {t.periode}
-                      </p>
-                      <p className="text-yellow-500 text-sm absolute top-4 right-4">
-                        Menunggu
-                      </p>
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-1">
+                        <h1 className="text-lg">Kamar {t.noKamar}</h1>
+                        <p className="text-sm text-muted-foreground">
+                          {t.periode}
+                        </p>
+                      </div>
+                      <StatusText status="menunggu_verifikasi" />
                     </div>
                     <Separator />
                     <h1 className="text-xl">{formatRupiah(t.jumlah)}</h1>
@@ -138,13 +160,15 @@ function TagihanPage() {
                     key={t.id}
                     to="/pemilik/tagihan/detail"
                     search={{ id: t.id }}
-                    className="block border rounded-xl p-4 space-y-3 relative cursor-pointer hover:bg-muted/50 transition-colors"
+                    className="block border rounded-xl p-4 space-y-3 cursor-pointer hover:bg-muted/50 transition-colors"
                   >
-                    <div className="space-y-1">
-                      <h1 className="text-lg">Kamar {t.noKamar}</h1>
-                      <p className="text-sm text-muted-foreground">
-                        {t.periode}
-                      </p>
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-1">
+                        <h1 className="text-lg">Kamar {t.noKamar}</h1>
+                        <p className="text-sm text-muted-foreground">
+                          {t.periode}
+                        </p>
+                      </div>
                       <StatusText status={t.status} />
                     </div>
                     <Separator />

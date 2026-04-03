@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, Loader2, Save, Trash2 } from "lucide-react";
+import { ArrowLeft, Loader2, Save, Trash2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -166,12 +166,24 @@ function RouteComponent() {
             {fotoUrls.length > 0 ? (
               <div className="grid grid-cols-2 gap-3">
                 {fotoUrls.map((url) => (
-                  <img
-                    key={url}
-                    src={url}
-                    alt="Foto informasi"
-                    className="h-36 w-full rounded-lg object-cover"
-                  />
+                  <div key={url} className="relative group">
+                    <img
+                      src={url}
+                      alt="Foto informasi"
+                      className="h-36 w-full rounded-lg object-cover"
+                    />
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="destructive"
+                      className="absolute top-1 right-1 size-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() =>
+                        setFotoUrls((prev) => prev.filter((u) => u !== url))
+                      }
+                    >
+                      <X className="size-4" />
+                    </Button>
+                  </div>
                 ))}
               </div>
             ) : null}
