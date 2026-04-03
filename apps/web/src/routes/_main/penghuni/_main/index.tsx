@@ -1,12 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  ArrowUpRight,
-  Bell,
-  ChevronRight,
-  Clipboard,
-  ReceiptText,
-} from "lucide-react";
+import { ArrowUpRight, Bell, ChevronRight, ReceiptText } from "lucide-react";
 import { NotificationPromptBanner } from "@/components/notification-prompt-banner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -38,7 +32,7 @@ function RouteComponent() {
     queryFn: getTagihan,
   });
 
-  const noKamar = (session?.user as { noKamar?: number })?.noKamar;
+  const _noKamar = (session?.user as { noKamar?: number })?.noKamar;
   const tagihanBelumLunas = tagihanList.filter(
     (t) => t.status === "belum_dibayar" || t.status === "ditolak",
   ).length;

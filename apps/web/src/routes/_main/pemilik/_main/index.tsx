@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { getAllKamar } from "@/lib/kamar";
-import { getKeluhanList, type Keluhan } from "@/lib/keluhan";
+import { getKeluhanList } from "@/lib/keluhan";
 import { getSettings } from "@/lib/settings";
 import { getTagihan } from "@/lib/tagihan";
 import { useNotificationFeed } from "@/lib/use-notification-feed";
@@ -246,7 +246,7 @@ function RouteComponent() {
       </div>
       <div className="flex flex-col gap-2 px-4">
         <div className="flex flex-row">
-          <h1 className="text-lg">Pembayaran Masuk</h1>
+          <h1 className="text-lg">Tagihan</h1>
         </div>
         {pembayaranMasuk.length === 0 ? (
           <p className="text-sm text-muted-foreground py-2">
