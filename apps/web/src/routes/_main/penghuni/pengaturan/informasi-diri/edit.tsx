@@ -47,18 +47,11 @@ function EditForm({
       name: session?.user.name ?? "",
       noTelepon:
         ((session?.user as Record<string, unknown>).noTelepon as string) ?? "",
-      noTeleponDarurat:
-        ((session?.user as Record<string, unknown>)
-          .noTeleponDarurat as string) ?? "",
     },
   });
 
   const name = useStore(form.store, (s) => s.values.name);
   const noTelepon = useStore(form.store, (s) => s.values.noTelepon);
-  const noTeleponDarurat = useStore(
-    form.store,
-    (s) => s.values.noTeleponDarurat,
-  );
 
   const saveMutation = useMutation({
     mutationFn: async () => {
@@ -70,7 +63,6 @@ function EditForm({
         body: JSON.stringify({
           name: value.name,
           noTelepon: value.noTelepon,
-          noTeleponDarurat: value.noTeleponDarurat,
         }),
       });
       if (!res.ok) throw new Error("Gagal memperbarui profil");
@@ -183,23 +175,6 @@ function EditForm({
               <FieldLabel htmlFor="telepon">No Telepon</FieldLabel>
               <Input
                 id="telepon"
-                type="tel"
-                placeholder="08xxxxxxxxxx"
-                value={field.state.value}
-                onChange={(e) => field.handleChange(e.target.value)}
-              />
-            </Field>
-          )}
-        </form.Field>
-
-        <form.Field name="noTeleponDarurat">
-          {(field) => (
-            <Field>
-              <FieldLabel htmlFor="telepon-darurat">
-                No Telepon Darurat
-              </FieldLabel>
-              <Input
-                id="telepon-darurat"
                 type="tel"
                 placeholder="08xxxxxxxxxx"
                 value={field.state.value}
