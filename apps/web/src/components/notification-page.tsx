@@ -1,5 +1,6 @@
 import {
   BellRing,
+  CheckCheck,
   ChevronRight,
   Info,
   Loader2,
@@ -107,7 +108,7 @@ export function NotificationPage({ audience, onBack }: NotificationPageProps) {
           {notifications.length > 0 && (
             <Button
               variant="ghost"
-              size="sm"
+              size="icon"
               onClick={() => {
                 const unreadKeys = notifications
                   .filter((n) => !n.isRead)
@@ -118,7 +119,7 @@ export function NotificationPage({ audience, onBack }: NotificationPageProps) {
               }}
               disabled={notifications.every((n) => n.isRead)}
             >
-              Mark all read
+              <CheckCheck className="size-5" />
             </Button>
           )}
         </TopBarRight>
