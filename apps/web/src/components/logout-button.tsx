@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
-import { clearSessionMarkers } from "@/lib/ephemeral-session";
 
 export function LogoutButton() {
   const navigate = useNavigate();
@@ -39,7 +38,6 @@ export function LogoutButton() {
             disabled={loading}
             onClick={async () => {
               setLoading(true);
-              clearSessionMarkers();
               await authClient.signOut({
                 fetchOptions: {
                   onSuccess: () => navigate({ to: "/login" }),
