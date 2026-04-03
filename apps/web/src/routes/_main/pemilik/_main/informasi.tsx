@@ -35,12 +35,9 @@ function RouteComponent() {
         </TopBarCenter>
       </TopBar>
 
-      <div className="fixed inset-x-0 bottom-14 z-50 mx-auto flex max-w-lg justify-end px-4 pointer-events-none">
+      <div className="fixed bottom-14 right-4 z-50">
         <Link to="/pemilik/informasi/add">
-          <Button
-            size="icon-lg"
-            className="pointer-events-auto h-12 w-20 rounded-xl border border-black/20"
-          >
+          <Button size="icon-lg" className="h-12 w-12 rounded-full shadow-lg">
             <Plus className="size-6" />
           </Button>
         </Link>
