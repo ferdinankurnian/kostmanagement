@@ -83,11 +83,9 @@ function RouteComponent() {
           data: {
             noTelepon: value.noTelepon,
           },
-          callbackURL: "/sign-up/ktp",
+          rememberMe: true,
           fetchOptions: {
             onSuccess: async () => {
-              // Always set persistent session for new signups
-              setPersistentSession();
               try {
                 await useInvite({ code: inviteCode });
                 toast.success("Akun berhasil dibuat!");
