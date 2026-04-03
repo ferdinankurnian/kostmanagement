@@ -219,8 +219,8 @@ function RouteComponent() {
     return (
       <div className="flex flex-col p-4 pb-32">
         <div className="flex flex-col justify-center items-center gap-2 py-8">
-          <div className="p-3 rounded-full bg-primary">
-            <CheckCircle2 size={28} className="text-white" />
+          <div className="p-3 rounded-full bg-yellow-500">
+            <Clock size={28} className="text-white" />
           </div>
           <div className="flex flex-col justify-center items-center gap-1">
             <h1 className="text-xl font-semibold">Verifikasi KTP</h1>
@@ -481,8 +481,8 @@ function VerifikasiPembayaranOnboarding({
   return (
     <div className="flex flex-col p-4 pb-32">
       <div className="flex flex-col justify-center items-center gap-2 py-8">
-        <div className="p-3 rounded-full bg-primary">
-          <CheckCircle2 size={28} className="text-white" />
+        <div className="p-3 rounded-full bg-yellow-500">
+          <Clock size={28} className="text-white" />
         </div>
         <div className="flex flex-col justify-center items-center gap-1">
           <h1 className="text-xl font-semibold">Verifikasi Pembayaran</h1>
