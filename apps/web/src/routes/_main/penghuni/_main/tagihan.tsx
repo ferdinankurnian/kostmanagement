@@ -185,19 +185,6 @@ function TagihanPage() {
                   Ditolak: {t.alasanPenolakan}
                 </div>
               )}
-
-              {t.buktiPembayaran && (
-                <div>
-                  <p className="text-xs text-muted-foreground mb-1">
-                    Bukti Pembayaran:
-                  </p>
-                  <img
-                    src={t.buktiPembayaran}
-                    alt="Bukti"
-                    className="max-h-32 rounded-lg object-contain"
-                  />
-                </div>
-              )}
             </Link>
 
             {(t.status === "belum_dibayar" || t.status === "ditolak") &&
