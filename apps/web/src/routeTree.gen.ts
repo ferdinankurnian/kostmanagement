@@ -38,6 +38,8 @@ import { Route as MainPenghuniProfileNomerDaruratRouteImport } from './routes/_m
 import { Route as MainPenghuniProfileInformasiDiriRouteImport } from './routes/_main/penghuni/profile/informasi-diri'
 import { Route as MainPenghuniProfileInformasiRouteImport } from './routes/_main/penghuni/profile/informasi'
 import { Route as MainPenghuniProfileAlamatTinggalRouteImport } from './routes/_main/penghuni/profile/alamat-tinggal'
+import { Route as MainPenghuniPengaturanPeraturanKostRouteImport } from './routes/_main/penghuni/pengaturan/peraturan-kost'
+import { Route as MainPenghuniPengaturanNomerDaruratRouteImport } from './routes/_main/penghuni/pengaturan/nomer-darurat'
 import { Route as MainPenghuniOnboardingRuleRouteImport } from './routes/_main/penghuni/onboarding/rule'
 import { Route as MainPenghuniOnboardingBayarTagihanRouteImport } from './routes/_main/penghuni/onboarding/bayar-tagihan'
 import { Route as MainPenghuniKeluhanDetailRouteImport } from './routes/_main/penghuni/keluhan/detail'
@@ -58,9 +60,11 @@ import { Route as MainPemilikInformasiAddRouteImport } from './routes/_main/pemi
 import { Route as MainPemilikMainTagihanRouteImport } from './routes/_main/pemilik/_main/tagihan'
 import { Route as MainPemilikMainProfileRouteImport } from './routes/_main/pemilik/_main/profile'
 import { Route as MainPemilikMainInformasiRouteImport } from './routes/_main/pemilik/_main/informasi'
+import { Route as MainPenghuniPengaturanInformasiDiriIndexRouteImport } from './routes/_main/penghuni/pengaturan/informasi-diri/index'
 import { Route as MainPemilikPengaturanPinIndexRouteImport } from './routes/_main/pemilik/pengaturan/pin/index'
 import { Route as MainPemilikPengaturanPeraturanKostIndexRouteImport } from './routes/_main/pemilik/pengaturan/peraturan-kost/index'
 import { Route as MainPemilikPengaturanInformasiPemilikIndexRouteImport } from './routes/_main/pemilik/pengaturan/informasi-pemilik/index'
+import { Route as MainPenghuniPengaturanInformasiDiriEditRouteImport } from './routes/_main/penghuni/pengaturan/informasi-diri/edit'
 import { Route as MainPemilikPengaturanPinKonfirmasiRouteImport } from './routes/_main/pemilik/pengaturan/pin/konfirmasi'
 import { Route as MainPemilikPengaturanPinBaruRouteImport } from './routes/_main/pemilik/pengaturan/pin/baru'
 import { Route as MainPemilikPengaturanPeraturanKostEditRouteImport } from './routes/_main/pemilik/pengaturan/peraturan-kost/edit'
@@ -219,6 +223,18 @@ const MainPenghuniProfileAlamatTinggalRoute =
     path: '/penghuni/profile/alamat-tinggal',
     getParentRoute: () => MainRoute,
   } as any)
+const MainPenghuniPengaturanPeraturanKostRoute =
+  MainPenghuniPengaturanPeraturanKostRouteImport.update({
+    id: '/penghuni/pengaturan/peraturan-kost',
+    path: '/penghuni/pengaturan/peraturan-kost',
+    getParentRoute: () => MainRoute,
+  } as any)
+const MainPenghuniPengaturanNomerDaruratRoute =
+  MainPenghuniPengaturanNomerDaruratRouteImport.update({
+    id: '/penghuni/pengaturan/nomer-darurat',
+    path: '/penghuni/pengaturan/nomer-darurat',
+    getParentRoute: () => MainRoute,
+  } as any)
 const MainPenghuniOnboardingRuleRoute =
   MainPenghuniOnboardingRuleRouteImport.update({
     id: '/rule',
@@ -331,6 +347,12 @@ const MainPemilikMainInformasiRoute =
     path: '/informasi',
     getParentRoute: () => MainPemilikMainRouteRoute,
   } as any)
+const MainPenghuniPengaturanInformasiDiriIndexRoute =
+  MainPenghuniPengaturanInformasiDiriIndexRouteImport.update({
+    id: '/penghuni/pengaturan/informasi-diri/',
+    path: '/penghuni/pengaturan/informasi-diri/',
+    getParentRoute: () => MainRoute,
+  } as any)
 const MainPemilikPengaturanPinIndexRoute =
   MainPemilikPengaturanPinIndexRouteImport.update({
     id: '/pemilik/pengaturan/pin/',
@@ -347,6 +369,12 @@ const MainPemilikPengaturanInformasiPemilikIndexRoute =
   MainPemilikPengaturanInformasiPemilikIndexRouteImport.update({
     id: '/pemilik/pengaturan/informasi-pemilik/',
     path: '/pemilik/pengaturan/informasi-pemilik/',
+    getParentRoute: () => MainRoute,
+  } as any)
+const MainPenghuniPengaturanInformasiDiriEditRoute =
+  MainPenghuniPengaturanInformasiDiriEditRouteImport.update({
+    id: '/penghuni/pengaturan/informasi-diri/edit',
+    path: '/penghuni/pengaturan/informasi-diri/edit',
     getParentRoute: () => MainRoute,
   } as any)
 const MainPemilikPengaturanPinKonfirmasiRoute =
@@ -411,6 +439,8 @@ export interface FileRoutesByFullPath {
   '/penghuni/keluhan/detail': typeof MainPenghuniKeluhanDetailRoute
   '/penghuni/onboarding/bayar-tagihan': typeof MainPenghuniOnboardingBayarTagihanRoute
   '/penghuni/onboarding/rule': typeof MainPenghuniOnboardingRuleRoute
+  '/penghuni/pengaturan/nomer-darurat': typeof MainPenghuniPengaturanNomerDaruratRoute
+  '/penghuni/pengaturan/peraturan-kost': typeof MainPenghuniPengaturanPeraturanKostRoute
   '/penghuni/profile/alamat-tinggal': typeof MainPenghuniProfileAlamatTinggalRoute
   '/penghuni/profile/informasi': typeof MainPenghuniProfileInformasiRoute
   '/penghuni/profile/informasi-diri': typeof MainPenghuniProfileInformasiDiriRoute
@@ -426,9 +456,11 @@ export interface FileRoutesByFullPath {
   '/pemilik/pengaturan/peraturan-kost/edit': typeof MainPemilikPengaturanPeraturanKostEditRoute
   '/pemilik/pengaturan/pin/baru': typeof MainPemilikPengaturanPinBaruRoute
   '/pemilik/pengaturan/pin/konfirmasi': typeof MainPemilikPengaturanPinKonfirmasiRoute
+  '/penghuni/pengaturan/informasi-diri/edit': typeof MainPenghuniPengaturanInformasiDiriEditRoute
   '/pemilik/pengaturan/informasi-pemilik/': typeof MainPemilikPengaturanInformasiPemilikIndexRoute
   '/pemilik/pengaturan/peraturan-kost/': typeof MainPemilikPengaturanPeraturanKostIndexRoute
   '/pemilik/pengaturan/pin/': typeof MainPemilikPengaturanPinIndexRoute
+  '/penghuni/pengaturan/informasi-diri/': typeof MainPenghuniPengaturanInformasiDiriIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof MainIndexRoute
@@ -464,6 +496,8 @@ export interface FileRoutesByTo {
   '/penghuni/keluhan/detail': typeof MainPenghuniKeluhanDetailRoute
   '/penghuni/onboarding/bayar-tagihan': typeof MainPenghuniOnboardingBayarTagihanRoute
   '/penghuni/onboarding/rule': typeof MainPenghuniOnboardingRuleRoute
+  '/penghuni/pengaturan/nomer-darurat': typeof MainPenghuniPengaturanNomerDaruratRoute
+  '/penghuni/pengaturan/peraturan-kost': typeof MainPenghuniPengaturanPeraturanKostRoute
   '/penghuni/profile/alamat-tinggal': typeof MainPenghuniProfileAlamatTinggalRoute
   '/penghuni/profile/informasi': typeof MainPenghuniProfileInformasiRoute
   '/penghuni/profile/informasi-diri': typeof MainPenghuniProfileInformasiDiriRoute
@@ -479,9 +513,11 @@ export interface FileRoutesByTo {
   '/pemilik/pengaturan/peraturan-kost/edit': typeof MainPemilikPengaturanPeraturanKostEditRoute
   '/pemilik/pengaturan/pin/baru': typeof MainPemilikPengaturanPinBaruRoute
   '/pemilik/pengaturan/pin/konfirmasi': typeof MainPemilikPengaturanPinKonfirmasiRoute
+  '/penghuni/pengaturan/informasi-diri/edit': typeof MainPenghuniPengaturanInformasiDiriEditRoute
   '/pemilik/pengaturan/informasi-pemilik': typeof MainPemilikPengaturanInformasiPemilikIndexRoute
   '/pemilik/pengaturan/peraturan-kost': typeof MainPemilikPengaturanPeraturanKostIndexRoute
   '/pemilik/pengaturan/pin': typeof MainPemilikPengaturanPinIndexRoute
+  '/penghuni/pengaturan/informasi-diri': typeof MainPenghuniPengaturanInformasiDiriIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -523,6 +559,8 @@ export interface FileRoutesById {
   '/_main/penghuni/keluhan/detail': typeof MainPenghuniKeluhanDetailRoute
   '/_main/penghuni/onboarding/bayar-tagihan': typeof MainPenghuniOnboardingBayarTagihanRoute
   '/_main/penghuni/onboarding/rule': typeof MainPenghuniOnboardingRuleRoute
+  '/_main/penghuni/pengaturan/nomer-darurat': typeof MainPenghuniPengaturanNomerDaruratRoute
+  '/_main/penghuni/pengaturan/peraturan-kost': typeof MainPenghuniPengaturanPeraturanKostRoute
   '/_main/penghuni/profile/alamat-tinggal': typeof MainPenghuniProfileAlamatTinggalRoute
   '/_main/penghuni/profile/informasi': typeof MainPenghuniProfileInformasiRoute
   '/_main/penghuni/profile/informasi-diri': typeof MainPenghuniProfileInformasiDiriRoute
@@ -538,9 +576,11 @@ export interface FileRoutesById {
   '/_main/pemilik/pengaturan/peraturan-kost/edit': typeof MainPemilikPengaturanPeraturanKostEditRoute
   '/_main/pemilik/pengaturan/pin/baru': typeof MainPemilikPengaturanPinBaruRoute
   '/_main/pemilik/pengaturan/pin/konfirmasi': typeof MainPemilikPengaturanPinKonfirmasiRoute
+  '/_main/penghuni/pengaturan/informasi-diri/edit': typeof MainPenghuniPengaturanInformasiDiriEditRoute
   '/_main/pemilik/pengaturan/informasi-pemilik/': typeof MainPemilikPengaturanInformasiPemilikIndexRoute
   '/_main/pemilik/pengaturan/peraturan-kost/': typeof MainPemilikPengaturanPeraturanKostIndexRoute
   '/_main/pemilik/pengaturan/pin/': typeof MainPemilikPengaturanPinIndexRoute
+  '/_main/penghuni/pengaturan/informasi-diri/': typeof MainPenghuniPengaturanInformasiDiriIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -581,6 +621,8 @@ export interface FileRouteTypes {
     | '/penghuni/keluhan/detail'
     | '/penghuni/onboarding/bayar-tagihan'
     | '/penghuni/onboarding/rule'
+    | '/penghuni/pengaturan/nomer-darurat'
+    | '/penghuni/pengaturan/peraturan-kost'
     | '/penghuni/profile/alamat-tinggal'
     | '/penghuni/profile/informasi'
     | '/penghuni/profile/informasi-diri'
@@ -596,9 +638,11 @@ export interface FileRouteTypes {
     | '/pemilik/pengaturan/peraturan-kost/edit'
     | '/pemilik/pengaturan/pin/baru'
     | '/pemilik/pengaturan/pin/konfirmasi'
+    | '/penghuni/pengaturan/informasi-diri/edit'
     | '/pemilik/pengaturan/informasi-pemilik/'
     | '/pemilik/pengaturan/peraturan-kost/'
     | '/pemilik/pengaturan/pin/'
+    | '/penghuni/pengaturan/informasi-diri/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -634,6 +678,8 @@ export interface FileRouteTypes {
     | '/penghuni/keluhan/detail'
     | '/penghuni/onboarding/bayar-tagihan'
     | '/penghuni/onboarding/rule'
+    | '/penghuni/pengaturan/nomer-darurat'
+    | '/penghuni/pengaturan/peraturan-kost'
     | '/penghuni/profile/alamat-tinggal'
     | '/penghuni/profile/informasi'
     | '/penghuni/profile/informasi-diri'
@@ -649,9 +695,11 @@ export interface FileRouteTypes {
     | '/pemilik/pengaturan/peraturan-kost/edit'
     | '/pemilik/pengaturan/pin/baru'
     | '/pemilik/pengaturan/pin/konfirmasi'
+    | '/penghuni/pengaturan/informasi-diri/edit'
     | '/pemilik/pengaturan/informasi-pemilik'
     | '/pemilik/pengaturan/peraturan-kost'
     | '/pemilik/pengaturan/pin'
+    | '/penghuni/pengaturan/informasi-diri'
   id:
     | '__root__'
     | '/_auth'
@@ -692,6 +740,8 @@ export interface FileRouteTypes {
     | '/_main/penghuni/keluhan/detail'
     | '/_main/penghuni/onboarding/bayar-tagihan'
     | '/_main/penghuni/onboarding/rule'
+    | '/_main/penghuni/pengaturan/nomer-darurat'
+    | '/_main/penghuni/pengaturan/peraturan-kost'
     | '/_main/penghuni/profile/alamat-tinggal'
     | '/_main/penghuni/profile/informasi'
     | '/_main/penghuni/profile/informasi-diri'
@@ -707,9 +757,11 @@ export interface FileRouteTypes {
     | '/_main/pemilik/pengaturan/peraturan-kost/edit'
     | '/_main/pemilik/pengaturan/pin/baru'
     | '/_main/pemilik/pengaturan/pin/konfirmasi'
+    | '/_main/penghuni/pengaturan/informasi-diri/edit'
     | '/_main/pemilik/pengaturan/informasi-pemilik/'
     | '/_main/pemilik/pengaturan/peraturan-kost/'
     | '/_main/pemilik/pengaturan/pin/'
+    | '/_main/penghuni/pengaturan/informasi-diri/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -922,6 +974,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MainPenghuniProfileAlamatTinggalRouteImport
       parentRoute: typeof MainRoute
     }
+    '/_main/penghuni/pengaturan/peraturan-kost': {
+      id: '/_main/penghuni/pengaturan/peraturan-kost'
+      path: '/penghuni/pengaturan/peraturan-kost'
+      fullPath: '/penghuni/pengaturan/peraturan-kost'
+      preLoaderRoute: typeof MainPenghuniPengaturanPeraturanKostRouteImport
+      parentRoute: typeof MainRoute
+    }
+    '/_main/penghuni/pengaturan/nomer-darurat': {
+      id: '/_main/penghuni/pengaturan/nomer-darurat'
+      path: '/penghuni/pengaturan/nomer-darurat'
+      fullPath: '/penghuni/pengaturan/nomer-darurat'
+      preLoaderRoute: typeof MainPenghuniPengaturanNomerDaruratRouteImport
+      parentRoute: typeof MainRoute
+    }
     '/_main/penghuni/onboarding/rule': {
       id: '/_main/penghuni/onboarding/rule'
       path: '/rule'
@@ -1062,6 +1128,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MainPemilikMainInformasiRouteImport
       parentRoute: typeof MainPemilikMainRouteRoute
     }
+    '/_main/penghuni/pengaturan/informasi-diri/': {
+      id: '/_main/penghuni/pengaturan/informasi-diri/'
+      path: '/penghuni/pengaturan/informasi-diri'
+      fullPath: '/penghuni/pengaturan/informasi-diri/'
+      preLoaderRoute: typeof MainPenghuniPengaturanInformasiDiriIndexRouteImport
+      parentRoute: typeof MainRoute
+    }
     '/_main/pemilik/pengaturan/pin/': {
       id: '/_main/pemilik/pengaturan/pin/'
       path: '/pemilik/pengaturan/pin'
@@ -1081,6 +1154,13 @@ declare module '@tanstack/react-router' {
       path: '/pemilik/pengaturan/informasi-pemilik'
       fullPath: '/pemilik/pengaturan/informasi-pemilik/'
       preLoaderRoute: typeof MainPemilikPengaturanInformasiPemilikIndexRouteImport
+      parentRoute: typeof MainRoute
+    }
+    '/_main/penghuni/pengaturan/informasi-diri/edit': {
+      id: '/_main/penghuni/pengaturan/informasi-diri/edit'
+      path: '/penghuni/pengaturan/informasi-diri/edit'
+      fullPath: '/penghuni/pengaturan/informasi-diri/edit'
+      preLoaderRoute: typeof MainPenghuniPengaturanInformasiDiriEditRouteImport
       parentRoute: typeof MainRoute
     }
     '/_main/pemilik/pengaturan/pin/konfirmasi': {
@@ -1215,6 +1295,8 @@ interface MainRouteChildren {
   MainPenghuniInformasiDetailRoute: typeof MainPenghuniInformasiDetailRoute
   MainPenghuniKeluhanAddRoute: typeof MainPenghuniKeluhanAddRoute
   MainPenghuniKeluhanDetailRoute: typeof MainPenghuniKeluhanDetailRoute
+  MainPenghuniPengaturanNomerDaruratRoute: typeof MainPenghuniPengaturanNomerDaruratRoute
+  MainPenghuniPengaturanPeraturanKostRoute: typeof MainPenghuniPengaturanPeraturanKostRoute
   MainPenghuniProfileAlamatTinggalRoute: typeof MainPenghuniProfileAlamatTinggalRoute
   MainPenghuniProfileInformasiRoute: typeof MainPenghuniProfileInformasiRoute
   MainPenghuniProfileInformasiDiriRoute: typeof MainPenghuniProfileInformasiDiriRoute
@@ -1227,9 +1309,11 @@ interface MainRouteChildren {
   MainPemilikPengaturanPeraturanKostEditRoute: typeof MainPemilikPengaturanPeraturanKostEditRoute
   MainPemilikPengaturanPinBaruRoute: typeof MainPemilikPengaturanPinBaruRoute
   MainPemilikPengaturanPinKonfirmasiRoute: typeof MainPemilikPengaturanPinKonfirmasiRoute
+  MainPenghuniPengaturanInformasiDiriEditRoute: typeof MainPenghuniPengaturanInformasiDiriEditRoute
   MainPemilikPengaturanInformasiPemilikIndexRoute: typeof MainPemilikPengaturanInformasiPemilikIndexRoute
   MainPemilikPengaturanPeraturanKostIndexRoute: typeof MainPemilikPengaturanPeraturanKostIndexRoute
   MainPemilikPengaturanPinIndexRoute: typeof MainPemilikPengaturanPinIndexRoute
+  MainPenghuniPengaturanInformasiDiriIndexRoute: typeof MainPenghuniPengaturanInformasiDiriIndexRoute
 }
 
 const MainRouteChildren: MainRouteChildren = {
@@ -1257,6 +1341,10 @@ const MainRouteChildren: MainRouteChildren = {
   MainPenghuniInformasiDetailRoute: MainPenghuniInformasiDetailRoute,
   MainPenghuniKeluhanAddRoute: MainPenghuniKeluhanAddRoute,
   MainPenghuniKeluhanDetailRoute: MainPenghuniKeluhanDetailRoute,
+  MainPenghuniPengaturanNomerDaruratRoute:
+    MainPenghuniPengaturanNomerDaruratRoute,
+  MainPenghuniPengaturanPeraturanKostRoute:
+    MainPenghuniPengaturanPeraturanKostRoute,
   MainPenghuniProfileAlamatTinggalRoute: MainPenghuniProfileAlamatTinggalRoute,
   MainPenghuniProfileInformasiRoute: MainPenghuniProfileInformasiRoute,
   MainPenghuniProfileInformasiDiriRoute: MainPenghuniProfileInformasiDiriRoute,
@@ -1272,11 +1360,15 @@ const MainRouteChildren: MainRouteChildren = {
   MainPemilikPengaturanPinBaruRoute: MainPemilikPengaturanPinBaruRoute,
   MainPemilikPengaturanPinKonfirmasiRoute:
     MainPemilikPengaturanPinKonfirmasiRoute,
+  MainPenghuniPengaturanInformasiDiriEditRoute:
+    MainPenghuniPengaturanInformasiDiriEditRoute,
   MainPemilikPengaturanInformasiPemilikIndexRoute:
     MainPemilikPengaturanInformasiPemilikIndexRoute,
   MainPemilikPengaturanPeraturanKostIndexRoute:
     MainPemilikPengaturanPeraturanKostIndexRoute,
   MainPemilikPengaturanPinIndexRoute: MainPemilikPengaturanPinIndexRoute,
+  MainPenghuniPengaturanInformasiDiriIndexRoute:
+    MainPenghuniPengaturanInformasiDiriIndexRoute,
 }
 
 const MainRouteWithChildren = MainRoute._addFileChildren(MainRouteChildren)
