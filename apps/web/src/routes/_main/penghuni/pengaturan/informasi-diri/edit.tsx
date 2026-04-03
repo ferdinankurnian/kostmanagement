@@ -1,5 +1,5 @@
 import { useForm, useStore } from "@tanstack/react-form";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Camera, ChevronLeft, Loader2 } from "lucide-react";
 import { useRef, useState } from "react";
@@ -9,7 +9,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { authClient } from "@/lib/auth-client";
 import { API_BASE } from "@/lib/config";
 import { uploadAvatar } from "@/lib/upload";
@@ -48,14 +47,18 @@ function EditForm({
       name: session?.user.name ?? "",
       noTelepon:
         ((session?.user as Record<string, unknown>).noTelepon as string) ?? "",
-      alamat:
-        ((session?.user as Record<string, unknown>).alamat as string) ?? "",
+      noTeleponDarurat:
+        ((session?.user as Record<string, unknown>)
+          .noTeleponDarurat as string) ?? "",
     },
   });
 
   const name = useStore(form.store, (s) => s.values.name);
   const noTelepon = useStore(form.store, (s) => s.values.noTelepon);
-  const alamat = useStore(form.store, (s) => s.values.alamat);
+  const noTeleponDarurat = useStore(
+    form.store,
+    (s) => s.values.noTeleponDarurat,
+  );
 
   const saveMutation = useMutation({
     mutationFn: async () => {
@@ -67,7 +70,7 @@ function EditForm({
         body: JSON.stringify({
           name: value.name,
           noTelepon: value.noTelepon,
-          alamat: value.alamat,
+          noTeleponDarurat: value.noTeleponDarurat,
         }),
       });
       if (!res.ok) throw new Error("Gagal memperbarui profil");
@@ -189,16 +192,18 @@ function EditForm({
           )}
         </form.Field>
 
-        <form.Field name="alamat">
+        <form.Field name="noTeleponDarurat">
           {(field) => (
             <Field>
-              <FieldLabel htmlFor="alamat">Alamat Tinggal</FieldLabel>
-              <Textarea
-                id="alamat"
-                placeholder="Alamat tempat tinggal"
+              <FieldLabel htmlFor="telepon-darurat">
+                No Telepon Darurat
+              </FieldLabel>
+              <Input
+                id="telepon-darurat"
+                type="tel"
+                placeholder="08xxxxxxxxxx"
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
-                rows={3}
               />
             </Field>
           )}
