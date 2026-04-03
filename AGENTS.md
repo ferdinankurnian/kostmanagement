@@ -158,3 +158,16 @@ Vitest is installed in `apps/web` with `@testing-library/react` and jsdom. No te
 - File serving (`/api/files/*`) requires authentication.
 - Workspace packages use `workspace:*` protocol (e.g. `"@repo/db": "workspace:*"`) — installed via bun at root.
 - Shared code goes in `packages/*` and is imported as `@repo/<package-name>` (e.g. `@repo/api-types`, `@repo/db`, `@repo/auth`).
+
+---
+
+## For Agentic Coding Systems
+
+When operating in this repo, follow these principles:
+
+1. **Before modifying code:** Always read relevant files to understand context. Use `bun run check-types` before committing to catch type errors early.
+2. **File operations:** Use Read/Edit/Write tools; prefer editing existing files over creating new ones.
+3. **Testing single files:** Run `cd apps/web && bun run test -- --run <filename-pattern>` to verify changes locally.
+4. **Import organization:** Never manually reorder imports — run `bun run lint:fix` which auto-organizes via Biome.
+5. **Don't commit secrets:** Verify `.env` and `.dev.vars` changes are excluded before any git operations.
+6. **Cloudflare APIs only:** The API has no Node.js runtime — use `fetch`, `Request`, `Response`, `TextEncoder`, `crypto.subtle`, etc.
