@@ -169,7 +169,7 @@ function RouteComponent() {
 
       <div data-tour="pembayaran" className="flex flex-col gap-2 px-4">
         <div className="flex flex-row justify-between">
-          <h1 className="text-lg">Pembayaran</h1>
+          <h1 className="text-lg">Tagihan</h1>
           <Link to="/penghuni/tagihan">
             <p className="text-sm text-muted-foreground hover:text-foreground">
               Lihat Semua

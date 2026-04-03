@@ -174,38 +174,40 @@ function RouteComponent() {
             </div>
           </div>
 
-          <div className="fixed bottom-0 left-0 right-0 mx-auto w-full max-w-lg border-t bg-background p-4 space-y-2">
-            <Button
-              type="button"
-              className="w-full gap-2"
-              onClick={() => mutation.mutate()}
-              disabled={mutation.isPending}
-            >
-              {mutation.isPending ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <Save className="size-4" />
-              )}
-              Simpan Status
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full gap-2 text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
-              disabled={deleteMutation.isPending}
-              onClick={() => {
-                if (window.confirm("Hapus keluhan ini?")) {
-                  deleteMutation.mutate();
-                }
-              }}
-            >
-              {deleteMutation.isPending ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <Trash2 className="size-4" />
-              )}
-              Hapus Keluhan
-            </Button>
+          <div className="fixed bottom-0 left-0 right-0 px-4 pb-4 pt-8 bg-linear-to-t from-background to-transparent">
+            <div className="mx-auto max-w-lg space-y-2">
+              <Button
+                type="button"
+                className="w-full gap-2"
+                onClick={() => mutation.mutate()}
+                disabled={mutation.isPending}
+              >
+                {mutation.isPending ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <Save className="size-4" />
+                )}
+                Simpan Status
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full gap-2 text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
+                disabled={deleteMutation.isPending}
+                onClick={() => {
+                  if (window.confirm("Hapus keluhan ini?")) {
+                    deleteMutation.mutate();
+                  }
+                }}
+              >
+                {deleteMutation.isPending ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <Trash2 className="size-4" />
+                )}
+                Hapus Keluhan
+              </Button>
+            </div>
           </div>
         </>
       )}

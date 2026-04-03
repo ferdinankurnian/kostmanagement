@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowUpRight, Loader2 } from "lucide-react";
-import { TopBar, TopBarCenter } from "@/components/top-bar";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { ArrowLeft, ArrowUpRight, Loader2 } from "lucide-react";
+import { TopBar, TopBarCenter, TopBarLeft } from "@/components/top-bar";
+import { Button } from "@/components/ui/button";
 import { getInformasiList, type Informasi } from "@/lib/informasi";
 
 export const Route = createFileRoute("/_main/penghuni/informasi/")({
@@ -9,6 +10,7 @@ export const Route = createFileRoute("/_main/penghuni/informasi/")({
 });
 
 function InformasiPage() {
+  const navigate = useNavigate();
   const {
     data: informasiList = [],
     isLoading,
@@ -27,6 +29,15 @@ function InformasiPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <TopBar>
+        <TopBarLeft>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate({ to: "/penghuni" })}
+          >
+            <ArrowLeft className="size-5" />
+          </Button>
+        </TopBarLeft>
         <TopBarCenter>
           <h1 className="text-lg font-semibold">Informasi</h1>
         </TopBarCenter>

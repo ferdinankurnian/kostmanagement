@@ -264,61 +264,63 @@ function RouteComponent() {
 
         {/* Action Buttons */}
         {data.status === "menunggu_verifikasi" && (
-          <div className="fixed bottom-0 left-0 right-0 mx-auto w-full max-w-lg border-t bg-background p-4 space-y-3">
-            {showReject ? (
-              <>
-                <Textarea
-                  value={alasan}
-                  onChange={(e) => setAlasan(e.target.value)}
-                  placeholder="Alasan penolakan..."
-                  rows={3}
-                />
+          <div className="fixed bottom-0 left-0 right-0 px-4 pb-4 pt-8 bg-linear-to-t from-background to-transparent">
+            <div className="mx-auto max-w-lg space-y-3">
+              {showReject ? (
+                <>
+                  <Textarea
+                    value={alasan}
+                    onChange={(e) => setAlasan(e.target.value)}
+                    placeholder="Alasan penolakan..."
+                    rows={3}
+                  />
+                  <div className="flex gap-2">
+                    <Button
+                      variant="destructive"
+                      className="flex-1"
+                      onClick={() => rejectMutation.mutate()}
+                      disabled={rejectMutation.isPending || !alasan.trim()}
+                    >
+                      {rejectMutation.isPending ? (
+                        <Loader2 className="size-4 animate-spin" />
+                      ) : (
+                        "Tolak"
+                      )}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setShowReject(false);
+                        setAlasan("");
+                      }}
+                    >
+                      Batal
+                    </Button>
+                  </div>
+                </>
+              ) : (
                 <div className="flex gap-2">
                   <Button
-                    variant="destructive"
                     className="flex-1"
-                    onClick={() => rejectMutation.mutate()}
-                    disabled={rejectMutation.isPending || !alasan.trim()}
+                    onClick={() => acceptMutation.mutate()}
+                    disabled={acceptMutation.isPending}
                   >
-                    {rejectMutation.isPending ? (
+                    {acceptMutation.isPending ? (
                       <Loader2 className="size-4 animate-spin" />
                     ) : (
-                      "Tolak"
+                      "Terima"
                     )}
                   </Button>
                   <Button
-                    variant="outline"
-                    onClick={() => {
-                      setShowReject(false);
-                      setAlasan("");
-                    }}
+                    variant="destructive"
+                    className="flex-1"
+                    onClick={() => setShowReject(true)}
                   >
-                    Batal
+                    Tolak
                   </Button>
                 </div>
-              </>
-            ) : (
-              <div className="flex gap-2">
-                <Button
-                  className="flex-1"
-                  onClick={() => acceptMutation.mutate()}
-                  disabled={acceptMutation.isPending}
-                >
-                  {acceptMutation.isPending ? (
-                    <Loader2 className="size-4 animate-spin" />
-                  ) : (
-                    "Terima"
-                  )}
-                </Button>
-                <Button
-                  variant="destructive"
-                  className="flex-1"
-                  onClick={() => setShowReject(true)}
-                >
-                  Tolak
-                </Button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         )}
       </div>
