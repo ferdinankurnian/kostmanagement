@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
-import { setPersistentSession } from "@/lib/ephemeral-session";
 import { useInvite, validateInvite } from "@/lib/invite";
 
 const searchSchema = z.object({
