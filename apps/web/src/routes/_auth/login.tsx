@@ -40,9 +40,6 @@ function Page() {
       return;
     }
 
-    // Always set persistent session to prevent logout on browser close
-    setPersistentSession();
-
     window.location.replace(redirect ?? "/");
   };
 
@@ -113,7 +110,7 @@ function Page() {
               {loading ? "Memproses..." : "Masuk"}
             </Button>
             <Separator />
-            <Link to="/sign-up" search={{ code: undefined }}>
+            <Link to="/sign-up" search={{ code: "" }}>
               <Button type="button" variant="ghost" className="w-full">
                 Member baru? Daftar disini
               </Button>
