@@ -77,7 +77,7 @@ function RouteComponent() {
           <MenuListItem
             icon={BellRing}
             label="Notifikasi"
-            to="/penghuni/notification"
+            to="/penghuni/pengaturan/notification"
           />
           <MenuListItem
             icon={FileText}
