@@ -101,16 +101,11 @@ function RouteComponent() {
               <p className="text-sm font-medium">Tagihan</p>
               <ChevronRight className="size-4" />
             </div>
-            <div className="flex flex-row items-center justify-between">
-              <div className="flex flex-col">
-                <p className="text-2xl font-semibold leading-none">
-                  {tagihanBelumLunas}
-                </p>
-                <p className="text-xs opacity-80">Belum Lunas</p>
-              </div>
-              <div className="p-2 bg-white/20 rounded-lg">
-                <ReceiptText className="size-5" />
-              </div>
+            <div className="flex flex-row items-end gap-2">
+              <p className="text-2xl font-semibold leading-none">
+                {tagihanBelumLunas}
+              </p>
+              <p className="text-sm">Belum Lunas</p>
             </div>
           </div>
         </Link>
@@ -120,16 +115,11 @@ function RouteComponent() {
               <p className="text-sm font-medium">Pemberitahuan</p>
               <ChevronRight className="size-4" />
             </div>
-            <div className="flex flex-row items-center justify-between">
-              <div className="flex flex-col">
-                <p className="text-2xl font-semibold leading-none">
-                  {unreadCount}
-                </p>
-                <p className="text-xs opacity-80">Belum Dibaca</p>
-              </div>
-              <div className="p-2 bg-white/20 rounded-lg">
-                <Bell className="size-5" />
-              </div>
+            <div className="flex flex-row items-end gap-2">
+              <p className="text-2xl font-semibold leading-none">
+                {unreadCount}
+              </p>
+              <p className="text-xs opacity-80">Belum Dibaca</p>
             </div>
           </div>
         </Link>

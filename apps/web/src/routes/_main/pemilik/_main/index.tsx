@@ -3,7 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowUpRight,
   Bell,
-  Clipboard,
+  ChevronRight,
   ReceiptText,
   ShieldAlert,
 } from "lucide-react";
