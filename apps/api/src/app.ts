@@ -26,6 +26,17 @@ export interface Env {
 
 export const app = new Hono<{ Bindings: Env }>();
 
+// Cache auth instances per env to avoid recreating on every request
+const authCache = new Map<string, any>();
+
+function getAuth(env: Env) {
+  const key = `${env.DATABASE_URL}:${env.BETTER_AUTH_SECRET}`;
+  if (!authCache.has(key)) {
+    authCache.set(key, createAuth(env));
+  }
+  return authCache.get(key);
+}
+
 // Global error handler
 app.onError((error, c) => {
   console.error("API Error:", error);
@@ -60,7 +71,7 @@ app.use("/api/auth/*", async (c, next) => {
 
 // Handle all auth requests
 app.all("/api/auth/*", async (c) => {
-  const auth = createAuth(c.env);
+  const auth = getAuth(c.env);
   return auth.handler(c.req.raw);
 });
 
