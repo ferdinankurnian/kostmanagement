@@ -26,15 +26,7 @@ function RouteComponent() {
 
   const cards = parseInformasiKostCards(settings?.peraturan_kost_cards);
 
-  const rules =
-    cards.length > 0
-      ? cards.map((c, idx) => ({ num: idx + 1, content: c }))
-      : settings?.peraturan_kost
-        ? settings.peraturan_kost
-            .split("\n")
-            .filter((r) => r.trim())
-            .map((r, idx) => ({ num: idx + 1, text: r }))
-        : [];
+  const rules = cards.map((c, idx) => ({ num: idx + 1, content: c }));
 
   return (
     <div className="space-y-4 px-4 pt-20 pb-20">
@@ -64,31 +56,23 @@ function RouteComponent() {
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3 pt-4">
           {rules.map((rule, index) => (
             <Card
               key={rule.content?.id ?? `rule-${index}`}
               className="py-0 overflow-hidden"
             >
-              <CardHeader className="flex flex-row items-start gap-4">
+              <CardHeader className="flex flex-row items-start gap-4 py-4">
                 <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 font-semibold text-primary text-sm">
-                  [{rule.num}]
+                  {rule.num}
                 </div>
                 <div className="flex-1 space-y-1">
-                  {rule.content ? (
-                    <>
-                      <CardTitle className="text-sm">
-                        {rule.content.title}
-                      </CardTitle>
-                      <CardDescription className="text-xs whitespace-pre-wrap">
-                        {rule.content.description}
-                      </CardDescription>
-                    </>
-                  ) : (
-                    <CardDescription className="text-xs whitespace-pre-wrap">
-                      {rule.text}
-                    </CardDescription>
-                  )}
+                  <CardTitle className="text-sm">
+                    {rule.content.title}
+                  </CardTitle>
+                  <CardDescription className="text-xs whitespace-pre-wrap">
+                    {rule.content.description}
+                  </CardDescription>
                 </div>
               </CardHeader>
             </Card>
