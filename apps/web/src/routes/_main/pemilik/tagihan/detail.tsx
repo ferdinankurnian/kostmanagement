@@ -125,9 +125,9 @@ function RouteComponent() {
         </TopBarCenter>
       </TopBar>
 
-      <div className="pt-24 px-4 space-y-6">
+      <div className="pt-24 px-4 space-y-4">
         {/* Status Icon */}
-        <div className="flex justify-center">
+        <div className="flex justify-center pt-4">
           <div
             className={`size-16 rounded-full flex items-center justify-center ${statusConfig[data.status].color}`}
           >
@@ -137,100 +137,59 @@ function RouteComponent() {
 
         {/* Amount & Period */}
         <div className="text-center space-y-1">
-          <h2 className="text-3xl font-semibold">
-            {formatRupiah(data.jumlah)}
-          </h2>
+          <h2 className="text-3xl font-bold">{formatRupiah(data.jumlah)}</h2>
           <p className="text-sm text-muted-foreground">{data.periode}</p>
         </div>
 
-        {/* Bukti Pembayaran Card */}
+        {/* Bukti Pembayaran Button */}
         {data.buktiPembayaran && (
-          <div className="space-y-2">
-            <p className="text-sm font-medium">Foto Bukti Pembayaran</p>
-            <div className="rounded-xl border bg-muted/30 p-2">
-              <img
-                src={data.buktiPembayaran}
-                alt="Bukti Pembayaran"
-                className="w-full rounded-lg object-contain max-h-96"
-              />
-            </div>
-          </div>
+          <Button variant="default" className="w-full">
+            Bukti Pembayaran
+          </Button>
         )}
 
-        {/* Info Rows */}
-        <div className="space-y-4">
-          <div className="flex justify-between items-center py-3 border-b">
-            <span className="text-sm text-muted-foreground">Invoice ID</span>
-            <span className="text-sm font-medium">{data.id.slice(0, 8)}</span>
+        {/* Info Grid */}
+        <div className="space-y-4 pt-2">
+          <div className="grid grid-cols-2 gap-x-4">
+            <span className="text-sm">Invoice ID</span>
+            <span className="text-sm text-right">{data.id.slice(0, 10)}</span>
           </div>
 
-          <div className="flex justify-between items-center py-3 border-b">
-            <span className="text-sm text-muted-foreground">Nama Penghuni</span>
-            <span className="text-sm font-medium">
+          <div className="grid grid-cols-2 gap-x-4">
+            <span className="text-sm">Nama Penghuni</span>
+            <span className="text-sm text-right">
               {data.namaPenghuni || "-"}
             </span>
           </div>
 
-          <div className="flex justify-between items-center py-3 border-b">
-            <span className="text-sm text-muted-foreground">No Kamar</span>
-            <span className="text-sm font-medium">{data.noKamar}</span>
+          <div className="grid grid-cols-2 gap-x-4">
+            <span className="text-sm">No Kamar</span>
+            <span className="text-sm text-right">{data.noKamar}</span>
           </div>
 
-          <div className="flex justify-between items-center py-3 border-b">
-            <span className="text-sm text-muted-foreground">Periode</span>
-            <span className="text-sm font-medium">{data.periode}</span>
+          <div className="grid grid-cols-2 gap-x-4">
+            <span className="text-sm">Periode</span>
+            <span className="text-sm text-right">{data.periode}</span>
           </div>
-
-          {data.tanggalJatuhTempo && (
-            <div className="flex justify-between items-center py-3 border-b">
-              <span className="text-sm text-muted-foreground">Jatuh Tempo</span>
-              <span className="text-sm font-medium">
-                {new Date(data.tanggalJatuhTempo).toLocaleDateString("id-ID", {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                })}
-              </span>
-            </div>
-          )}
-
-          {data.tanggalBayar && (
-            <div className="flex justify-between items-center py-3 border-b">
-              <span className="text-sm text-muted-foreground">
-                Tanggal Bayar
-              </span>
-              <span className="text-sm font-medium">
-                {new Date(data.tanggalBayar).toLocaleDateString("id-ID", {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                })}
-              </span>
-            </div>
-          )}
-
-          {data.metodePembayaran && (
-            <div className="flex justify-between items-center py-3 border-b">
-              <span className="text-sm text-muted-foreground">
-                Metode Bayar
-              </span>
-              <span className="text-sm font-medium capitalize">
-                {data.metodePembayaran}
-              </span>
-            </div>
-          )}
-
-          {data.monthsPaid && data.monthsPaid > 1 && (
-            <div className="flex justify-between items-center py-3 border-b">
-              <span className="text-sm text-muted-foreground">
-                Bulan Dibayar
-              </span>
-              <span className="text-sm font-medium">
-                {data.monthsPaid} bulan
-              </span>
-            </div>
-          )}
         </div>
+
+        {/* Foto Bukti Pembayaran Button */}
+        {data.buktiPembayaran && (
+          <Button variant="default" className="w-full">
+            Foto Bukti Pembayaran
+          </Button>
+        )}
+
+        {/* Bukti Image */}
+        {data.buktiPembayaran && (
+          <div className="rounded-lg bg-muted h-48 overflow-hidden">
+            <img
+              src={data.buktiPembayaran}
+              alt="Bukti Pembayaran"
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
 
         {/* Alasan Penolakan */}
         {data.alasanPenolakan && (
